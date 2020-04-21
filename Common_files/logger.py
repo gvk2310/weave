@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging, platform
 
 class HostnameFilter(logging.Filter):
@@ -8,10 +9,10 @@ class HostnameFilter(logging.Filter):
         return True
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-file_handler = logging.FileHandler('/Authentication/LOGS/events.log')
+logger.setLevel(logging.INFO)
+file_handler = logging.FileHandler('/Authentication/Logs/events.log')
 file_handler.addFilter(HostnameFilter())
-formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(hostname)s | [%(module)s %(funcName)s] | %(message)s')
+formatter = logging.Formatter('%(asctime)s  %(levelname)s  %(hostname)s [%(module)s -  %(funcName)s]  %(message)s')
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
