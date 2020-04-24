@@ -7,7 +7,6 @@ roles = ["admin"]
 read = ["svc1", "svc2"]
 write = ["svc1", "svc2"]
 
-db.createRole
 
 if db.createRole(roles[0], read, write):
     logger.info('Role-"admin" Created')
