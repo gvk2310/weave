@@ -10,7 +10,7 @@ spec:
         app: devNetOps
     spec:
       imagePullSecrets:
-      - name: phnx-int-reg-cred
+      - name: regcred
       containers:
       - name: devNetOps
         image: devopstudio.azurecr.io/devopstudio/devNetOps:sprint1
