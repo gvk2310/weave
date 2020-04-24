@@ -13,7 +13,7 @@ spec:
       - name: regcred
       containers:
       - name: devNetOps
-        image: devopstudio.azurecr.io/devopstudio/devNetOps:latest
+        image: devopstudio.azurecr.io/devopstudio/devnops:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
