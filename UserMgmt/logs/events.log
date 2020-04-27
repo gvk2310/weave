@@ -1,0 +1,6 @@
+2020-04-24 16:50:44,185 | INFO | BDC7-L-9361NF2 |         [__init__ <module>] | Executing Initial User data setup
+2020-04-24 16:50:44,248 | ERROR | BDC7-L-9361NF2 |         [db createRole] | Tried to save duplicate unique keys (E11000 duplicate key error collection: devnetopsV2.role index: name_1 dup key: { : "admin" })
+2020-04-24 16:50:44,248 | ERROR | BDC7-L-9361NF2 |         [datasetup <module>] | Role-"admin" Creation failed
+2020-04-24 16:50:50,282 | INFO | BDC7-L-9361NF2 |         [__init__ <module>] | Executing Initial User data setup
+2020-04-24 16:50:50,308 | ERROR | BDC7-L-9361NF2 |         [db createRole] | Tried to save duplicate unique keys (E11000 duplicate key error collection: devnetopsV2.role index: name_1 dup key: { : "admin" })
+2020-04-24 16:50:50,309 | ERROR | BDC7-L-9361NF2 |         [datasetup <module>] | Role-"admin" Creation failed

@@ -1,19 +1,19 @@
 apiVersion: extensions/v1beta1
-kind: eployment
+kind: Deployment
 metadata:
-  name: devNetOps
+  name: devnetops
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: devNetOps
+        app: devnetops
     spec:
       imagePullSecrets:
       - name: regcred
       containers:
-      - name: devNetOps
-        image: devopstudio.azurecr.io/devopstudio/devNetOps:sprint1
+      - name: devnetops
+        image: devopstudio.azurecr.io/devopstudio/devnetops:s0
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
