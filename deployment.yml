@@ -12,8 +12,8 @@ spec:
       imagePullSecrets:
       - name: regcred
       containers:
-      - name: devnetops
-        image: devopstudio.azurecr.io/devopstudio/devnetops:s0
+      - name: devNetOps
+        image: devopstudio.azurecr.io/devnetops:s1
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
