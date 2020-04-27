@@ -42,12 +42,12 @@ def passChecker(passw):
 
 def createUser(user, passw, roles):
     try:
-        if len(roles) != len(Role.objects(name__in=roles)):
-            return False
+        #if len(roles) != len(Role.objects(name__in=roles)):
+         #   return False
         user_datastore.create_user(
             email=user,
             password=passw,
-            roles=roles
+            roles=[roles]
         )
     except Exception as e:
         logger.debug(traceback.format_exc())
@@ -107,7 +107,7 @@ def createSvc(name):
         return False
     return True
 
-
+#not
 def checkSvcUsage(svc):
     try:
         for ob in Role.objects():
@@ -160,18 +160,21 @@ def createRole(role, read, write):
 
 
 def addSvcToRole(role, permType, svcs):
-    for svc in svcs:
-        if not createSvcs(svc):
+    if not createSvc(svcs): #need to define
             return False
     try:
-        svcOb = Services.objects(name__in=svcs)
+        print('test')
+        svcOb = Services.objects(serviceName=svcs)
         rol = Role.objects(name=role).first()
+        print(rol)
         if permType == 'read':
             rol.read += svcOb
             rol.read = list(set(rol.read))
+            rol.update(read=rol.read)
         if permType == 'write':
             rol.write += svcOb
             rol.write = list(set(rol.write))
+            rol.update(read=rol.read)
         return True
     except Exception as e:
         logger.error(e)
@@ -179,21 +182,25 @@ def addSvcToRole(role, permType, svcs):
 
 
 def remSvcFrmRole(role, permType, svcs):
+    print("removeService")
     try:
+        print("hii")
         rol = Role.objects(name=role).first()
         newSvc = []
         if permType == 'read':
             newSvc = [item for item in rol.read if item.name not in svcs]
             rol.read = newSvc
+            rol.delete(rol)
         if permType == 'write':
             newSvc = [item for item in rol.write if item.name not in svcs]
             rol.write = newSvc
+            rol.delete(rol)
         return True
     except Exception as e:
         logger.error(e)
         return False
 
-
+#not
 def checkRoleUsage(role):
     try:
         usr = User.objects()
@@ -216,10 +223,12 @@ def deleteRole(role):
         logger.error(e)
         return None
 
-
+#not
 def userRoles(user):
     try:
+        print(user)
         usr = user_datastore.get_user(user)
+        print(usr)
         return [role.name for role in usr.roles]
     except Exception as e:
         logger.error(e)
