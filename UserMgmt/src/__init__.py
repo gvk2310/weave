@@ -15,3 +15,5 @@ from . import datasetup
 
 app_api.add_resource(resources.Authenticate, '/auth')
 app_api.add_resource(resources.User, '/users')
+app_api.add_resource(resources.Role,'/roles')
+app_api.add_resource(resources.Service, '/service')
