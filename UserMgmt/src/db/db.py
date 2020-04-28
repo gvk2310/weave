@@ -3,6 +3,7 @@ from ..log import logger
 from ..config.config import app
 from flask_mongoengine import MongoEngine
 from bcrypt import hashpw, checkpw, gensalt
+
 db = MongoEngine(app)
 
 
@@ -118,6 +119,7 @@ def createSvc(name):
     try:
         svc = Services(name=name)
         svc.save()
+        addSvcToRole('admin', read=[name], write=[name])
         logger.info(f"Service '{name}' has been created")
         return True
     except Exception as e:
@@ -128,7 +130,7 @@ def createSvc(name):
 
 def checkSvcUsage(svc):
     try:
-        for ob in Role.objects():
+        for ob in Role.objects(name__ne='admin'):
             if svc in [obj.name for obj in (ob.read + ob.write)]:
                 return True
         return False
@@ -144,6 +146,7 @@ def deleteSvcs(svc):
     elif check == True:
         return False
     try:
+        remSvcFrmRole('admin', read=[svc], write=[svc])
         Services.objects(name=svc).delete()
         return True
     except Exception as e:

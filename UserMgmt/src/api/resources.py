@@ -64,16 +64,16 @@ class User(Resource):
     @admin_required
     def put(self):
         user = request.json['email']
-        if (action := int(request.args['action'])) == 1:
+        if (action := int(request.args['action'])) == 3:
             if not passChecker(passw := request.json['password']):
                 return {'message': passFormatMsg}, 417
             if db.changePass(user, passw):
                 return {'message': 'Password changed'}, 200
-        elif action == 2:
+        elif action == 1:
             roles = request.json['roles']
             if db.addRoleToUser(user, roles):
                 return {'message': 'Roles modified'}, 200
-        elif action == 3:
+        elif action == 2:
             roles = request.json['roles']
             if db.removeRoleFrmUser(user, roles):
                 return {'message': 'Roles modified'}, 200
