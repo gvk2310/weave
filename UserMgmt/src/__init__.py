@@ -10,10 +10,19 @@ from .config import config
 from .db import db
 from .api import resources
 
-logger.info('Executing Initial User data setup')
-from . import datasetup
+@app.before_first_request
+def initialDataSetup():
+    db.createSvc('svc1')
+    db.createSvc('svc2')
+    db.createRole('admin', ["svc1", "svc2"], ["svc1", "svc2"])
+    db.createUser('admin@acc.com', 'Admin@123', ['admin'])
+
+#logger.info('Executing Initial User data setup')
+#from . import datasetup
+
+
 
 app_api.add_resource(resources.Authenticate, '/auth')
 app_api.add_resource(resources.User, '/users')
-app_api.add_resource(resources.Role,'/roles')
+app_api.add_resource(resources.Role, '/roles')
 app_api.add_resource(resources.Service, '/service')

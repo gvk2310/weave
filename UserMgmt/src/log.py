@@ -11,7 +11,7 @@ class HostnameFilter(logging.Filter):
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 file_handler = logging.FileHandler(r'logs//events.log')
 file_handler.addFilter(HostnameFilter())
 formatter = logging.Formatter(

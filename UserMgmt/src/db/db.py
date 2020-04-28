@@ -2,112 +2,130 @@ import traceback
 from ..log import logger
 from ..config.config import app
 from flask_mongoengine import MongoEngine
-from flask_security import Security, MongoEngineUserDatastore
-from flask_security import UserMixin, RoleMixin
-from flask_security.utils import hash_password, verify_password
-
+from bcrypt import hashpw, checkpw, gensalt
 db = MongoEngine(app)
 
 
 class Services(db.Document):
-    serviceName = db.StringField(max_lenth=255, unique=True)
+    name = db.StringField(required=True, unique=True)
 
 
-class Role(db.Document, RoleMixin):
-    name = db.StringField(max_length=80, unique=True)
+class Role(db.Document):
+    name = db.StringField(required=True, unique=True)
     read = db.ListField(db.ReferenceField(Services), default=[])
     write = db.ListField(db.ReferenceField(Services), default=[])
 
 
-class User(db.Document, UserMixin):
-    email = db.StringField(max_length=255, unique=True)
-    password = db.StringField(max_length=255)
-    active = db.BooleanField(default=False)
+class User(db.Document):
+    email = db.EmailField(required=True, unique=True)
+    password = db.StringField(required=True)
     roles = db.ListField(db.ReferenceField(Role), default=[])
 
 
-user_datastore = MongoEngineUserDatastore(db, User, Role)
-security = Security(app, user_datastore)
-
-
-def passChecker(passw):
-    if not len(passw) > 7 or\
-       not re.search('[A-Z]', passw) or \
-       not re.search('[a-z]', passw) or \
-       not re.search('[0-9]', passw) or \
-       not re.search('[_@$]', passw):
-        return False
-    return True
+def getUsers():
+    try:
+        return [{
+            "email": usr.email,
+            "roles": [role.name for role in usr.roles]}
+            for usr in User.objects()
+        ]
+    except Exception as e:
+        logger.error('Unable to retrieve user list')
+        logger.debug(traceback.format_exc())
+        logger.error(e)
 
 
 def createUser(user, passw, roles):
     try:
-        #if len(roles) != len(Role.objects(name__in=roles)):
-         #   return False
-        user_datastore.create_user(
-            email=user,
-            password=passw,
-            roles=[roles]
-        )
+        if len(roles) != len(rols:=Role.objects(name__in=roles)):
+            return False
+        # roles = Role.objects(name__in=roles)
+        usr = User(email=user, password=hashpw(
+            passw.encode('utf-8'), gensalt()), roles=rols)
+        usr.save()
+        logger.info(f"User '{user}' created with roles '{','.join(roles)}'")
+        return True
     except Exception as e:
+        logger.error(f"Failed to create user '{user}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
-        return None
-    return True
 
 
 def changePass(user, passw):
     try:
-        usr = user_datastore.get_user(user)
-        usr.update(password=hash_password(passw))
+        usr = User.objects(email=user).first()
+        usr.update(password=hashpw(passw.encode('utf-8'), gensalt()).decode('utf-8'))
+        logger.info(f"Password successfully changed for user '{user}'")
+        return True
     except Exception as e:
+        logger.error(f"Failed to change password for user '{user}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return False
-    return True
 
 
-def modifyRoles(user, roles, action):
+def addRoleToUser(user, roles):
     try:
-        if action == "remove_role":
-            for role in roles:
-                user_datastore.remove_role_from_user(user, role)
-        if action == "add_role":
-            for role in roles:
-                user_datastore.add_role_from_user(user, role)
+        if len(roles) != len(rols:=Role.objects(name__in=roles)):
+            return False
+        usr = User.objects(email=user).first()
+        new_roles = usr.roles + list(rols)
+        usr.update(roles=new_roles)
+        logger.info(
+            f"New roles - {','.join(roles)} added to the user '{user}'")
+        return True
     except Exception as e:
+        logger.error(f"Unable to add new roles to the user '{user}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return False
-    return True
+
+
+def removeRoleFrmUser(user, roles):
+    try:
+        usr = User.objects(email=user).first()
+        new_roles = list(set(usr.roles) - set(Role.objects(name__in=roles)))
+        usr.update(roles=new_roles)
+        logger.info(
+            f"Roles - '{','.join(roles)}' has been removed from the user '{user}'")
+        return True
+    except Exception as e:
+        logger.error(f"Unable to remove roles from the user '{user}'")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
 
 
 def deleteUser(user):
     try:
-        usr = user_datastore.get_user(user)
+        usr = User.objects(email=user).first()
         usr.delete()
+        logger.info(f"User '{user}' has been deleted")
+        return True
     except Exception as e:
+        logger.error(f"Unable to remove roles from the user '{user}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return False
-    return True
 
 
 def getServices():
     try:
-        return [svc.serviceName for svc in Services.objects()]
+        return [svc.name for svc in Services.objects()]
     except Exception as e:
+        logger.error("Unable retrieve service list")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return False
 
 
 def createSvc(name):
     try:
-        svc = Services(serviceName=name)
+        svc = Services(name=name)
         svc.save()
+        logger.info(f"Service '{name}' has been created")
+        return True
     except Exception as e:
+        logger.error(f"Failed to create service {name}")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return False
-    return True
 
-#not
+
 def checkSvcUsage(svc):
     try:
         for ob in Role.objects():
@@ -115,132 +133,129 @@ def checkSvcUsage(svc):
                 return True
         return False
     except Exception as e:
+        logger.error(f"Unable to check if service '{svc}' is in use")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return None
 
 
 def deleteSvcs(svc):
     if (check:=checkSvcUsage(svc)) == None:
-        return False
+        return None
     elif check == True:
-        return 'Service still in use'
+        return False
     try:
         Services.objects(name=svc).delete()
+        return True
     except Exception as e:
+        logger.error(f"Unable to delete service '{svc}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return False
 
 
 def getRoles():
     try:
-        return [{"name": role.name,
-                 "read": [item.name for item in role.read],
-                 "write":[item.name for item in role.write]}
-                for role in Role.objects()]
+        msg = [{"name": role.name,
+                "read": [item.name for item in role.read],
+                "write":[item.name for item in role.write]}
+               for role in Role.objects()]
+        return msg
     except Exception as e:
+        logger.error(f"Unable to retrieve role list")
+        logger.debug(traceback.format_exc())
         logger.error(e)
 
 
-def createRole(role, read, write):
-    if len(read)+len(write) > 0:
-        dif = list(set(read+write)-set(getServices()))
-    if len(dif) > 0:
-        for svc in dif:
-            if createSvc(svc) == False:
-                return False
-    rd = Services.objects(serviceName__in=read)
-    wr = Services.objects(serviceName__in=write)
+def createRole(role, read=[], write=[]):
+    if len(set(read+write)) != len(Services.objects(name__in=list(set(read+write)))) and len(read+write)>0:
+        return False
     try:
-        user_datastore.create_role(name=role, read=rd, write=wr)
-        logger.info(f'Role "{role}"" created')
+        rol = Role(name=role, read=Services.objects(name__in=read),
+                   write=Services.objects(name__in=write))
+        rol.save()
+        logger.info(f"Role '{role}' has been created")
         return True
     except Exception as e:
+        logger.error(f"Failed to create role '{role}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
+
+
+def addSvcToRole(role, read=[], write=[]):
+    if len(set(read+write)) != len(Services.objects(name__in=list(set(read+write)))):
         return False
-
-
-def addSvcToRole(role, permType, svcs):
-    if not createSvc(svcs): #need to define
-            return False
     try:
-        print('test')
-        svcOb = Services.objects(serviceName=svcs)
         rol = Role.objects(name=role).first()
-        print(rol)
-        if permType == 'read':
-            rol.read += svcOb
-            rol.read = list(set(rol.read))
-            rol.update(read=rol.read)
-        if permType == 'write':
-            rol.write += svcOb
-            rol.write = list(set(rol.write))
-            rol.update(read=rol.read)
+        if len(read) > 0:
+            rol.update(read=rol.read + list(Services.objects(name__in=read)))
+        if len(write) > 0:
+            rol.update(write=rol.write + list(Services.objects(name__in=write)))
+        logger.info(f"Services added to role '{role}'")
         return True
     except Exception as e:
+        logger.error(f"Failed to add services to role '{role}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return False
 
 
-def remSvcFrmRole(role, permType, svcs):
-    print("removeService")
+def remSvcFrmRole(role, read=[], write=[]):
     try:
-        print("hii")
         rol = Role.objects(name=role).first()
-        newSvc = []
-        if permType == 'read':
-            newSvc = [item for item in rol.read if item.name not in svcs]
-            rol.read = newSvc
-            rol.delete(rol)
-        if permType == 'write':
-            newSvc = [item for item in rol.write if item.name not in svcs]
-            rol.write = newSvc
-            rol.delete(rol)
+        if len(read) > 0:
+            rol.update(read=list(set(rol.read) -
+                                 set(Services.objects(name__in=read))))
+        if len(write) > 0:
+            rol.update(write=list(set(rol.write) -
+                                  set(Services.objects(name__in=write))))
+        logger.info(f"Services removed from role '{role}'")
         return True
     except Exception as e:
+        logger.error(f"Failed to remove services from role '{role}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return False
 
-#not
+
 def checkRoleUsage(role):
     try:
         usr = User.objects()
         return role in [r.name for u in usr for r in u.roles]
     except Exception as e:
+        logger.error(f"Failed to check role usage for '{role}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return None
 
 
 def deleteRole(role):
     if (check:=checkRoleUsage(role)) == None:
         return None
-    elif check == True:
+    elif check:
         return False
     try:
-        rol = user_datastore.find_role(role)
+        rol = Role.objects(name=role).first()
         rol.delete()
+        logger.info(f"Role '{role}' deleted successfully")
         return True
     except Exception as e:
+        logger.error(f"Failed to delete role '{role}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return None
 
-#not
-def userRoles(user):
+
+def checkAdminPrivilege(user):
     try:
-        print(user)
-        usr = user_datastore.get_user(user)
-        print(usr)
-        return [role.name for role in usr.roles]
+        usr = User.objects(email=user).first()
+        return 'admin' in [role.name for role in usr.roles]
     except Exception as e:
+        logger.error(f"Failed to check admin privilege for user '{user}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return False
 
 
 def authenticateUser(user, passw):
     try:
-        if not user_datastore.find_user(email=user):
+        if not (usr:=User.objects(email=user).first()):
             return False
-        usr = user_datastore.get_user(user)
-        return verify_password(passw, usr.password)
+        return checkpw(passw.encode('utf8'), usr.password.encode('utf-8'))
     except Exception as e:
+        logger.error(f"Failed to verify user '{user}'")
+        logger.debug(traceback.format_exc())
         logger.error(e)
-        return None
