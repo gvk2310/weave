@@ -2,7 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: devnetops
+  namespace: devnetops
 spec:
+  selector:
+    matchLabels:
+      app: devnetops
   replicas: 1
   template:
     metadata:
@@ -10,10 +14,9 @@ spec:
         app: devnetops
     spec:
       imagePullSecrets:
-      - name: regcred
+        - name: regcred
       containers:
-      - name: devNetOps
+      - name: devnetops
         image: devopstudio.azurecr.io/devnetops:s1
-        imagePullPolicy: Always
         ports:
         - containerPort: 8080
