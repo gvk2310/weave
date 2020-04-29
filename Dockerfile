@@ -1,4 +1,4 @@
-FROM python:3.8-buster
+FROM python:3.8.2-alpine3.11
 MAINTAINER "Devnetops Team"
 ADD UserMgmt /UserMgmt
 WORKDIR /UserMgmt
