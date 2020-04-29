@@ -1,22 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: devnetops
-  namespace: devnetops
+  name: usermgmt
+  labels:
+    app: usermgmt
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: devnetops
-  replicas: 1
+      app: usermgmt
   template:
     metadata:
       labels:
-        app: devnetops
+        app: usermgmt
     spec:
       imagePullSecrets:
-        - name: regcred
+      - name: regcred
       containers:
-      - name: devnetops
-        image: devopstudio.azurecr.io/devnetops:s1
+      - name: usermgmt
+        image: devopstudio.azurecr.io/devnops:latest
         ports:
         - containerPort: 8080
