@@ -1,6 +1,6 @@
 import re
 from ..db import db
-from flask_restful import Resource, request
+from flask_restful import Resource, request, reqparse
 from functools import wraps
 
 
@@ -41,13 +41,14 @@ class User(Resource):
     passFormatMsg = "Password must be minimum 8 characters long and must \
         contain at least 1 uppercase, 1  lowercase character, 1 number \
             and 1 of the special characters <_@$>"
-
+    # Getting List of user Available
     @admin_required
     def get(self):
         if users := db.getUsers():
             return users, 200
         return {'message': 'Unable to fetch users'}, 500
-
+        
+    # Creating user
     @admin_required
     def post(self):
         user = request.json['email']
@@ -82,13 +83,17 @@ class User(Resource):
     # Deleting user
     @admin_required
     def delete(self):
-        user = request.json['email']
+        if 'email' not in request.json.keys() or len(user:=request.json['email'])<1:
+            return {'message': 'user name can not be blank'}
+        #user = request.json['email']
         if db.deleteUser(user):
             return {'message': 'User deleted'}, 200
         return {'message': 'Unable to delete user'}, 500
 
 
 class Role(Resource):
+
+    #Getting List of role Available
     @admin_required
     def get(self):
         if roles := db.getRoles():
@@ -117,10 +122,11 @@ class Role(Resource):
         role = request.json['role']
         read=[]
         write=[]
-        if 'read' in request.json.keys():
-            read = request.json["read"]
-        if 'write' in request.json.keys():
-            write = request.json["write"]
+        if ('read' in request.json.keys() or len(read:=request.json['read'])<1):
+            return {'message': 'read value can not be blank'}  
+        if ('write' in request.json.keys() or len(write:=request.json['write'])<1):
+            return {'message': 'write value can not be blank'}  
+       
         if (action := int(request.args['action'])) == 1:
             if resp := db.addSvcToRole(role, read, write):
                 return {'message': 'Services has been added to Role'}, 200
@@ -134,7 +140,8 @@ class Role(Resource):
     # Deleting roles
     @admin_required
     def delete(self):
-        role = request.json['role']
+        if 'role' not in request.json.keys() or len(role:=request.json['role'])<1:
+            return {'message': 'role name can not be blank'}    
         if resp := db.deleteRole(role):
             return {'message': 'Role is deleted'}, 200
         elif resp == False:
@@ -143,6 +150,7 @@ class Role(Resource):
 
 
 class Service(Resource):
+
     # Getting list of Services
     @admin_required
     def get(self):
@@ -153,7 +161,8 @@ class Service(Resource):
     # Creating Service
     @admin_required
     def post(self):
-        serviceName = request.json['name']
+        if 'name' not in request.json.keys() or len(serviceName:=request.json['name'])<1:
+            return {'message': 'service name can not be blank'}
         if db.createSvc(serviceName):
             return {'message': 'Service is created'}, 200
         return {'message': 'Unable to process this request'}, 500
@@ -161,7 +170,10 @@ class Service(Resource):
     # Deleting Service
     @admin_required
     def delete(self):
-        serviceName = request.json['name']
-        if db.deleteSvcs(serviceName):
+        if 'name' not in request.json.keys() or len(serviceName:=request.json['name'])<1:
+            return {'message': 'service name can not be blank'}
+        if serve := db.deleteSvcs(serviceName):
             return {'message': 'Service is deleted'}, 200
+        elif serve == False:
+            return {'message': 'Service in use, cannot delete'}, 412
         return {'message': 'Unable to process this request'}, 500
