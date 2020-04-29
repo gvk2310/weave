@@ -119,23 +119,30 @@ class Role(Resource):
     # Adding Service to role
     @admin_required
     def put(self):
+        if 'role' not in (keys := request.json.keys()) or 'action' not in request.args.keys() or\
+        ('read' not in keys and 'write' not in keys):
+            return {'message': 'Missing fields! mandatory fields - action, role and atleast one of read, write'}
         role = request.json['role']
         read=[]
         write=[]
-        if ('read' in request.json.keys() or len(read:=request.json['read'])<1):
-            return {'message': 'read value can not be blank'}  
-        if ('write' in request.json.keys() or len(write:=request.json['write'])<1):
-            return {'message': 'write value can not be blank'}  
-       
+        if 'read' in request.json.keys():
+            read = request.json['read']
+            print(read)
+        if 'write' in request.json.keys():
+            write = request.json['write']
+            print(write)
+        if len(read+write)<1:
+            return {'message': 'No services provided to process on'}
         if (action := int(request.args['action'])) == 1:
-            if resp := db.addSvcToRole(role, read, write):
-                return {'message': 'Services has been added to Role'}, 200
-            elif resp == False:
-                return {'message': 'Services not found'}, 400
+                if resp := db.addSvcToRole(role, read, write):
+                    return {'message': 'Services has been added to Role'}, 200
+        elif resp == False:
+            return {'message': 'Services not found'}, 400
         elif action == 2:
             if db.remSvcFrmRole(role, read, write):
                 return {'message': 'Service is removed from Role'}, 200
-        return {'message': 'Unable to process this request'}, 500
+        return {'message': 'Unable to process this request'}, 500                              
+        
 
     # Deleting roles
     @admin_required
@@ -177,3 +184,5 @@ class Service(Resource):
         elif serve == False:
             return {'message': 'Service in use, cannot delete'}, 412
         return {'message': 'Unable to process this request'}, 500
+        
+
