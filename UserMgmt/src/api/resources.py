@@ -1,6 +1,6 @@
 import re
 from ..db import db
-from flask_restful import Resource, request, reqparse
+from flask_restful import Resource, request
 from functools import wraps
 
 
