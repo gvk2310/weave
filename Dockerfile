@@ -1,4 +1,4 @@
-FROM tiangolo/uwsgi-nginx-flask
+FROM python:3.8-alpine3.11
 MAINTAINER "Devnetops Team"
 RUN apk add --no-cache --virtual .build-deps libressl-dev libffi-dev gcc musl-dev
 COPY UserMgmt /UserMgmt
