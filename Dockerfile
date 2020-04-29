@@ -1,10 +1,8 @@
-FROM alpine:latest
+FROM python:3.8-alpine3.11
 MAINTAINER "Devnetops Team"
-ADD UserMgmt /UserMgmt
+RUN apk update && apk add --no-cache --virtual .build-deps libressl-dev libffi-dev gcc musl-dev
+COPY UserMgmt /UserMgmt
 WORKDIR /UserMgmt
-RUN apk add --update py-pip
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev \
-     && pip install cython
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt \
+      && apk del .build-deps
 CMD ["uwsgi", "--ini", "uwsgi.ini"]
-
