@@ -1,11 +1,5 @@
 from .. import app
 
-#app.config['MONGODB_DB'] = 'devnetops'
-#app.config['MONGODB_HOST'] = 'mongo.devnetops.svc.cluster.local'
-#app.config['MONGODB_PORT'] = 27017
-#app.config['MONGODB_USERNAME'] = 'admin'
-#app.config['MONGODB_PASSWORD'] = 'password'
-#app.config['MONGODB_CONNECT'] = False
 app.config['MONGODB_SETTINGS'] = {
         'host': 'mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops?authSource=admin',
         'connect': False
