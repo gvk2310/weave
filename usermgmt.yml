@@ -1,9 +1,15 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: usermgmt
+  labels:
+    app: usermgmt
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: usermgmt
   template:
     metadata:
       labels:
@@ -12,9 +18,8 @@ spec:
       imagePullSecrets:
       - name: regcred
       containers:
-      - name: devNetOps
+      - name: usermgmt
         image: devopstudio.azurecr.io/devnetops:s1
-        imagePullPolicy: Always
         ports:
         - containerPort: 8080
 ---
