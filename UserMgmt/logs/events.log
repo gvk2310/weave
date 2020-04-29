@@ -858,3 +858,11 @@ TypeError: Unicode-objects must be encoded before checking
 2020-04-28 11:02:28,257 | ERROR | BDC7-L-9361NF2 |         [db createRole] | Tried to save duplicate unique keys (E11000 duplicate key error collection: testnetops.role index: name_1 dup key: { name: "admin" })
 2020-04-28 11:02:28,804 | ERROR | BDC7-L-9361NF2 |         [db createUser] | Failed to create user 'admin@acc.com'
 2020-04-28 11:02:28,810 | ERROR | BDC7-L-9361NF2 |         [db createUser] | Tried to save duplicate unique keys (E11000 duplicate key error collection: testnetops.user index: email_1 dup key: { email: "admin@acc.com" })
+2020-04-28 13:06:36,130 | ERROR | BDC7-L-9361NF2 |         [db createSvc] | Failed to create service svc1
+2020-04-28 13:06:36,141 | ERROR | BDC7-L-9361NF2 |         [db createSvc] | Tried to save duplicate unique keys (E11000 duplicate key error collection: testnetops.services index: name_1 dup key: { name: "svc1" })
+2020-04-28 13:06:36,145 | ERROR | BDC7-L-9361NF2 |         [db createSvc] | Failed to create service svc2
+2020-04-28 13:06:36,155 | ERROR | BDC7-L-9361NF2 |         [db createSvc] | Tried to save duplicate unique keys (E11000 duplicate key error collection: testnetops.services index: name_1 dup key: { name: "svc2" })
+2020-04-28 13:06:36,173 | ERROR | BDC7-L-9361NF2 |         [db createRole] | Failed to create role 'admin'
+2020-04-28 13:06:36,179 | ERROR | BDC7-L-9361NF2 |         [db createRole] | Tried to save duplicate unique keys (E11000 duplicate key error collection: testnetops.role index: name_1 dup key: { name: "admin" })
+2020-04-28 13:06:36,454 | ERROR | BDC7-L-9361NF2 |         [db createUser] | Failed to create user 'admin@acc.com'
+2020-04-28 13:06:36,456 | ERROR | BDC7-L-9361NF2 |         [db createUser] | Tried to save duplicate unique keys (E11000 duplicate key error collection: testnetops.user index: email_1 dup key: { email: "admin@acc.com" })

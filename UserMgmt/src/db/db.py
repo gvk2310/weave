@@ -189,9 +189,9 @@ def addSvcToRole(role, read=[], write=[]):
     try:
         rol = Role.objects(name=role).first()
         if len(read) > 0:
-            rol.update(read=rol.read + list(Services.objects(name__in=read)))
+            rol.update(read=list(set(rol.read + list(Services.objects(name__in=read)))))
         if len(write) > 0:
-            rol.update(write=rol.write + list(Services.objects(name__in=write)))
+            rol.update(write=list(set(rol.write + list(Services.objects(name__in=write)))))
         logger.info(f"Services added to role '{role}'")
         return True
     except Exception as e:
