@@ -17,10 +17,6 @@ def initialDataSetup():
     db.createRole('admin', ["svc1", "svc2"], ["svc1", "svc2"])
     db.createUser('admin@acc.com', 'Admin@123', ['admin'])
 
-#logger.info('Executing Initial User data setup')
-#from . import datasetup
-
-
 
 app_api.add_resource(resources.Authenticate, '/auth')
 app_api.add_resource(resources.User, '/users')
