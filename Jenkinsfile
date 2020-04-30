@@ -52,7 +52,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               container('docker') {		 
 	             withCredentials([usernamePassword(credentialsId: ${DockerReg_Credentials}, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
 				 {
-			     sh ("docker login -u ${USERNAME} -p ${PASSWORD} '+'${DockerReg_Url}")
+			     sh ("docker login -u ${USERNAME} -p ${PASSWORD} "+DockerReg_Url)
 				 sh ("docker push ${DockerReg_Url}/${Docker_Image}:${Image_Tag}")	
          }
              }
