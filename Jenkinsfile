@@ -50,7 +50,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		}  
 		stage('Pushing the Docker image to Container Registry') {
               container('docker') {		 
-	             withCredentials([usernamePassword(credentialsId: ${DockerReg_Credentials}, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
+	             withCredentials([usernamePassword(credentialsId: 'acr', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
 				 {
 			     sh ("docker login -u ${USERNAME} -p ${PASSWORD} "+DockerReg_Url)
 				 sh ("docker push ${DockerReg_Url}/${Docker_Image}:${Image_Tag}")	
