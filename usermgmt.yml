@@ -47,7 +47,7 @@ spec:
   - host: dno-dev.acndevopsengineering.com
     http:
       paths:
-      - path: /usermgmt(/|$)(.*)
+      - path: /usrmgmt(/|$)(.*)
         backend:
           serviceName: user
           servicePort: 8080
