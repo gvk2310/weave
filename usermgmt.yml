@@ -49,5 +49,5 @@ spec:
       paths:
       - path: /usrmgmt(/|$)(.*)
         backend:
-          serviceName: user
+          serviceName: usermgmt
           servicePort: 8080
