@@ -44,7 +44,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          }
 		 stage (' Create Docker image'){
 			container('docker'){
-			sh ("docker build -t ${DockerReg_Url}/devnetops-usermgmt:${Image_Tag} --network=host .")
+              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host .")
 			}
 	
 		}  
@@ -52,7 +52,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               container('docker') {		 
 	             withCredentials([usernamePassword(credentialsId: ${DockerReg_Credentials}, passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
 				 {
-			     sh ('docker login -u ${USERNAME} -p ${PASSWORD} '+'${DockerReg_Url}')
+			     sh ("docker login -u ${USERNAME} -p ${PASSWORD} '+'${DockerReg_Url}")
 				 sh ("docker push ${DockerReg_Url}/${Docker_Image}:${Image_Tag}")	
          }
              }
