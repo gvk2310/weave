@@ -66,7 +66,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					}
 				} 
 				catch(e){
-					sh("kubectl apply -f ${K8s_Deployment}")
+					sh("kubectl apply -f usermgmt.yml")
 					echo "deploying"
               }
 			}
