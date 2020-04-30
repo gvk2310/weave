@@ -12,7 +12,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		def Commit_Id
 		def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='acr'
-        def Docker_Image = 'devnetops'
+        def Docker_Image = 'devnetops-usermgmt'
         def Image_Tag = 's1'
 		def K8s_Deployment = 'usermgmt'
 	    node(label) {
