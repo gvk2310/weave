@@ -16,7 +16,7 @@ spec:
         app: usermgmt
     spec:
       imagePullSecrets:
-      - name: regcred
+      - name: devnetops
       containers:
       - name: usermgmt
         image: devnetops.azurecr.io/devnetops-usermgmt:s1
