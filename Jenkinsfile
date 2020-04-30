@@ -44,7 +44,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          }
 		 stage (' Create Docker image'){
 			container('docker'){
-			sh ('docker build -t ${DockerReg_Url}/devnetops-usermgmt:${Image_Tag} --network=host .')
+			sh ("docker build -t ${DockerReg_Url}/devnetops-usermgmt:${Image_Tag} --network=host .")
 			}
 	
 		}  
