@@ -19,7 +19,7 @@ spec:
       - name: regcred
       containers:
       - name: usermgmt
-        image: devnetops.azurecr.io/devnetops:s1
+        image: devnetops.azurecr.io/devnetops-usermgmt:s1
         ports:
         - containerPort: 8080
 ---
