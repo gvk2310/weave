@@ -39,7 +39,7 @@ class Authenticate(Resource):
 
 class User(Resource):
     passFormatMsg = "Password must be minimum 8 characters long and must \
-        contain at least 1 uppercase, 1  lowercase character, 1 number \
+        contain at least 1 uppercase, 1 lowercase character, 1 number \
             and 1 of the special characters <_@$>"
     # Getting List of user Available
     @admin_required
