@@ -53,7 +53,7 @@ class User(Resource):
     def post(self):
         user = request.json['email']
         if not passChecker((passw := request.json['password'])):
-            return {'message': passFormatMsg}, 417
+            return {'message': self.passFormatMsg}, 417
         roles = request.json['roles']
         if (resp := db.createUser(user, passw, roles)) == True:
             return {'message': 'User  created'}, 200
@@ -67,7 +67,7 @@ class User(Resource):
         user = request.json['email']
         if (action := int(request.args['action'])) == 3:
             if not passChecker(passw := request.json['password']):
-                return {'message': passFormatMsg}, 417
+                return {'message': self.passFormatMsg}, 417
             if db.changePass(user, passw):
                 return {'message': 'Password changed'}, 200
         elif action == 1:
