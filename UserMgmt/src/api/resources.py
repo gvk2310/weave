@@ -52,10 +52,11 @@ class User(Resource):
     @admin_required
     def post(self):
         user = request.json['email']
+        name = request.json['name']
         if not passChecker((passw := request.json['password'])):
             return {'message': self.passFormatMsg}, 417
         roles = request.json['roles']
-        if (resp := db.createUser(user, passw, roles)) == True:
+        if (resp := db.createUser(name, user, passw, roles)) == True:
             return {'message': 'User  created'}, 200
         elif resp == False:
             return {"message": "Role/Roles does not exist"}, 500
@@ -78,6 +79,10 @@ class User(Resource):
             roles = request.json['roles']
             if db.removeRoleFrmUser(user, roles):
                 return {'message': 'Roles modified'}, 200
+        elif action == 4:
+            name = request.json['name']
+            if db.changeuserName(user, name):
+                return {'message': 'username modified'}, 200      
         return {'message': 'Unable to process the request'}, 500
 
     # Deleting user
