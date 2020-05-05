@@ -20,7 +20,7 @@ class Role(db.Document):
 
 class User(db.Document):
     email = db.EmailField(required=True, unique=True)
-     name = db.StringField(required=True, unique=True)
+    name = db.StringField(required=True, unique=True)
     password = db.StringField(required=True)
     roles = db.ListField(db.ReferenceField(Role), default=[])
 
