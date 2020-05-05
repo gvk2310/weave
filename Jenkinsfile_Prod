@@ -13,7 +13,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-usermgmt'
-        def Image_Tag = 's1'
 		def K8s_Deployment = 'usermgmt'
 	    node(label) {
 		try{
@@ -25,32 +24,12 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
         }
-        stage('Sonar Analysis'){
-            withSonarQubeEnv('SonarQube') {
-            withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
-            {   def scannerHome = tool 'Sonar Scanner';
-                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$username -Dsonar.password=$password";
-            }
-        }
-        }
-		stage ('Quality Gate Check')
-         {
-            timeout(time: 5, unit: 'MINUTES') {
-                waitForQualityGate abortPipeline: true
-                }
-         }
-		 stage (' Create Docker image'){
-			container('docker'){
-              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host .")
-			}
-	
-		}  
 		stage('Pushing the Docker image to Container Registry') {
               container('docker') {		 
 	             withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
 				 {
 			     sh ("docker login -u ${USERNAME} -p ${PASSWORD} "+DockerReg_Url)
-				 sh ("docker push ${DockerReg_Url}/${Docker_Image}:${Image_Tag}")	
+				 sh ("docker push ${DockerReg_Url}/${Docker_Image}:${env.BUILD_ID}")	
          }
              }
          }
@@ -59,7 +38,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 				try{
 					sh("kubectl get deployment ${K8s_Deployment}")
 					if(true){
-						sh ("kubectl set image deployment/${K8s_Deployment} ${K8s_Deployment}=${DockerReg_Url}/${Docker_Image}:${Image_Tag}") 
+						sh ("kubectl set image deployment/${K8s_Deployment} ${K8s_Deployment}=${DockerReg_Url}/${Docker_Image}:${env.BUILD_ID}") 
 					}
 				} 
 				catch(e){
