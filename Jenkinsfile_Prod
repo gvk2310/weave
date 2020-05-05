@@ -48,6 +48,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					}
 				} 
 				catch(e){
+                	sh("sed 's/s1/${env.BUILD_ID}/g' usermgmt.yml")
 					sh("kubectl apply -f usermgmt.yml")
 					echo "deploying"
               }
