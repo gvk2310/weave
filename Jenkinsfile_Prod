@@ -24,6 +24,12 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
         }
+         stage (' Create Docker image'){
+			container('docker'){
+              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${env.BUILD_ID} --network=host .")
+			}
+	
+		}  
 		stage('Pushing the Docker image to Container Registry') {
               container('docker') {		 
 	             withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
