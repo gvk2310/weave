@@ -10,9 +10,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
     node(label)
     {
 		def Commit_Id
-        def Git_Url = Git_Url
-        def Git_Branch = Git_Branch
-        def Git_Credential = Git_Credential
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-usermgmt'
