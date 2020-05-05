@@ -9,6 +9,7 @@ db = MongoEngine(app)
 
 class Services(db.Document):
     name = db.StringField(required=True, unique=True)
+    state = db.BooleanField(required=True, default=False)
 
 
 class Role(db.Document):
@@ -19,6 +20,7 @@ class Role(db.Document):
 
 class User(db.Document):
     email = db.EmailField(required=True, unique=True)
+     name = db.StringField(required=True, unique=True)
     password = db.StringField(required=True)
     roles = db.ListField(db.ReferenceField(Role), default=[])
 
@@ -36,13 +38,13 @@ def getUsers():
         logger.error(e)
 
 
-def createUser(user, passw, roles):
+def createUser(name,user, passw, roles):
     try:
         if len(roles) != len(rols:=Role.objects(name__in=roles)):
             return False
         # roles = Role.objects(name__in=roles)
         usr = User(email=user, password=hashpw(
-            passw.encode('utf-8'), gensalt()), roles=rols)
+            passw.encode('utf-8'), gensalt()), roles=rols,name=name)
         usr.save()
         logger.info(f"User '{user}' created with roles '{','.join(roles)}'")
         return True
@@ -62,6 +64,18 @@ def changePass(user, passw):
         logger.error(f"Failed to change password for user '{user}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
+                    
+                  
+def changeuserName(user, name):
+    try:
+        uname = User.objects(email=user).first()
+        uname.update(name=name)
+        logger.info(f"username successfully changed for user '{user}'")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to change username for user '{user}'")
+        logger.debug(traceback.format_exc())
+        logger.error(e)                    
 
 
 def addRoleToUser(user, roles):
