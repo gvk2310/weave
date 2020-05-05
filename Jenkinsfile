@@ -10,10 +10,10 @@ podTemplate(label: label, serviceAccount: serviceaccount,
     node(label)
     {
 		def Commit_Id
-        def Git_Url = 'https://innersource.accenture.com/scm/dnp/devnetops.git'
-        def Git_Branch = 'feature/sprint1'
-        def Git_Credential = 'raagitha_innersource'
-		def DockerReg_Url='devnetops.azurecr.io'
+        def Git_Url = Git_Url
+        def Git_Branch = Git_Branch
+        def Git_Credential = Git_Credential
+        def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-usermgmt'
         def Image_Tag = 's1'
@@ -95,6 +95,6 @@ def notifyBitbucket(String state) {
         currentBuild.result = state
     }
  
-    notifyBitbucket commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: 'raagitha_innersource', disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
+    notifyBitbucket commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: Git_Credential, disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
 }
  
