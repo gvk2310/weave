@@ -10,6 +10,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
     node(label)
     {
 		def Commit_Id
+        def Git_Url = 'https://innersource.accenture.com/scm/dnp/devnetops.git'
+        def Git_Branch = 'feature/sprint1'
+        def Git_Credential = 'raagitha_innersource'
 		def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-usermgmt'
@@ -18,14 +21,11 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 	    node(label) {
 		try{
        stage('Git Checkout'){
-            scmVars =  checkout([$class: 'GitSCM',
-            branches: [[name: '*/feature/sprint1']], 
-            doGenerateSubmoduleConfigurations: false, 
-            extensions: [], 
-            submoduleCfg: [], 
-            userRemoteConfigs: [[credentialsId: 'raagitha_innersource', 
-            url: 'https://innersource.accenture.com/scm/dnp/devnetops.git']]])
-			this.Commit_Id = scmVars.GIT_COMMIT
+            git branch: Git_Branch,
+            url: Git_Url,
+            credentialsId: Git_Credential
+         
+			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
         }
         stage('Sonar Analysis'){
