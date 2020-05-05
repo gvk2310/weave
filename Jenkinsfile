@@ -41,7 +41,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          }
 		 stage (' Create Docker image'){
 			container('docker'){
-              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host .")
+              //sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host .")
+              sh ("docker build --build-arg "ENV=PROD" -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host .")
 			}
 	
 		}  
