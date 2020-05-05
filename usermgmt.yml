@@ -19,7 +19,7 @@ spec:
       - name: devnetops
       containers:
       - name: usermgmt
-        image: devnetops.azurecr.io/devnetops-usermgmt:s1
+        image: devnetops.azurecr.io/devnetops-usermgmt:latest
         ports:
         - containerPort: 8080
 ---
