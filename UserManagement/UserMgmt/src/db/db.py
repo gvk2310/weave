@@ -250,14 +250,10 @@ def verifyPermissions(user, svc, perm):
     try:
         roles = User.objects(email=user).first().roles
         for role in roles:
-            if perm=='read':
-                svcs = [s.name for s in role.read]
-                if svc in svcs:
-                    return True
-            if perm == 'write':
-                svcs = [s.name for s in role.write]
-                if svc in svcs:
-                    return True
+            if perm=='read' and sum(1 for s in role.read if s.name==svc)>0:
+                return True
+            if perm == 'write' and sum(1 for s in role.write if s.name==svc)>0:
+                return True
         return False
     except Exception as e:
         logs("Failed to verify permissions",traceback.format_exc(), e)
