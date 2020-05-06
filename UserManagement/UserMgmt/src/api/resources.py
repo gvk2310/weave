@@ -1,7 +1,9 @@
 import re
+import datetime
 from ..db import db
 from flask_restful import Resource, request
 from functools import wraps
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 
 def admin_required(fn):
@@ -27,12 +29,27 @@ def passChecker(passw):
     return True
 
 
+class Token(Resource):
+    @jwt_required
+    def get(self):
+        svc = request.args['svc']
+        perm = request.args['perm']
+        if resp := db.verifyPermissions(get_jwt_identity(), svc, perm):
+            return {'permission': 'granted'}, 200
+        elif resp == False:
+            return {'permission': 'denied'}, 401
+        return {'message': 'Unable to verify permissions'}, 500
+
+
 class Authenticate(Resource):
     def get(self):
         user = request.authorization['username']
         passw = request.authorization['password']
         if db.authenticateUser(user, passw):
-            return {'message': 'User Validated'}, 200
+            access_token = create_access_token(identity=user, expires_delta=datetime.timedelta(minutes=120))
+            return {'token': access_token,
+                    'token expiry(UTC time)':
+                        (datetime.datetime.utcnow()+datetime.timedelta(minutes=120)).strftime('%m-%d-%Y %H:%M:%S')}, 200
         return {'message': 'Invalid credentials'}, 500
 
 

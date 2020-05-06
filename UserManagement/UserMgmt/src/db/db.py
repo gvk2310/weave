@@ -244,3 +244,20 @@ def authenticateUser(user, passw):
         return checkpw(passw.encode('utf8'), usr.password.encode('utf-8'))
     except Exception as e:
         logs(f"Failed to verify user '{user}'",traceback.format_exc(), e)
+
+
+def verifyPermissions(user, svc, perm):
+    try:
+        roles = User.objects(email=user).first().roles
+        for role in roles:
+            if perm=='read':
+                svcs = [s.name for s in role.read]
+                if svc in svcs:
+                    return True
+            if perm == 'write':
+                svcs = [s.name for s in role.write]
+                if svc in svcs:
+                    return True
+        return False
+    except Exception as e:
+        logs("Failed to verify permissions",traceback.format_exc(), e)
