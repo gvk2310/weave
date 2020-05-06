@@ -1,0 +1,3 @@
+deployment.yml
+services.yml
+.dockerignore

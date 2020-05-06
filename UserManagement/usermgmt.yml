@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usermgmt
+  labels:
+    app: usermgmt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: usermgmt
+  template:
+    metadata:
+      labels:
+        app: usermgmt
+    spec:
+      imagePullSecrets:
+      - name: devnetops
+      containers:
+      - name: usermgmt
+        image: devnetops.azurecr.io/devnetops-usermgmt:s1
+        env:
+        - name: mongohost
+          value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops?authSource=admin
+        - name: secretkey
+          value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
+        - name: jwtsecretkey
+          value: eKHjwE761qUucC7FXtHKkeFI5O7c8GJ41PVcfLrMFA7oE-tINxTCB78SwyoNPhN7iHE
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: usermgmt
+  labels:
+    app: usermgmt
+spec:
+  selector:
+    app: usermgmt
+  ports:
+  - port: 8080
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: usermgmt
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - host: dno-dev.acndevopsengineering.com
+    http:
+      paths:
+      - path: /usrmgmt(/|$)(.*)
+        backend:
+          serviceName: usermgmt
+          servicePort: 8080
