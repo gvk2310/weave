@@ -1,4 +1,3 @@
-import os
 from .log import logger
 from flask import Flask
 from flask_restful import Api
@@ -15,7 +14,7 @@ def initialDataSetup():
     db.createSvc('svc1')
     db.createSvc('svc2')
     db.createRole('admin', ["svc1", "svc2"], ["svc1", "svc2"])
-    db.createUser('admin@acc.com', 'Admin@123', ['admin'])
+    db.createUser('Admin', 'admin@acc.com', 'Admin@123', ['admin'])
 
 
 app_api.add_resource(resources.Authenticate, '/auth')

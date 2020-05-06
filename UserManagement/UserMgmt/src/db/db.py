@@ -25,6 +25,12 @@ class User(db.Document):
     roles = db.ListField(db.ReferenceField(Role), default=[])
 
 
+def logs(msg, traceback, exception):
+    logger.error(msg)
+    logger.debug(traceback)
+    logger.error(exception)
+
+
 def getUsers():
     try:
         return [{
@@ -33,12 +39,10 @@ def getUsers():
             for usr in User.objects()
         ]
     except Exception as e:
-        logger.error('Unable to retrieve user list')
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs('Unable to retrieve user list',traceback.format_exc(), e)
 
 
-def createUser(name,user, passw, roles):
+def createUser(name, user, passw, roles):
     try:
         if len(roles) != len(rols:=Role.objects(name__in=roles)):
             return False
@@ -49,9 +53,7 @@ def createUser(name,user, passw, roles):
         logger.info(f"User '{user}' created with roles '{','.join(roles)}'")
         return True
     except Exception as e:
-        logger.error(f"Failed to create user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Failed to create user '{user}'",traceback.format_exc(), e)
 
 
 def changePass(user, passw):
@@ -61,10 +63,8 @@ def changePass(user, passw):
         logger.info(f"Password successfully changed for user '{user}'")
         return True
     except Exception as e:
-        logger.error(f"Failed to change password for user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
-                    
+        logs(f"Failed to change password for user '{user}'",traceback.format_exc(), e)
+
                   
 def changeuserName(user, name):
     try:
@@ -73,9 +73,7 @@ def changeuserName(user, name):
         logger.info(f"username successfully changed for user '{user}'")
         return True
     except Exception as e:
-        logger.error(f"Failed to change username for user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)                    
+        logs(f"Failed to change username for user '{user}'",traceback.format_exc(), e)
 
 
 def addRoleToUser(user, roles):
@@ -89,9 +87,7 @@ def addRoleToUser(user, roles):
             f"New roles - {','.join(roles)} added to the user '{user}'")
         return True
     except Exception as e:
-        logger.error(f"Unable to add new roles to the user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Unable to add new roles to the user '{user}'",traceback.format_exc(), e)
 
 
 def removeRoleFrmUser(user, roles):
@@ -103,9 +99,7 @@ def removeRoleFrmUser(user, roles):
             f"Roles - '{','.join(roles)}' has been removed from the user '{user}'")
         return True
     except Exception as e:
-        logger.error(f"Unable to remove roles from the user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Unable to remove roles from the user '{user}'",traceback.format_exc(), e)
 
 
 def deleteUser(user):
@@ -115,18 +109,14 @@ def deleteUser(user):
         logger.info(f"User '{user}' has been deleted")
         return True
     except Exception as e:
-        logger.error(f"Unable to remove roles from the user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Unable to remove roles from the user '{user}'",traceback.format_exc(), e)
 
 
 def getServices():
     try:
         return [svc.name for svc in Services.objects()]
     except Exception as e:
-        logger.error("Unable retrieve service list")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs("Unable retrieve service list",traceback.format_exc(), e)
 
 
 def createSvc(name):
@@ -137,9 +127,7 @@ def createSvc(name):
         logger.info(f"Service '{name}' has been created")
         return True
     except Exception as e:
-        logger.error(f"Failed to create service {name}")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Failed to create service {name}",traceback.format_exc(), e)
 
 
 def checkSvcUsage(svc):
@@ -149,9 +137,7 @@ def checkSvcUsage(svc):
                 return True
         return False
     except Exception as e:
-        logger.error(f"Unable to check if service '{svc}' is in use")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Unable to check if service '{svc}' is in use",traceback.format_exc(), e)
 
 
 def deleteSvcs(svc):
@@ -164,9 +150,7 @@ def deleteSvcs(svc):
         Services.objects(name=svc).delete()
         return True
     except Exception as e:
-        logger.error(f"Unable to delete service '{svc}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Unable to delete service '{svc}'",traceback.format_exc(), e)
 
 
 def getRoles():
@@ -177,9 +161,7 @@ def getRoles():
                for role in Role.objects()]
         return msg
     except Exception as e:
-        logger.error(f"Unable to retrieve role list")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Unable to retrieve role list",traceback.format_exc(), e)
 
 
 def createRole(role, read=[], write=[]):
@@ -192,9 +174,7 @@ def createRole(role, read=[], write=[]):
         logger.info(f"Role '{role}' has been created")
         return True
     except Exception as e:
-        logger.error(f"Failed to create role '{role}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Failed to create role '{role}'",traceback.format_exc(), e)
 
 
 def addSvcToRole(role, read=[], write=[]):
@@ -209,9 +189,7 @@ def addSvcToRole(role, read=[], write=[]):
         logger.info(f"Services added to role '{role}'")
         return True
     except Exception as e:
-        logger.error(f"Failed to add services to role '{role}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Failed to add services to role '{role}'",traceback.format_exc(), e)
 
 
 def remSvcFrmRole(role, read=[], write=[]):
@@ -226,9 +204,7 @@ def remSvcFrmRole(role, read=[], write=[]):
         logger.info(f"Services removed from role '{role}'")
         return True
     except Exception as e:
-        logger.error(f"Failed to remove services from role '{role}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Failed to remove services from role '{role}'",traceback.format_exc(), e)
 
 
 def checkRoleUsage(role):
@@ -236,9 +212,7 @@ def checkRoleUsage(role):
         usr = User.objects()
         return role in [r.name for u in usr for r in u.roles]
     except Exception as e:
-        logger.error(f"Failed to check role usage for '{role}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Failed to check role usage for '{role}'",traceback.format_exc(), e)
 
 
 def deleteRole(role):
@@ -252,9 +226,7 @@ def deleteRole(role):
         logger.info(f"Role '{role}' deleted successfully")
         return True
     except Exception as e:
-        logger.error(f"Failed to delete role '{role}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Failed to delete role '{role}'",traceback.format_exc(), e)
 
 
 def checkAdminPrivilege(user):
@@ -262,9 +234,7 @@ def checkAdminPrivilege(user):
         usr = User.objects(email=user).first()
         return 'admin' in [role.name for role in usr.roles]
     except Exception as e:
-        logger.error(f"Failed to check admin privilege for user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Failed to check admin privilege for user '{user}'",traceback.format_exc(), e)
 
 
 def authenticateUser(user, passw):
@@ -273,6 +243,4 @@ def authenticateUser(user, passw):
             return False
         return checkpw(passw.encode('utf8'), usr.password.encode('utf-8'))
     except Exception as e:
-        logger.error(f"Failed to verify user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+        logs(f"Failed to verify user '{user}'",traceback.format_exc(), e)

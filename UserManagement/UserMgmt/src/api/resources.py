@@ -14,7 +14,6 @@ def admin_required(fn):
         if not db.checkAdminPrivilege(user):
             return {'message': "Don't have adequate privilege"}, 401
         return fn(*args, **kwargs)
-
     return wrapper
 
 
@@ -189,5 +188,3 @@ class Service(Resource):
         elif serve == False:
             return {'message': 'Service in use, cannot delete'}, 412
         return {'message': 'Unable to process this request'}, 500
-        
-
