@@ -9,10 +9,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        user = request.authorization['username']
-        passw = request.authorization['password']
-        if not db.authenticateUser(user, passw):
-            return {'message': 'Invalid admin credentials!'}, 401
+        user = get_jwt_identity()
         if not db.checkAdminPrivilege(user):
             return {'message': "Don't have adequate privilege"}, 401
         return fn(*args, **kwargs)
@@ -59,6 +56,7 @@ class User(Resource):
             and 1 of the special characters <_@$>"
     # Getting List of user Available
     @admin_required
+    @jwt_required
     def get(self):
         if users := db.getUsers():
             return users, 200
@@ -66,6 +64,7 @@ class User(Resource):
         
     # Creating user
     @admin_required
+    @jwt_required
     def post(self):
         user = request.json['email']
         name = request.json['name']
@@ -80,6 +79,7 @@ class User(Resource):
 
     # Updating User details
     @admin_required
+    @jwt_required
     def put(self):
         user = request.json['email']
         if (action := int(request.args['action'])) == 3:
@@ -103,6 +103,7 @@ class User(Resource):
 
     # Deleting user
     @admin_required
+    @jwt_required
     def delete(self):
         if 'email' not in request.json.keys() or len(user:=request.json['email'])<1:
             return {'message': 'user name can not be blank'}
@@ -116,6 +117,7 @@ class Role(Resource):
 
     #Getting List of role Available
     @admin_required
+    @jwt_required
     def get(self):
         if roles := db.getRoles():
             return roles, 200
@@ -123,6 +125,7 @@ class Role(Resource):
 
     # Creating Role
     @admin_required
+    @jwt_required
     def post(self):
         role = request.json["role"]
         read=[]
@@ -139,6 +142,7 @@ class Role(Resource):
 
     # Adding Service to role
     @admin_required
+    @jwt_required
     def put(self):
         if 'role' not in (keys := request.json.keys()) or 'action' not in request.args.keys() or\
         ('read' not in keys and 'write' not in keys):
@@ -157,8 +161,8 @@ class Role(Resource):
         if (action := int(request.args['action'])) == 1:
                 if resp := db.addSvcToRole(role, read, write):
                     return {'message': 'Services has been added to Role'}, 200
-        elif resp == False:
-            return {'message': 'Services not found'}, 400
+                elif resp == False:
+                    return {'message': 'Services not found'}, 400
         elif action == 2:
             if db.remSvcFrmRole(role, read, write):
                 return {'message': 'Service is removed from Role'}, 200
@@ -167,6 +171,7 @@ class Role(Resource):
 
     # Deleting roles
     @admin_required
+    @jwt_required
     def delete(self):
         if 'role' not in request.json.keys() or len(role:=request.json['role'])<1:
             return {'message': 'role name can not be blank'}    
@@ -181,6 +186,7 @@ class Service(Resource):
 
     # Getting list of Services
     @admin_required
+    @jwt_required
     def get(self):
         if svcs := db.getServices():
             return {'Services': svcs}, 200
@@ -188,6 +194,7 @@ class Service(Resource):
 
     # Creating Service
     @admin_required
+    @jwt_required
     def post(self):
         if 'name' not in request.json.keys() or len(serviceName:=request.json['name'])<1:
             return {'message': 'service name can not be blank'}
@@ -197,6 +204,7 @@ class Service(Resource):
 
     # Deleting Service
     @admin_required
+    @jwt_required
     def delete(self):
         if 'name' not in request.json.keys() or len(serviceName:=request.json['name'])<1:
             return {'message': 'service name can not be blank'}
