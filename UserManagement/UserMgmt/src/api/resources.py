@@ -26,7 +26,10 @@ def passChecker(passw):
     return True
 
 
-class Token(Resource):
+class IsAuthorized(Resource):
+    #This endpoint is to verify whether the token user is authorised for the service along with the permission type.
+    #Token provided to the user while user authentication needs to be passed as Bearer token along with service,
+    #and permission type.
     @jwt_required
     def get(self):
         svc = request.args['svc']
@@ -51,6 +54,8 @@ class Authenticate(Resource):
 
 
 class User(Resource):
+    #For all admin task requests, token generated while admin authentication will only be accepted and must be
+    # passed as bearer token .
     passFormatMsg = "Password must be minimum 8 characters long and must \
         contain at least 1 uppercase, 1 lowercase character, 1 number \
             and 1 of the special characters <_@$>"
@@ -114,7 +119,8 @@ class User(Resource):
 
 
 class Role(Resource):
-
+    #For all admin task requests, token generated while admin authentication will only be accepted and must be
+    # passed as bearer token.
     #Getting List of role Available
     @admin_required
     @jwt_required
@@ -183,7 +189,8 @@ class Role(Resource):
 
 
 class Service(Resource):
-
+    #For all admin task requests, token generated while admin authentication will only be accepted and must be
+    # passed as bearer token.
     # Getting list of Services
     @admin_required
     @jwt_required
