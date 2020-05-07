@@ -6,3 +6,4 @@ app.config['MONGODB_SETTINGS'] = {
         'connect': False
                 }
 app.config['SECRET_KEY'] = os.environ['secretkey']
+app.config['JWT_SECRET_KEY'] = os.environ['jwtsecretkey']
