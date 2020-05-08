@@ -44,7 +44,8 @@ def getUsers():
 
 def createUser(name, user, passw, roles):
     try:
-        if len(roles) != len(rols:=Role.objects(name__in=roles)):
+        rols = Role.objects(name__in=roles)
+        if len(roles) != len(rols):
             return False
         # roles = Role.objects(name__in=roles)
         usr = User(email=user, password=hashpw(
@@ -78,7 +79,8 @@ def changeuserName(user, name):
 
 def addRoleToUser(user, roles):
     try:
-        if len(roles) != len(rols:=Role.objects(name__in=roles)):
+        rols = Role.objects(name__in=roles)
+        if len(roles) != len(rols):
             return False
         usr = User.objects(email=user).first()
         new_roles = usr.roles + list(rols)
@@ -141,7 +143,8 @@ def checkSvcUsage(svc):
 
 
 def deleteSvcs(svc):
-    if (check:=checkSvcUsage(svc)) == None:
+    check = checkSvcUsage(svc)
+    if check == None:
         return None
     elif check == True:
         return False
@@ -216,7 +219,8 @@ def checkRoleUsage(role):
 
 
 def deleteRole(role):
-    if (check:=checkRoleUsage(role)) == None:
+    check = checkRoleUsage(role)
+    if check == None:
         return None
     elif check:
         return False
@@ -239,7 +243,8 @@ def checkAdminPrivilege(user):
 
 def authenticateUser(user, passw):
     try:
-        if not (usr:=User.objects(email=user).first()):
+        usr = User.objects(email=user).first()
+        if not usr:
             return False
         return checkpw(passw.encode('utf8'), usr.password.encode('utf-8'))
     except Exception as e:
