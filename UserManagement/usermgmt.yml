@@ -27,6 +27,8 @@ spec:
           value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
         - name: jwtsecretkey
           value: eKHjwE761qUucC7FXtHKkeFI5O7c8GJ41PVcfLrMFA7oE-tINxTCB78SwyoNPhN7iHE
+        - name: request_header
+          value: {"Access-Control-Allow-Origin":"*"}
         ports:
         - containerPort: 8080
 ---

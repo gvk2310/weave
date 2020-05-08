@@ -1,3 +1,5 @@
+import os
+import json
 import re
 import datetime
 from ..db import db
@@ -5,6 +7,7 @@ from flask_restful import Resource, request
 from functools import wraps
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
+request_header = json.loads(os.environ['request_header'])
 
 def admin_required(fn):
     @wraps(fn)
@@ -37,10 +40,10 @@ class IsAuthorized(Resource):
         perm = request.args['perm']
         resp = db.verifyPermissions(get_jwt_identity(), svc, perm)
         if resp:
-            return {'permission': 'granted'}, 200
+            return {'permission': 'granted'}, 200, request_header
         elif resp == False:
-            return {'permission': 'denied'}, 401
-        return {'message': 'Unable to verify permissions'}, 500
+            return {'permission': 'denied'}, 401, request_header
+        return {'message': 'Unable to verify permissions'}, 500, request_header
 
 
 class Authenticate(Resource):
@@ -51,8 +54,9 @@ class Authenticate(Resource):
             access_token = create_access_token(identity=user, expires_delta=datetime.timedelta(minutes=120))
             return {'token': access_token,
                     'token expiry(UTC time)':
-                        (datetime.datetime.utcnow()+datetime.timedelta(minutes=120)).strftime('%m-%d-%Y %H:%M:%S')}, 200
-        return {'message': 'Invalid credentials'}, 500
+                        (datetime.datetime.utcnow()+datetime.timedelta(minutes=120)).strftime('%m-%d-%Y %H:%M:%S')},\
+                   200, request_header
+        return {'message': 'Invalid credentials'}, 500, request_header
 
 
 class User(Resource):
@@ -68,8 +72,8 @@ class User(Resource):
         print(get_jwt_identity())
         users = db.getUsers()
         if users:
-            return users, 200
-        return {'message': 'Unable to fetch users'}, 500
+            return users, 200, request_header
+        return {'message': 'Unable to fetch users'}, 500, request_header
         
     # Creating user
     @jwt_required
@@ -79,14 +83,14 @@ class User(Resource):
         name = request.json['name']
         passw = request.json['password']
         if not passChecker(passw):
-            return {'message': self.passFormatMsg}, 417
+            return {'message': self.passFormatMsg}, 417, request_header
         roles = request.json['roles']
         resp = db.createUser(name, user, passw, roles)
         if resp:
-            return {'message': 'User  created'}, 200
+            return {'message': 'User  created'}, 200, request_header
         elif resp == False:
-            return {"message": "Role/Roles does not exist"}, 500
-        return {'message': 'Unable to create user '}, 500
+            return {"message": "Role/Roles does not exist"}, 500, request_header
+        return {'message': 'Unable to create user '}, 500, request_header
 
     # Updating User details
     @jwt_required
@@ -97,33 +101,33 @@ class User(Resource):
         if action == 3:
             passw = request.json['password']
             if not passChecker(passw):
-                return {'message': self.passFormatMsg}, 417
+                return {'message': self.passFormatMsg}, 417, request_header
             if db.changePass(user, passw):
-                return {'message': 'Password changed'}, 200
+                return {'message': 'Password changed'}, 200, request_header
         elif action == 1:
             roles = request.json['roles']
             if db.addRoleToUser(user, roles):
-                return {'message': 'Roles modified'}, 200
+                return {'message': 'Roles modified'}, 200, request_header
         elif action == 2:
             roles = request.json['roles']
             if db.removeRoleFrmUser(user, roles):
-                return {'message': 'Roles modified'}, 200
+                return {'message': 'Roles modified'}, 200, request_header
         elif action == 4:
             name = request.json['name']
             if db.changeuserName(user, name):
-                return {'message': 'username modified'}, 200      
-        return {'message': 'Unable to process the request'}, 500
+                return {'message': 'username modified'}, 200, request_header
+        return {'message': 'Unable to process the request'}, 500, request_header
 
     # Deleting user
     @jwt_required
     @admin_required
     def delete(self):
         if 'email' not in request.json.keys() or len(request.json['email'])<1:
-            return {'message': 'user name can not be blank'}
+            return {'message': 'user name can not be blank'}, 422, request_header
         #user = request.json['email']
         if db.deleteUser(request.json['email']):
-            return {'message': 'User deleted'}, 200
-        return {'message': 'Unable to delete user'}, 500
+            return {'message': 'User deleted'}, 200, request_header
+        return {'message': 'Unable to delete user'}, 500, request_header
 
 
 class Role(Resource):
@@ -135,8 +139,8 @@ class Role(Resource):
     def get(self):
         roles = db.getRoles()
         if roles:
-            return roles, 200
-        return {'message': 'Unable to fetch roles'}, 500
+            return roles, 200, request_header
+        return {'message': 'Unable to fetch roles'}, 500, request_header
 
     # Creating Role
     @jwt_required
@@ -151,10 +155,10 @@ class Role(Resource):
             write = request.json["write"]
         resp = db.createRole(role, read, write)
         if resp == True:
-            return {'message': 'Role Created'}, 200
+            return {'message': 'Role Created'}, 200, request_header
         elif resp == False:
-            return {'messages': 'Services not found'}, 412
-        return {'message': 'Request not processed'}, 500
+            return {'messages': 'Services not found'}, 412, request_header
+        return {'message': 'Request not processed'}, 500, request_header
 
     # Adding Service to role
     @jwt_required
@@ -162,7 +166,8 @@ class Role(Resource):
     def put(self):
         if 'role' not in request.json.keys() or 'action' not in request.args.keys() or\
         ('read' not in request.json.keys() and 'write' not in request.json.keys()):
-            return {'message': 'Missing fields! mandatory fields - action, role and atleast one of read, write'}
+            return {'message': 'Missing fields! mandatory fields - action, role and atleast one of read, write'},
+        422, request_header
         role = request.json['role']
         read=[]
         write=[]
@@ -173,18 +178,18 @@ class Role(Resource):
             write = request.json['write']
             print(write)
         if len(read+write)<1:
-            return {'message': 'No services provided to process on'}
+            return {'message': 'No services provided to process on'}, 422, request_header
         action = int(request.args['action'])
         if action == 1:
             resp = db.addSvcToRole(role, read, write)
             if resp:
-                return {'message': 'Services has been added to Role'}, 200
+                return {'message': 'Services has been added to Role'}, 200, request_header
             elif resp == False:
-                return {'message': 'Services not found'}, 400
+                return {'message': 'Services not found'}, 400, request_header
         elif action == 2:
             if db.remSvcFrmRole(role, read, write):
-                return {'message': 'Service is removed from Role'}, 200
-        return {'message': 'Unable to process this request'}, 500                              
+                return {'message': 'Service is removed from Role'}, 200, request_header
+        return {'message': 'Unable to process this request'}, 500, request_header
         
 
     # Deleting roles
@@ -192,13 +197,13 @@ class Role(Resource):
     @admin_required
     def delete(self):
         if 'role' not in request.json.keys() or len(request.json['role'])<1:
-            return {'message': 'role name can not be blank'}
+            return {'message': 'role name can not be blank'}, 422, request_header
         resp = db.deleteRole(request.json['role'])
         if resp:
-            return {'message': 'Role is deleted'}, 200
+            return {'message': 'Role is deleted'}, 200, request_header
         elif resp == False:
-            return {'message': 'Role in use, cannot delete'}, 412
-        return {'message': 'Unable to process this request'}, 500
+            return {'message': 'Role in use, cannot delete'}, 412, request_header
+        return {'message': 'Unable to process this request'}, 500, request_header
 
 
 class Service(Resource):
@@ -210,28 +215,28 @@ class Service(Resource):
     def get(self):
         svcs = db.getServices()
         if svcs:
-            return {'Services': svcs}, 200
-        return {'message': 'Unable to fetch services'}, 500
+            return {'Services': svcs}, 200, request_header
+        return {'message': 'Unable to fetch services'}, 500, request_header
 
     # Creating Service
     @jwt_required
     @admin_required
     def post(self):
         if 'name' not in request.json.keys() or len(request.json['name'])<1:
-            return {'message': 'service name can not be blank'}
+            return {'message': 'service name can not be blank'}, 422, request_header
         if db.createSvc(request.json['name']):
-            return {'message': 'Service is created'}, 200
-        return {'message': 'Unable to process this request'}, 500
+            return {'message': 'Service is created'}, 200, request_header
+        return {'message': 'Unable to process this request'}, 500, request_header
 
     # Deleting Service
     @jwt_required
     @admin_required
     def delete(self):
         if 'name' not in request.json.keys() or len(request.json['name'])<1:
-            return {'message': 'service name can not be blank'}
+            return {'message': 'service name can not be blank'}, 422, request_header
         serve = db.deleteSvcs(request.json['name'])
         if serve:
-            return {'message': 'Service is deleted'}, 200
+            return {'message': 'Service is deleted'}, 200, request_header
         elif serve == False:
-            return {'message': 'Service in use, cannot delete'}, 412
-        return {'message': 'Unable to process this request'}, 500
+            return {'message': 'Service in use, cannot delete'}, 412, request_header
+        return {'message': 'Unable to process this request'}, 500, request_header
