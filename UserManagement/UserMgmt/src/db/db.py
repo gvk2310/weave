@@ -66,7 +66,7 @@ def changePass(user, passw):
     except Exception as e:
         logs(f"Failed to change password for user '{user}'",traceback.format_exc(), e)
 
-                  
+
 def changeuserName(user, name):
     try:
         uname = User.objects(email=user).first()
@@ -116,7 +116,11 @@ def deleteUser(user):
 
 def getServices():
     try:
-        return [svc.name for svc in Services.objects()]
+        msg = [{"name": svc.name,
+                "state": "enabled" if svc.state else "disabled"
+                }
+               for svc in Services.objects()]
+        return msg
     except Exception as e:
         logs("Unable retrieve service list",traceback.format_exc(), e)
 
@@ -154,6 +158,16 @@ def deleteSvcs(svc):
         return True
     except Exception as e:
         logs(f"Unable to delete service '{svc}'",traceback.format_exc(), e)
+
+
+def changeServiceStatus(svc, state):
+    try:
+        svc = Services.objects(name=svc).first()
+        svc.update(state= True if state.lower() == 'true' else False)
+        logger.info(f"service state successfully changed for service '{svc}'")
+        return True
+    except Exception as e:
+        logs(f"Unable to change service state '{svc}' is in use",traceback.format_exc(), e)
 
 
 def getRoles():

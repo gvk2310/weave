@@ -7,7 +7,8 @@ from flask_restful import Resource, request
 from functools import wraps
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
-request_header = json.loads(os.environ['request_header'])
+# request_header = json.loads(os.environ['request_header'])
+request_header = json.loads('{"Access-Control-Allow-Origin":"*"}')
 
 def admin_required(fn):
     @wraps(fn)
@@ -240,3 +241,15 @@ class Service(Resource):
         elif serve == False:
             return {'message': 'Service in use, cannot delete'}, 412, request_header
         return {'message': 'Unable to process this request'}, 500, request_header
+
+    # status change
+    @jwt_required
+    @admin_required
+    def put(self):
+        if 'name' not in request.json.keys() or len(request.json['name'])<1:
+            return {'message': 'service name can not be blank'}
+        if 'state' not in request.json.keys() or len(request.json['state'])<1:
+            return {'message': 'state field can not be blank'}
+        if db.changeServiceStatus(request.json['name'], request.json['state']):
+            return {'message': 'service state is updated'}, 200
+        return {'message': 'Unable to process this request'}, 500
