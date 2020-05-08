@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: usermgmt
+  name: usermgmt37
   labels:
-    app: usermgmt
+    app: usermgmt37
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: usermgmt
+      app: usermgmt37
   template:
     metadata:
       labels:
-        app: usermgmt
+        app: usermgmt37
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: usermgmt
-        image: devnetops.azurecr.io/devnetops-usermgmt:s1
+      - name: usermgmt37
+        image: devnetops.azurecr.io/devnetops-usermgmt37:s1
         env:
         - name: mongohost
           value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops?authSource=admin
@@ -35,12 +35,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: usermgmt
+  name: usermgmt37
   labels:
-    app: usermgmt
+    app: usermgmt37
 spec:
   selector:
-    app: usermgmt
+    app: usermgmt37
   ports:
   - port: 8080
     targetPort: 8080
@@ -48,7 +48,7 @@ spec:
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: usermgmt
+  name: usermgmt37
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
 spec:
@@ -56,7 +56,7 @@ spec:
   - host: dno-dev.acndevopsengineering.com
     http:
       paths:
-      - path: /usrmgmt(/|$)(.*)
+      - path: /umg37(/|$)(.*)
         backend:
-          serviceName: usermgmt
+          serviceName: usermgmt37
           servicePort: 8080
