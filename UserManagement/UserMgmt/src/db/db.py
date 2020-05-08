@@ -281,7 +281,7 @@ def verifyPermissions(user, svc, perm):
 @app.before_first_request
 def initial_data_setup():
     users = getUsers()
-    if users and len(users)<1:
+    if not users:
         svcs = ['OnBoard','Security','Test','Monitor']
         for svc in svcs:
             createSvc(svc)
