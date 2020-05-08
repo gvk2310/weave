@@ -60,16 +60,16 @@ class User(Resource):
         contain at least 1 uppercase, 1 lowercase character, 1 number \
             and 1 of the special characters <_@$>"
     # Getting List of user Available
-    @admin_required
     @jwt_required
+    @admin_required
     def get(self):
         if users := db.getUsers():
             return users, 200
         return {'message': 'Unable to fetch users'}, 500
         
     # Creating user
-    @admin_required
     @jwt_required
+    @admin_required
     def post(self):
         user = request.json['email']
         name = request.json['name']
@@ -83,8 +83,8 @@ class User(Resource):
         return {'message': 'Unable to create user '}, 500
 
     # Updating User details
-    @admin_required
     @jwt_required
+    @admin_required
     def put(self):
         user = request.json['email']
         if (action := int(request.args['action'])) == 3:
@@ -107,8 +107,8 @@ class User(Resource):
         return {'message': 'Unable to process the request'}, 500
 
     # Deleting user
-    @admin_required
     @jwt_required
+    @admin_required
     def delete(self):
         if 'email' not in request.json.keys() or len(user:=request.json['email'])<1:
             return {'message': 'user name can not be blank'}
@@ -122,16 +122,16 @@ class Role(Resource):
     #For all admin task requests, token generated while admin authentication will only be accepted and must be
     # passed as bearer token.
     #Getting List of role Available
-    @admin_required
     @jwt_required
+    @admin_required
     def get(self):
         if roles := db.getRoles():
             return roles, 200
         return {'message': 'Unable to fetch roles'}, 500
 
     # Creating Role
-    @admin_required
     @jwt_required
+    @admin_required
     def post(self):
         role = request.json["role"]
         read=[]
@@ -147,8 +147,8 @@ class Role(Resource):
         return {'message': 'Request not processed'}, 500
 
     # Adding Service to role
-    @admin_required
     @jwt_required
+    @admin_required
     def put(self):
         if 'role' not in (keys := request.json.keys()) or 'action' not in request.args.keys() or\
         ('read' not in keys and 'write' not in keys):
@@ -176,8 +176,8 @@ class Role(Resource):
         
 
     # Deleting roles
-    @admin_required
     @jwt_required
+    @admin_required
     def delete(self):
         if 'role' not in request.json.keys() or len(role:=request.json['role'])<1:
             return {'message': 'role name can not be blank'}    
@@ -192,16 +192,16 @@ class Service(Resource):
     #For all admin task requests, token generated while admin authentication will only be accepted and must be
     # passed as bearer token.
     # Getting list of Services
-    @admin_required
     @jwt_required
+    @admin_required
     def get(self):
         if svcs := db.getServices():
             return {'Services': svcs}, 200
         return {'message': 'Unable to fetch services'}, 500
 
     # Creating Service
-    @admin_required
     @jwt_required
+    @admin_required
     def post(self):
         if 'name' not in request.json.keys() or len(serviceName:=request.json['name'])<1:
             return {'message': 'service name can not be blank'}
@@ -210,8 +210,8 @@ class Service(Resource):
         return {'message': 'Unable to process this request'}, 500
 
     # Deleting Service
-    @admin_required
     @jwt_required
+    @admin_required
     def delete(self):
         if 'name' not in request.json.keys() or len(serviceName:=request.json['name'])<1:
             return {'message': 'service name can not be blank'}
