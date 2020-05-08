@@ -276,3 +276,14 @@ def verifyPermissions(user, svc, perm):
         return False
     except Exception as e:
         logs("Failed to verify permissions",traceback.format_exc(), e)
+
+
+@app.before_first_request
+def initial_data_setup():
+    users = getUsers()
+    if users and len(users)<1:
+        svcs = ['OnBoard','Security','Test','Monitor']
+        for svc in svcs:
+            createSvc(svc)
+        createRole('admin', svcs, svcs)
+        createUser('Admin','admin@dnops.com', 'Admin@123', ['admin'])

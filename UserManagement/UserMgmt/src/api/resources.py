@@ -1,5 +1,4 @@
 import os
-import json
 import re
 import datetime
 from ..db import db
@@ -7,8 +6,7 @@ from flask_restful import Resource, request
 from functools import wraps
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
-# request_header = json.loads(os.environ['request_header'])
-request_header = json.loads('{"Access-Control-Allow-Origin":"*"}')
+request_header = {os.environ['request_header'].split('/')[0]:os.environ['request_header'].split('/')[1]}
 
 def admin_required(fn):
     @wraps(fn)
