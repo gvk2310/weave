@@ -26,7 +26,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         }
          stage (' Create Docker image'){
 			container('docker'){
-              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${env.BUILD_ID} --network=host -f Dockerfile_Prod .")
+              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${env.BUILD_ID} --network=host -f Dockerfile .")
 			}
 	
 		}  
