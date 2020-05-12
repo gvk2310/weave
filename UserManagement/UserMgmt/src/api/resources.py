@@ -145,7 +145,9 @@ class Role(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        role = request.json["role"]
+        if 'role' not in request.json.keys() or len(request.json['role'])<1:
+            return {'message': 'role name can not be blank'}, 422, request_header
+        role = request.json['role']
         read=[]
         write=[]
         if 'read' in request.json.keys():
