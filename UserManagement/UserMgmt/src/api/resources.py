@@ -4,9 +4,14 @@ import datetime
 from ..db import db
 from flask_restful import Resource, request
 from functools import wraps
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, \
+    jwt_required
 
-request_header = {os.environ['request_header'].split('/')[0]:os.environ['request_header'].split('/')[1]}
+request_header = {
+    item.split('/')[0]: item.split('/')[1]
+    for item in os.environ['request_header'].split(';')
+}
+
 
 def admin_required(fn):
     @wraps(fn)
@@ -16,6 +21,7 @@ def admin_required(fn):
         if not db.checkAdminPrivilege(user):
             return {'message': "Don't have adequate privilege"}, 401
         return fn(*args, **kwargs)
+
     return wrapper
 
 
@@ -30,9 +36,11 @@ def passChecker(passw):
 
 
 class IsAuthorized(Resource):
-    #This endpoint is to verify whether the token user is authorised for the service along with the permission type.
-    #Token provided to the user while user authentication needs to be passed as Bearer token along with service,
-    #and permission type.
+    # This endpoint is to verify whether the token user is authorised for the
+    # service along with the permission type.
+    # Token provided to the user while user authentication needs to be passed
+    # as Bearer token along with service,
+    # and permission type.
     @jwt_required
     def get(self):
         svc = request.args['svc']
@@ -40,7 +48,7 @@ class IsAuthorized(Resource):
         resp = db.verifyPermissions(get_jwt_identity(), svc, perm)
         if resp:
             return {'permission': 'granted'}, 200, request_header
-        elif resp == False:
+        elif resp is False:
             return {'permission': 'denied'}, 401, request_header
         return {'message': 'Unable to verify permissions'}, 500, request_header
 
@@ -50,20 +58,25 @@ class Authenticate(Resource):
         user = request.authorization['username']
         passw = request.authorization['password']
         if db.authenticateUser(user, passw):
-            access_token = create_access_token(identity=user, expires_delta=datetime.timedelta(minutes=120))
+            access_token = create_access_token(
+                identity=user,
+                expires_delta=datetime.timedelta(minutes=120))
             return {'token': access_token,
                     'token expiry(UTC time)':
-                        (datetime.datetime.utcnow()+datetime.timedelta(minutes=120)).strftime('%m-%d-%Y %H:%M:%S')},\
-                   200, request_header
+                        (datetime.datetime.utcnow() + datetime.timedelta(
+                            minutes=120)).strftime('%m-%d-%Y %H:%M:%S')}, \
+                200, request_header
         return {'message': 'Invalid credentials'}, 500, request_header
 
 
 class User(Resource):
-    #For all admin task requests, token generated while admin authentication will only be accepted and must be
+    # For all admin task requests, token generated while admin authentication
+    # will only be accepted and must be
     # passed as bearer token .
     passFormatMsg = "Password must be minimum 8 characters long and must \
         contain at least 1 uppercase, 1 lowercase character, 1 number \
             and 1 of the special characters <_@$>"
+
     # Getting List of user Available
     @jwt_required
     @admin_required
@@ -73,7 +86,7 @@ class User(Resource):
         if users:
             return users, 200, request_header
         return {'message': 'Unable to fetch users'}, 500, request_header
-        
+
     # Creating user
     @jwt_required
     @admin_required
@@ -87,8 +100,9 @@ class User(Resource):
         resp = db.createUser(name, user, passw, roles)
         if resp:
             return {'message': 'User  created'}, 200, request_header
-        elif resp == False:
-            return {"message": "Role/Roles does not exist"}, 500, request_header
+        elif resp is False:
+            return {"message": "Role/Roles does not exist"}, 500, \
+                request_header
         return {'message': 'Unable to create user '}, 500, request_header
 
     # Updating User details
@@ -115,24 +129,28 @@ class User(Resource):
             name = request.json['name']
             if db.changeuserName(user, name):
                 return {'message': 'username modified'}, 200, request_header
-        return {'message': 'Unable to process the request'}, 500, request_header
+        return {'message': 'Unable to process the request'}, 500, \
+            request_header
 
     # Deleting user
     @jwt_required
     @admin_required
     def delete(self):
-        if 'email' not in request.json.keys() or len(request.json['email'])<1:
-            return {'message': 'user name can not be blank'}, 422, request_header
-        #user = request.json['email']
+        if 'email' not in request.json.keys() or \
+                len(request.json['email']) < 1:
+            return {'message': 'user name can not be blank'}, 422, \
+                request_header
+        # user = request.json['email']
         if db.deleteUser(request.json['email']):
             return {'message': 'User deleted'}, 200, request_header
         return {'message': 'Unable to delete user'}, 500, request_header
 
 
 class Role(Resource):
-    #For all admin task requests, token generated while admin authentication will only be accepted and must be
+    # For all admin task requests, token generated while admin authentication
+    # will only be accepted and must be
     # passed as bearer token.
-    #Getting List of role Available
+    # Getting List of role Available
     @jwt_required
     @admin_required
     def get(self):
@@ -145,19 +163,17 @@ class Role(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        if 'role' not in request.json.keys() or len(request.json['role'])<1:
-            return {'message': 'role name can not be blank'}, 422, request_header
-        role = request.json['role']
-        read=[]
-        write=[]
+        role = request.json["role"]
+        read = []
+        write = []
         if 'read' in request.json.keys():
             read = request.json["read"]
         if 'write' in request.json.keys():
             write = request.json["write"]
         resp = db.createRole(role, read, write)
-        if resp == True:
+        if resp:
             return {'message': 'Role Created'}, 200, request_header
-        elif resp == False:
+        elif resp is False:
             return {'messages': 'Services not found'}, 412, request_header
         return {'message': 'Request not processed'}, 500, request_header
 
@@ -165,50 +181,60 @@ class Role(Resource):
     @jwt_required
     @admin_required
     def put(self):
-        if 'role' not in request.json.keys() or 'action' not in request.args.keys() or\
-        ('read' not in request.json.keys() and 'write' not in request.json.keys()):
-            return {'message': 'Missing fields! mandatory fields - action, role and atleast one of read, write'},
-        422, request_header
+        if 'role' not in request.json.keys() or 'action' not in \
+                request.args.keys() or \
+                ('read' not in request.json.keys() and 'write' not in
+                 request.json.keys()):
+            return {'message': 'Missing fields! mandatory fields - action, '
+                               'role and atleast one of read, write'}, 422, \
+                request_header
         role = request.json['role']
-        read=[]
-        write=[]
+        read = []
+        write = []
         if 'read' in request.json.keys():
             read = request.json['read']
             print(read)
         if 'write' in request.json.keys():
             write = request.json['write']
             print(write)
-        if len(read+write)<1:
-            return {'message': 'No services provided to process on'}, 422, request_header
+        if len(read + write) < 1:
+            return {'message': 'No services provided to process on'}, 422, \
+                request_header
         action = int(request.args['action'])
         if action == 1:
             resp = db.addSvcToRole(role, read, write)
             if resp:
-                return {'message': 'Services has been added to Role'}, 200, request_header
-            elif resp == False:
+                return {'message': 'Services has been added to Role'}, 200, \
+                    request_header
+            elif resp is False:
                 return {'message': 'Services not found'}, 400, request_header
         elif action == 2:
             if db.remSvcFrmRole(role, read, write):
-                return {'message': 'Service is removed from Role'}, 200, request_header
-        return {'message': 'Unable to process this request'}, 500, request_header
-        
+                return {'message': 'Service is removed from Role'}, 200, \
+                    request_header
+        return {'message': 'Unable to process this request'}, 500, \
+            request_header
 
     # Deleting roles
     @jwt_required
     @admin_required
     def delete(self):
-        if 'role' not in request.json.keys() or len(request.json['role'])<1:
-            return {'message': 'role name can not be blank'}, 422, request_header
+        if 'role' not in request.json.keys() or len(request.json['role']) < 1:
+            return {'message': 'role name can not be blank'}, 422, \
+                request_header
         resp = db.deleteRole(request.json['role'])
         if resp:
             return {'message': 'Role is deleted'}, 200, request_header
-        elif resp == False:
-            return {'message': 'Role in use, cannot delete'}, 412, request_header
-        return {'message': 'Unable to process this request'}, 500, request_header
+        elif resp is False:
+            return {'message': 'Role in use, cannot delete'}, 412, \
+                request_header
+        return {'message': 'Unable to process this request'}, 500, \
+            request_header
 
 
 class Service(Resource):
-    #For all admin task requests, token generated while admin authentication will only be accepted and must be
+    # For all admin task requests, token generated while admin authentication
+    # will only be accepted and must be
     # passed as bearer token.
     # Getting list of Services
     @jwt_required
@@ -223,32 +249,38 @@ class Service(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        if 'name' not in request.json.keys() or len(request.json['name'])<1:
-            return {'message': 'service name can not be blank'}, 422, request_header
+        if 'name' not in request.json.keys() or len(request.json['name']) < 1:
+            return {'message': 'service name can not be blank'}, 422, \
+                request_header
         if db.createSvc(request.json['name']):
             return {'message': 'Service is created'}, 200, request_header
-        return {'message': 'Unable to process this request'}, 500, request_header
+        return {'message': 'Unable to process this request'}, 500, \
+            request_header
 
     # Deleting Service
     @jwt_required
     @admin_required
     def delete(self):
-        if 'name' not in request.json.keys() or len(request.json['name'])<1:
-            return {'message': 'service name can not be blank'}, 422, request_header
+        if 'name' not in request.json.keys() or len(request.json['name']) < 1:
+            return {'message': 'service name can not be blank'}, 422, \
+                request_header
         serve = db.deleteSvcs(request.json['name'])
         if serve:
             return {'message': 'Service is deleted'}, 200, request_header
-        elif serve == False:
-            return {'message': 'Service in use, cannot delete'}, 412, request_header
-        return {'message': 'Unable to process this request'}, 500, request_header
+        elif serve is False:
+            return {'message': 'Service in use, cannot delete'}, 412, \
+                request_header
+        return {'message': 'Unable to process this request'}, 500, \
+            request_header
 
     # status change
     @jwt_required
     @admin_required
     def put(self):
-        if 'name' not in request.json.keys() or len(request.json['name'])<1:
+        if 'name' not in request.json.keys() or len(request.json['name']) < 1:
             return {'message': 'service name can not be blank'}
-        if 'state' not in request.json.keys() or len(request.json['state'])<1:
+        if 'state' not in request.json.keys() or\
+                len(request.json['state']) < 1:
             return {'message': 'state field can not be blank'}
         if db.changeServiceStatus(request.json['name'], request.json['state']):
             return {'message': 'service state is updated'}, 200

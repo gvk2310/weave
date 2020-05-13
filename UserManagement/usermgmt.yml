@@ -29,7 +29,7 @@ spec:
         - name: jwtsecretkey
           value: eKHjwE761qUucC7FXtHKkeFI5O7c8GJ41PVcfLrMFA7oE-tINxTCB78SwyoNPhN7iHE
         - name: request_header
-          value: Access-Control-Allow-Origin/*
+          value: Access-Control-Allow-Origin/*;Access-Control-Expose-Headers/access-control-allow-origin
         ports:
         - containerPort: 8080
 ---
