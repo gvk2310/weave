@@ -29,7 +29,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             withSonarQubeEnv('SonarQube') {
             withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
             {   def scannerHome = tool 'Sonar Scanner';
-                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$username -Dsonar.password=$password" -Dproject.settings=/UserManagement/sonar-project.properties;
+                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$username -Dsonar.password=$password" -Dproject.settings=UserManagement/sonar-project.properties;
             }
         }
         }
