@@ -1,16 +1,15 @@
 import re
+import datetime
 from ..db import db
 from flask_restful import Resource, request
 from functools import wraps
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        user = request.authorization['username']
-        passw = request.authorization['password']
-        if not db.authenticateUser(user, passw):
-            return {'message': 'Invalid admin credentials!'}, 401
+        user = get_jwt_identity()
         if not db.checkAdminPrivilege(user):
             return {'message': "Don't have adequate privilege"}, 401
         return fn(*args, **kwargs)
@@ -27,20 +26,41 @@ def passChecker(passw):
     return True
 
 
+class IsAuthorized(Resource):
+    #This endpoint is to verify whether the token user is authorised for the service along with the permission type.
+    #Token provided to the user while user authentication needs to be passed as Bearer token along with service,
+    #and permission type.
+    @jwt_required
+    def get(self):
+        svc = request.args['svc']
+        perm = request.args['perm']
+        if resp := db.verifyPermissions(get_jwt_identity(), svc, perm):
+            return {'permission': 'granted'}, 200
+        elif resp == False:
+            return {'permission': 'denied'}, 401
+        return {'message': 'Unable to verify permissions'}, 500
+
+
 class Authenticate(Resource):
     def get(self):
         user = request.authorization['username']
         passw = request.authorization['password']
         if db.authenticateUser(user, passw):
-            return {'message': 'User Validated'}, 200
+            access_token = create_access_token(identity=user, expires_delta=datetime.timedelta(minutes=120))
+            return {'token': access_token,
+                    'token expiry(UTC time)':
+                        (datetime.datetime.utcnow()+datetime.timedelta(minutes=120)).strftime('%m-%d-%Y %H:%M:%S')}, 200
         return {'message': 'Invalid credentials'}, 500
 
 
 class User(Resource):
+    #For all admin task requests, token generated while admin authentication will only be accepted and must be
+    # passed as bearer token .
     passFormatMsg = "Password must be minimum 8 characters long and must \
         contain at least 1 uppercase, 1 lowercase character, 1 number \
             and 1 of the special characters <_@$>"
     # Getting List of user Available
+    @jwt_required
     @admin_required
     def get(self):
         if users := db.getUsers():
@@ -48,6 +68,7 @@ class User(Resource):
         return {'message': 'Unable to fetch users'}, 500
         
     # Creating user
+    @jwt_required
     @admin_required
     def post(self):
         user = request.json['email']
@@ -62,6 +83,7 @@ class User(Resource):
         return {'message': 'Unable to create user '}, 500
 
     # Updating User details
+    @jwt_required
     @admin_required
     def put(self):
         user = request.json['email']
@@ -85,6 +107,7 @@ class User(Resource):
         return {'message': 'Unable to process the request'}, 500
 
     # Deleting user
+    @jwt_required
     @admin_required
     def delete(self):
         if 'email' not in request.json.keys() or len(user:=request.json['email'])<1:
@@ -96,8 +119,10 @@ class User(Resource):
 
 
 class Role(Resource):
-
+    #For all admin task requests, token generated while admin authentication will only be accepted and must be
+    # passed as bearer token.
     #Getting List of role Available
+    @jwt_required
     @admin_required
     def get(self):
         if roles := db.getRoles():
@@ -105,6 +130,7 @@ class Role(Resource):
         return {'message': 'Unable to fetch roles'}, 500
 
     # Creating Role
+    @jwt_required
     @admin_required
     def post(self):
         role = request.json["role"]
@@ -121,6 +147,7 @@ class Role(Resource):
         return {'message': 'Request not processed'}, 500
 
     # Adding Service to role
+    @jwt_required
     @admin_required
     def put(self):
         if 'role' not in (keys := request.json.keys()) or 'action' not in request.args.keys() or\
@@ -140,8 +167,8 @@ class Role(Resource):
         if (action := int(request.args['action'])) == 1:
                 if resp := db.addSvcToRole(role, read, write):
                     return {'message': 'Services has been added to Role'}, 200
-        elif resp == False:
-            return {'message': 'Services not found'}, 400
+                elif resp == False:
+                    return {'message': 'Services not found'}, 400
         elif action == 2:
             if db.remSvcFrmRole(role, read, write):
                 return {'message': 'Service is removed from Role'}, 200
@@ -149,6 +176,7 @@ class Role(Resource):
         
 
     # Deleting roles
+    @jwt_required
     @admin_required
     def delete(self):
         if 'role' not in request.json.keys() or len(role:=request.json['role'])<1:
@@ -161,8 +189,10 @@ class Role(Resource):
 
 
 class Service(Resource):
-
+    #For all admin task requests, token generated while admin authentication will only be accepted and must be
+    # passed as bearer token.
     # Getting list of Services
+    @jwt_required
     @admin_required
     def get(self):
         if svcs := db.getServices():
@@ -170,6 +200,7 @@ class Service(Resource):
         return {'message': 'Unable to fetch services'}, 500
 
     # Creating Service
+    @jwt_required
     @admin_required
     def post(self):
         if 'name' not in request.json.keys() or len(serviceName:=request.json['name'])<1:
@@ -179,6 +210,7 @@ class Service(Resource):
         return {'message': 'Unable to process this request'}, 500
 
     # Deleting Service
+    @jwt_required
     @admin_required
     def delete(self):
         if 'name' not in request.json.keys() or len(serviceName:=request.json['name'])<1:
