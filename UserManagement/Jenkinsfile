@@ -25,6 +25,37 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
         }
+ 	    stage('Python3+ and pep-8 coding standards compliance check') {
+ 	        container('python3'){
+              sh '''#!/bin/sh
+                    i=0
+                    printf '%s\n' "Checking python3+ and pep-8 coding standards compliance for all the python files"
+                    python3 -c "import pycodestyle"
+                    if [ $? -eq 1 ]; then
+                    	pip3 install pycodestyle
+                    fi
+                    for x in $(find . -type f -name "*.py");
+                    do
+                    	python3 -m py_compile $x;
+                    	if [ $? -eq 1 ]; then
+                    		i=$(($i + 1))
+                    		printf '%s\n' "$x --> python3+ non compliant"
+                    	else printf '%s\n' "$x --> python3+ Compliant"
+                    	fi
+
+                    	pycodestyle --ignore=E402 $x;
+                    	if [ $? -gt 0 ]; then
+                    		i=$(($i + 1))
+                    		printf '%s\n' "$x --> pep-8 non compliant"
+                    	else printf '%s\n' "$x --> pep-8 Compliant"
+                    	fi
+                    done
+                    if [ $i -gt 0 ]; then
+                    	exit
+                    fi
+              '''
+              }
+ 	    }
         stage('Sonar Analysis'){
             withSonarQubeEnv('SonarQube') {
             withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
@@ -38,6 +69,22 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             timeout(time: 5, unit: 'MINUTES') {
                 waitForQualityGate abortPipeline: true
                 }
+         }
+		stage ('Encrypting Source codes'){
+		    container('python'){
+              sh '''#!/bin/sh
+					python3 -c "import cython"
+					if [ $? -eq 1 ]; then
+						pip3 install cython
+					fi
+					pip3 install -r requirements.txt
+					python3 setup.py build_ext --inplace
+					find . -name "*.so" | cpio -p -dumv /tmp
+					find . -name "__init__.py" | python3 -m py_compile -
+					find . -name "__init__*.pyc" -exec cp "{}" /tmp/UserMgmt/src/__init__.pyc \;
+					find . -name "uwsgi.ini" -or -name "requirements.txt" | cpio -p -dumv /tmp
+					mkdir /tmp/UserMgmt/logs
+              '''}
          }
 		 stage (' Create Docker image'){
 			container('docker'){
