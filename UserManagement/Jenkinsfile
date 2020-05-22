@@ -87,7 +87,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		 stage (' Create Docker image'){
 			container('docker'){
               sh "pwd"
-              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserManagement/Dockerfile_Dev .")
+              sh "cd UserManagement"
+              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f Dockerfile_Dev .")
 			}
 		}  
 		stage('Pushing the Docker image to Container Registry') {
