@@ -41,7 +41,7 @@ metadata:
     app: usermgmt
 spec:
   selector:
-    app: usermgm
+    app: usermgmt
   ports:
   - port: 8080
     targetPort: 8080
