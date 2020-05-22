@@ -1,7 +1,7 @@
 def label = "mypod-${UUID.randomUUID().toString()}"
 def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
-           containers: [containerTemplate(name: 'python3', image: 'python:3.7-slim', ttyEnabled: true, command: 'cat'),
+           containers: [containerTemplate(name: 'python3', image: 'python:3.7-buster', ttyEnabled: true, command: 'cat'),
 						containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
                containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
 				volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')])
@@ -24,7 +24,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
-        }
+        }/*
  	    stage('Python3+ and pep-8 coding standards compliance check') {
  	        container('python3'){
               sh '''#!/bin/sh
@@ -69,7 +69,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             timeout(time: 5, unit: 'MINUTES') {
                 waitForQualityGate abortPipeline: true
                 }
-         }
+         }*/
 		stage ('Encrypting Source codes'){
 		    container('python3'){
               sh '''#!/bin/sh
