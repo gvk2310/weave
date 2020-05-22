@@ -1,7 +1,7 @@
 def label = "mypod-${UUID.randomUUID().toString()}"
 def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
-           containers: [containerTemplate(name: 'python3', image: 'python:3.7-buster', ttyEnabled: true, command: 'cat'),
+           containers: [containerTemplate(name: 'python3', image: 'python:3.7-slim', ttyEnabled: true, command: 'cat'),
 						containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
                containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
 				volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')])
