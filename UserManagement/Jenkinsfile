@@ -74,16 +74,19 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					pip3 install cython
 					find -name "requirements.txt" | xargs pip3 install -r
 					cd UserManagement && python3 setup.py build_ext --inplace
-					find . -name '*.so' -exec cp --parents \\{\\} /tmp \\;
+                    mkdir tmp
+					find . -name '*.so' -exec cp --parents \\{\\} tmp \\;
 					find . -name "__init__.py" | python3 -m py_compile -
-					find . -name "__init__*.pyc" -exec cp "{}" /tmp/UserMgmt/src/__init__.pyc \\;
-					find . -name "uwsgi.ini" -exec cp --parents \\{\\} /tmp \\;
-					find . -name "requirements.txt" -exec cp --parents \\{\\} /tmp \\;
-					mkdir /tmp/UserMgmt/logs
+					find . -name "__init__*.pyc" -exec cp "{}" tmp/UserMgmt/src/__init__.pyc \\;
+					find . -name "uwsgi.ini" -exec cp --parents \\{\\} tmp \\;
+					find . -name "requirements.txt" -exec cp --parents \\{\\} tmp \\;
+					mkdir tmp/UserMgmt/logs
+                    pwd
               '''}
          }
 		 stage (' Create Docker image'){
 			container('docker'){
+              sh "pwd"
               sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserManagement/Dockerfile_Dev .")
 			}
 		}  
