@@ -84,8 +84,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          }
 		 stage (' Create Docker image'){
 			container('docker'){
-              sh "docker images"
-              sleep 99999
               sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserManagement/Dockerfile_Dev .")
 			}
 		}  
