@@ -30,10 +30,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               sh '''#!/bin/sh
                     i=0
                     printf '%s\n' "Checking python3+ and pep-8 coding standards compliance for all the python files"
-                    python3 -c "import pycodestyle"
-                    if [ $? -eq 1 ]; then
-                    	pip3 install pycodestyle
-                    fi
+                    pip3 install pycodestyle
                     for x in $(find . -type f -name "*.py");
                     do
                     	python3 -m py_compile $x;
@@ -74,10 +71,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		    container('python3'){
               //sleep 9999
               sh '''#!/bin/sh
-					python3 -c "import cython"
-					if [ $? -eq 1 ]; then
-						pip3 install cython
-					fi
+					pip3 install cython
 					find -name "requirements.txt" | xargs pip3 install -r
 					cd UserManagement && python3 setup.py build_ext --inplace
 					find . -name '*.so' -exec cp --parents \\{\\} /tmp \\;
@@ -90,6 +84,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          }
 		 stage (' Create Docker image'){
 			container('docker'){
+              sleep 99999
               sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserManagement/Dockerfile_Dev .")
 			}
 		}  
