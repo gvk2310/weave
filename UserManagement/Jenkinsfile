@@ -24,7 +24,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
-        }/*
+        }
  	    stage('Python3+ and pep-8 coding standards compliance check') {
  	        container('python3'){
               sh '''#!/bin/sh
@@ -66,10 +66,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             timeout(time: 5, unit: 'MINUTES') {
                 waitForQualityGate abortPipeline: true
                 }
-         }*/
+         }
 		stage ('Encrypting Source codes'){
 		    container('python3'){
-              //sleep 9999
               sh '''#!/bin/sh
 					pip3 install cython
 					find -name "requirements.txt" | xargs pip3 install -r
