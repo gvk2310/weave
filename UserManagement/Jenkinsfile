@@ -77,8 +77,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					if [ $? -eq 1 ]; then
 						pip3 install cython
 					fi
-					find -name "requirements.txt" | pip3 install -r -
-					python3 setup.py build_ext --inplace
+					find -name "requirements.txt" | xargs pip3 install -r
+					cd UserManagement && python3 setup.py build_ext --inplace
 					find . -name "*.so" | cpio -p -dumv /tmp
 					find . -name "__init__.py" | python3 -m py_compile -
 					find . -name "__init__*.pyc" -exec cp "{}" /tmp/UserMgmt/src/__init__.pyc \\;
