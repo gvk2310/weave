@@ -81,13 +81,10 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					find . -name "uwsgi.ini" -exec cp --parents \\{\\} tmp \\;
 					find . -name "requirements.txt" -exec cp --parents \\{\\} tmp \\;
 					mkdir tmp/UserMgmt/logs
-                    pwd
               '''}
          }
 		 stage (' Create Docker image'){
 			container('docker'){
-              sh "pwd"
-              sh "cd UserManagement"
               sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f Dockerfile_Dev .")
 			}
 		}  
