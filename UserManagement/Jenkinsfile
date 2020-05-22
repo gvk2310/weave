@@ -77,7 +77,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					if [ $? -eq 1 ]; then
 						pip3 install cython
 					fi
-					pip3 install -r requirements.txt
+					find -name "requirements.txt" | pip3 install -r -
 					python3 setup.py build_ext --inplace
 					find . -name "*.so" | cpio -p -dumv /tmp
 					find . -name "__init__.py" | python3 -m py_compile -
