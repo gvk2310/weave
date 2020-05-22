@@ -111,7 +111,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					}
 				} 
 				catch(e){
-					sh("kubectl apply -f usermgmt.yml")
+					sh("kubectl apply -f UserManagement/usermgmt.yml")
 					echo "deploying"
               }
 			}
