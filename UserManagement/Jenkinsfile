@@ -81,7 +81,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					python3 setup.py build_ext --inplace
 					find . -name "*.so" | cpio -p -dumv /tmp
 					find . -name "__init__.py" | python3 -m py_compile -
-					find . -name "__init__*.pyc" -exec cp "{}" /tmp/UserMgmt/src/__init__.pyc \;
+					find . -name "__init__*.pyc" -exec cp "{}" /tmp/UserMgmt/src/__init__.pyc \\;
 					find . -name "uwsgi.ini" -or -name "requirements.txt" | cpio -p -dumv /tmp
 					mkdir /tmp/UserMgmt/logs
               '''}
