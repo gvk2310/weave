@@ -40,12 +40,12 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                 waitForQualityGate abortPipeline: true
                 }
          }
-          stage ('Running functional tests [TOX]')
+          /*stage ('Running functional tests [TOX]')
          {
             container('tox') {
              sh 'cd UserManagement && tox -e DNO'
                 }
-         }
+         }*/
     
 	 stage (' Create Docker image'){
 			container('docker'){
