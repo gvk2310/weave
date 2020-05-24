@@ -12,14 +12,10 @@ request_header = {
     item.split('/')[0]: item.split('/')[1]
     for item in os.environ['request_header'].split(';')
 }
-vault_url = r"http://44.233.97.168:8200"  # needs to be a environment variable
-vault_token = 'devnetops'  # this has to be a k8 secret
-token_auth_url = r"http://dno-dev.acndevopsengineering.com/umg37"  # needs to
-# be a environment variable
-####################################################
-# vault_url = os.environ['vaultUrl']
-# vault_token = os.environ['vaultToken']
-# token_auth_url = os.environ['usermgmtUrl']
+
+vault_url = os.environ['vaultUrl']
+vault_token = os.environ['vaultToken']
+token_auth_url = os.environ['usermgmtUrl']
 
 def logs(msg, traceback, exception):
     logger.error(msg)
