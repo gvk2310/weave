@@ -26,11 +26,11 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
         }
-       /* stage('Sonar Analysis'){
+       stage('Sonar Analysis'){
             withSonarQubeEnv('SonarQube') {
             withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
             {   def scannerHome = tool 'Sonar Scanner';
-                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$username -Dsonar.password=$password -Dproject.settings=UserManagement/sonar-project.properties";
+                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$username -Dsonar.password=$password -Dproject.settings=RepoManagement/sonar-project.properties";
             }
         }
         }
@@ -39,24 +39,18 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             timeout(time: 5, unit: 'MINUTES') {
                 waitForQualityGate abortPipeline: true
                 }
-         }*/
+         }
           stage ('Running functional tests [TOX]')
          {
             container('tox') {
-             // sh 'pip list'
-             // sh 'pip3 list'
-              //sh 'pip install requests unittest2 nose coverage'
-              // sh 'python UserManagement/UserMgmt/test/testCase.py'
-              sh '''python3 -c "import requests;print(requests.get('http://dno-dev.acndevopsengineering.com/umg37so/auth' , auth = ('admin@dnops.com', 'Admin@123')).json())"
-              '''
-              sh 'cd UserManagement && tox -e DNO'
+             sh 'cd UserManagement && tox -e DNO'
                 }
          }
-    //  sleep 7200
-	/*	 stage (' Create Docker image'){
+    
+	 stage (' Create Docker image'){
 			container('docker'){
               //sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host .")
-              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserManagement/Dockerfile_Dev .")
+              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f RepoManagement/Dockerfile_Dev .")
 			}
 	
 		}  
@@ -78,7 +72,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					}
 				} 
 				catch(e){
-					sh("kubectl apply -f usermgmt.yml")
+					sh("kubectl apply -f RepoManagement/repomgmt.yml")
 					echo "deploying"
               }
 			}
