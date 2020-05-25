@@ -48,7 +48,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
     
 	 stage (' Create Docker image'){
 			container('docker'){
-              //sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host .")
+              sh 'pwd'
+              sh 'ls'
               sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f RepoManagement/Dockerfile_Dev .")
 			}
 	
