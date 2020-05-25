@@ -93,7 +93,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 
 	}
 }
-}
 def notifyBitbucket(String state) {
  
     if('SUCCESS' == state || 'FAILED' == state) {
