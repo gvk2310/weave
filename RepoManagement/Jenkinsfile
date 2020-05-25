@@ -16,7 +16,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def Docker_Image = 'devnetops-repomgmt'
         def Image_Tag = 's1'
 		def K8s_Deployment = 'repomgmt'
-	    node(label) {
 		try{
        stage('Git Checkout'){
             git branch: Git_Branch,
@@ -76,7 +75,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					echo "deploying"
               }
 			}
-		}*/
+		}
 		currentBuild.result = 'SUCCESS'
         echo "RESULT: ${currentBuild.result}"
         echo "Finished: ${currentBuild.result}"
@@ -87,7 +86,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         echo "Finished: ${currentBuild.result}"
                }
 		finally {
-            // Success or failure, always send notifications to bitbucket           
             this.notifyBitbucket(currentBuild.result)
         }
 
