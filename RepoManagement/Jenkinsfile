@@ -14,7 +14,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-repomgmt'
-        def Image_Tag = 's1'
+        def Image_Tag = 's2'
 		def K8s_Deployment = 'repomgmt'
 		try{
        stage('Git Checkout'){
