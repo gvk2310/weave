@@ -10,6 +10,7 @@ db = MongoEngine(app)
 class Services(db.Document):
     name = db.StringField(required=True, unique=True)
     state = db.BooleanField(required=True, default=False)
+    endpoint = db.StringField()
 
 
 class Role(db.Document):
@@ -125,6 +126,7 @@ def getServices():
     try:
         msg = [{"name": svc.name,
                 "state": "enabled" if svc.state else "disabled"
+                "endpoint": svc.endpoint
                 }
                for svc in Services.objects()]
         return msg
@@ -132,9 +134,9 @@ def getServices():
         logs("Unable retrieve service list", traceback.format_exc(), e)
 
 
-def createSvc(name):
+def createSvc(name, endpoint=""):
     try:
-        svc = Services(name=name)
+        svc = Services(name=name, endpoint=endpoint)
         svc.save()
         addSvcToRole('admin', read=[name], write=[name])
         logger.info(f"Service '{name}' has been created")
@@ -168,10 +170,11 @@ def deleteSvcs(svc):
         logs(f"Unable to delete service '{svc}'", traceback.format_exc(), e)
 
 
-def changeServiceStatus(svc, state):
+def changeServiceStatus(svc, state, endpoint):
     try:
         svc = Services.objects(name=svc).first()
-        svc.update(state=True if state.lower() == 'true' else False)
+        svc.update(state=True if state.lower() == 'true' else False,
+        endpoint=endpoint)
         logger.info(f"service state successfully changed for service '{svc}'")
         return True
     except Exception as e:

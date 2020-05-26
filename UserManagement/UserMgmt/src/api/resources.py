@@ -163,6 +163,9 @@ class Role(Resource):
     @jwt_required
     @admin_required
     def post(self):
+        if 'role' not in request.json.keys() or len(request.json['role']) < 1:
+            return {'message': 'role name can not be blank'}, 422, \
+                request_header
         role = request.json["role"]
         read = []
         write = []
@@ -252,11 +255,12 @@ class Service(Resource):
         if 'name' not in request.json.keys() or len(request.json['name']) < 1:
             return {'message': 'service name can not be blank'}, 422, \
                 request_header
-        if db.createSvc(request.json['name']):
+        endpoint = request.json['endpoint'] if 'endpoint' in request.json.keys() else ""        
+        if db.createSvc(request.json['name'], endpoint):
             return {'message': 'Service is created'}, 200, request_header
         return {'message': 'Unable to process this request'}, 500, \
             request_header
-
+      
     # Deleting Service
     @jwt_required
     @admin_required
@@ -282,6 +286,7 @@ class Service(Resource):
         if 'state' not in request.json.keys() or\
                 len(request.json['state']) < 1:
             return {'message': 'state field can not be blank'}
-        if db.changeServiceStatus(request.json['name'], request.json['state']):
+        if db.changeServiceStatus(request.json['name'], request.json['state'], 
+        request.json['endpoint']):
             return {'message': 'service state is updated'}, 200
         return {'message': 'Unable to process this request'}, 500
