@@ -12,7 +12,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-usermgmt'
-        def Image_Tag = 's1'
+        def Image_Tag = 's2'
 		def K8s_Deployment = 'usermgmt'
 	    node(label) {
 		try{
@@ -24,6 +24,34 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
         }
+ 	    stage('Python3+ and pep-8 coding standards compliance check') {
+ 	        container('python3'){
+              sh '''#!/bin/sh
+                    i=0
+                    printf '%s\n' "Checking python3+ and pep-8 coding standards compliance for all the python files"
+                    pip3 install pycodestyle
+                    for x in $(find . -type f -name "*.py");
+                    do
+                    	python3 -m py_compile $x;
+                    	if [ $? -eq 1 ]; then
+                    		i=$(($i + 1))
+                    		printf '%s\n' "$x --> python3+ non compliant"
+                    	else printf '%s\n' "$x --> python3+ Compliant"
+                    	fi
+
+                    	pycodestyle --ignore=E402 $x;
+                    	if [ $? -gt 0 ]; then
+                    		i=$(($i + 1))
+                    		printf '%s\n' "$x --> pep-8 non compliant"
+                    	else printf '%s\n' "$x --> pep-8 Compliant"
+                    	fi
+                    done
+                    if [ $i -gt 0 ]; then
+                    	exit
+                    fi
+              '''
+              }
+ 	    }
         stage('Sonar Analysis'){
             withSonarQubeEnv('SonarQube') {
             withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
@@ -38,11 +66,25 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                 waitForQualityGate abortPipeline: true
                 }
          }
+		stage ('Encrypting Source codes'){
+		    container('python3'){
+              sh '''#!/bin/sh
+					pip3 install cython
+					find -name "requirements.txt" | xargs pip3 install -r
+					cd UserManagement && python3 setup.py build_ext --inplace
+                    mkdir tmp
+					find . -name '*.so' -exec cp --parents \\{\\} tmp \\;
+					find . -name "__init__.py" | python3 -m py_compile -
+					find . -name "__init__*.pyc" -exec cp "{}" tmp/UserMgmt/src/__init__.pyc \\;
+					find . -name "uwsgi.ini" -exec cp --parents \\{\\} tmp \\;
+					find . -name "requirements.txt" -exec cp --parents \\{\\} tmp \\;
+					mkdir tmp/UserMgmt/logs
+              '''}
+         }
 		 stage (' Create Docker image'){
 			container('docker'){
               sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserManagement/Dockerfile_Dev .")
 			}
-	
 		}  
 		stage('Pushing the Docker image to Container Registry') {
               container('docker') {		 
@@ -62,7 +104,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					}
 				} 
 				catch(e){
-					sh("kubectl apply -f usermgmt.yml")
+					sh("kubectl apply -f UserManagement/usermgmt.yml")
 					echo "deploying"
               }
 			}
