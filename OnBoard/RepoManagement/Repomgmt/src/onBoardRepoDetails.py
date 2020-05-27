@@ -73,8 +73,10 @@ class OnBoardRepoDetails(Resource):
 			repo_url = request.json['url']
 			repo_type = request.json['repotype']
 			repodata = {"data": request.json}
-			if repotype == 'Jfrog':
-				validate_credentials= requests.get(f"{repo_url}/artifactory/api/system/", auth=(repo_username, repo_password))
+			if repo_type == 'Jfrog':
+				validate_credentials = requests.get(f"{repo_url}/artifactory/api/system/", auth=(repo_username, repo_password))
+            elif repo_type == 'Nexus':
+              	validate_credentials = requests.get(f"{repo_url}/service/local/status", auth=(repo_username, repo_password))
 			if validate_credentials.status_code == 200:
             	addDataToVault(repo_name, repodata)
 			else:
