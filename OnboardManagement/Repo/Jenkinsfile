@@ -29,7 +29,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             withSonarQubeEnv('SonarQube') {
             withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
             {   def scannerHome = tool 'Sonar Scanner';
-                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$username -Dsonar.password=$password -Dproject.settings=RepoManagement/sonar-project.properties";
+                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$username -Dsonar.password=$password -Dproject.settings=OnboardManagement/Repo/sonar-project.properties";
             }
         }
         }
@@ -50,7 +50,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			container('docker'){
               sh 'pwd'
               sh 'ls'
-              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f RepoManagement/Dockerfile_Dev .")
+              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f OnboardManagement/Repo/Dockerfile_Dev .")
 			}
 	
 		}  
@@ -72,7 +72,10 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					}
 				} 
 				catch(e){
-					sh("kubectl apply -f RepoManagement/repomgmt.yml")
+                  	sh("sed 's/Vault_Url/${env.Vault_Url}/g' OnboardManagement/Repo/repomgmt.yml")
+                  	sh("sed 's/Vault_Token/${env.Vault_Token}/g' OnboardManagement/Repo/repomgmt.yml")
+                    sh("cat repomgmt.yml")
+					sh("kubectl apply -f OnboardManagement/Repo/repomgmt.yml")
 					echo "deploying"
               }
 			}
