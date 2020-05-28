@@ -5,4 +5,6 @@ from .log import logger
 app = Flask(__name__)
 api = Api(app)
 
-api.add_resource(OnBoardRepoDetails, '/repodetails/<string:repo_name>')
+from . import onBoardRepoDetails
+
+api.add_resource(onBoardRepoDetails.OnBoardRepoDetails, '/repodetails/<string:repo_name>')
