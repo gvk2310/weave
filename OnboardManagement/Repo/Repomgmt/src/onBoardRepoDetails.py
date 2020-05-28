@@ -5,7 +5,7 @@ import json
 from flask import Flask, request
 from flask_restful import Resource, Api
 from functools import wraps
-from log import logger
+from .log import logger
 
 
 request_header = {
