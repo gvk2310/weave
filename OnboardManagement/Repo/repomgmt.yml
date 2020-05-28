@@ -57,7 +57,7 @@ spec:
   - host: dno-dev.acndevopsengineering.com
     http:
       paths:
-      - path: /umg(/|$)(.*)
+      - path: /onboard(/|$)(.*)
         backend:
           serviceName: repomgmt
           servicePort: 8080
