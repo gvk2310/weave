@@ -125,7 +125,7 @@ def deleteUser(user):
 def getServices():
     try:
         msg = [{"name": svc.name,
-                "state": "enabled" if svc.state else "disabled"
+                "state": "enabled" if svc.state else "disabled",
                 "endpoint": svc.endpoint
                 }
                for svc in Services.objects()]
