@@ -72,8 +72,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					}
 				} 
 				catch(e){
-                  	sh("sed 's/Vault_Url/${env.Vault_Url}/' OnboardManagement/Repo/repomgmt.yml")
-                  	sh("sed 's/Vault_Token/${env.Vault_Token}/' OnboardManagement/Repo/repomgmt.yml")
+                  	sh("sed 's|Vault_Url|${env.Vault_Url}|' OnboardManagement/Repo/repomgmt.yml")
+                  	sh("sed 's|Vault_Token|${env.Vault_Token}|' OnboardManagement/Repo/repomgmt.yml")
                     sh("cat repomgmt.yml")
 					sh("kubectl apply -f OnboardManagement/Repo/repomgmt.yml")
 					echo "deploying"
