@@ -25,9 +25,9 @@ spec:
         - name: usermgmtUrl
           value: http://dno-dev.acndevopsengineering.com/umg37
         - name: vaultToken
-          value: devnetops
+          value: Vault_Token
         - name: vaultUrl
-          value: http://44.233.97.168:8200
+          value: Vault_Url
         - name: request_header
           value: Access-Control-Allow-Origin/*;Access-Control-Expose-Headers/access-control-allow-origin
         ports:
