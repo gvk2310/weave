@@ -288,6 +288,8 @@ def authenticateUser(user, passw):
 
 def verifyPermissions(user, svc, perm):
     try:
+        if perm not in ['read', 'write']:
+            raise Exception(logger.error('Invalid Permissions'))
         roles = User.objects(email=user).first().roles
         for role in roles:
             if perm == 'read' and sum(

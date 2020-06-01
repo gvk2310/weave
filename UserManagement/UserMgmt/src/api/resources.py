@@ -42,9 +42,7 @@ class IsAuthorized(Resource):
     # as Bearer token along with service,
     # and permission type.
     @jwt_required
-    def get(self):
-        svc = request.args['svc']
-        perm = request.args['perm']
+    def get(self, svc, perm):
         resp = db.verifyPermissions(get_jwt_identity(), svc, perm)
         if resp:
             return {'permission': 'granted'}, 200, request_header

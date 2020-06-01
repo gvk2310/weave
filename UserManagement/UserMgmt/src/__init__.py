@@ -1,7 +1,21 @@
 from .log import logger
 from flask_jwt_extended import JWTManager
 from flask import Flask
-from flask_restful import Api
+from flask_restful import Api as _Api
+
+
+class Api(_Api):
+
+
+    def error_router(self, original_handler, e):
+        error_type = type(e).__name__.split(".")[-1]
+        if self._has_fr_route() and error_type in ['UnprocessableEntity']:
+            try:
+                return self.handle_error(e)
+            except Exception:
+                pass
+        return original_handler(e)
+
 
 app = Flask(__name__)
 app_api = Api(app)
@@ -17,4 +31,5 @@ app_api.add_resource(resources.Authenticate, '/auth')
 app_api.add_resource(resources.User, '/users')
 app_api.add_resource(resources.Role, '/roles')
 app_api.add_resource(resources.Service, '/service')
-app_api.add_resource(resources.IsAuthorized, '/isauthorized')
+app_api.add_resource(resources.IsAuthorized,
+                     '/isauthorized/<string:svc>/<string:perm>')
