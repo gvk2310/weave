@@ -86,6 +86,7 @@ class OnBoardRepoDetails(Resource):
             resp = requests.delete(
                 f"{vault_url}/v1/secret/data/{repo_name}",
                 headers={'X-Vault-Token': vault_token})
+            # check should be added to delete the asset onboarded along with the data in vault <<TODO>>
             return resp.json(), resp.status_code, resp.headers
         except Exception as e:
           	logs('Unable to delete data from vault', traceback.format_exc(), e)
