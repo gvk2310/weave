@@ -34,7 +34,7 @@ def verifyToken(fn):
             headers={f'Authorization': f'Bearer {token}',
                      'Content-Type': 'application/json'},
         )
-        if resp != 200:
+        if resp.status_code != 200:
             return resp.json(), resp.status_code
         return fn(*args, **kwargs)
     return wrapper
