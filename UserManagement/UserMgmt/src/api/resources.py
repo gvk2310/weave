@@ -174,7 +174,7 @@ class Role(Resource):
     def post(self):
         role = request.json['role'].strip()
         if not validStrChecker(role) or 'role' not in request.json.keys() or len(role) < 1:
-            return {'message': 'Role name can not be blank or special characters'}, 422, \
+            return {'message': 'Role name cannot be blank or special characters'}, 422, \
                 request_header
         role = request.json["role"].strip()
         read = []
@@ -233,7 +233,7 @@ class Role(Resource):
     @admin_required
     def delete(self):
         if 'role' not in request.json.keys() or len(request.json['role']) < 1:
-            return {'message': 'role name can not be blank'}, 422, \
+            return {'message': 'role name cannot be blank'}, 422, \
                 request_header
         resp = db.deleteRole(request.json['role'])
         if resp:
@@ -264,7 +264,7 @@ class Service(Resource):
     def post(self):
         name = request.json['name'].strip()
         if not validStrChecker(name) or 'name' not in request.json.keys() or len(name) < 1:
-            return {'message': 'service name can not be blank or special characters'}, 422, \
+            return {'message': 'service name cannot be blank or special characters'}, 422, \
                 request_header
         endpoint = request.json['endpoint'] if 'endpoint' in request.json.keys() else ""        
         if db.createSvc(name, endpoint):
@@ -277,7 +277,7 @@ class Service(Resource):
     @admin_required
     def delete(self):
         if 'name' not in request.json.keys() or len(request.json['name']) < 1:
-            return {'message': 'service name can not be blank'}, 422, \
+            return {'message': 'service name cannot be blank'}, 422, \
                 request_header
         serve = db.deleteSvcs(request.json['name'])
         if serve:
@@ -294,7 +294,7 @@ class Service(Resource):
     def put(self):
         name = request.json['name']
         if not validStrChecker(name) or 'name' not in request.json.keys() or len(request.json['name']) < 1:
-            return {'message': 'service name can not be blank or special characters'}
+            return {'message': 'service name cannot be blank or special characters'}
         if 'state' not in request.json.keys() or\
                 len(request.json['state']) < 1:
             return {'message': 'state field can not be blank'}
