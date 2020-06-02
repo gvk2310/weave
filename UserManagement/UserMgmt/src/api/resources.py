@@ -7,10 +7,11 @@ from functools import wraps
 from flask_jwt_extended import create_access_token, get_jwt_identity, \
     jwt_required
 
-request_header = {
+"""request_header = {
     item.split('/')[0]: item.split('/')[1]
     for item in os.environ['request_header'].split(';')
-}
+}"""
+request_header = None
 
 
 def admin_required(fn):
@@ -35,6 +36,16 @@ def passChecker(passw):
     return True
 
 
+def validStrChecker(string):
+    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
+    if(regex.search(string) == None):
+        print("String is accepted")
+        return True
+    else:
+        print("String is not accepted.")
+        return False
+    
+
 class IsAuthorized(Resource):
     # This endpoint is to verify whether the token user is authorised for the
     # service along with the permission type.
@@ -42,7 +53,9 @@ class IsAuthorized(Resource):
     # as Bearer token along with service,
     # and permission type.
     @jwt_required
-    def get(self, svc, perm):
+    def get(self):
+        svc = request.args['svc']
+        perm = request.args['perm']
         resp = db.verifyPermissions(get_jwt_identity(), svc, perm)
         if resp:
             return {'permission': 'granted'}, 200, request_header
@@ -161,8 +174,9 @@ class Role(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        if 'role' not in request.json.keys() or len(request.json['role']) < 1:
-            return {'message': 'role name can not be blank'}, 422, \
+        role = request.json['role']
+        if not validStrChecker(role) or 'role' not in request.json.keys() or len(request.json['role']) < 1:
+            return {'message': 'role name can not be blank not accept special characters'}, 422, \
                 request_header
         role = request.json["role"]
         read = []
@@ -250,8 +264,9 @@ class Service(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        if 'name' not in request.json.keys() or len(request.json['name']) < 1:
-            return {'message': 'service name can not be blank'}, 422, \
+        name = request.json['name']
+        if not validStrChecker(name) or 'name' not in request.json.keys() or len(request.json['name']) < 1:
+            return {'message': 'service name can not be blank and not accept special characters'}, 422, \
                 request_header
         endpoint = request.json['endpoint'] if 'endpoint' in request.json.keys() else ""        
         if db.createSvc(request.json['name'], endpoint):
@@ -279,8 +294,9 @@ class Service(Resource):
     @jwt_required
     @admin_required
     def put(self):
-        if 'name' not in request.json.keys() or len(request.json['name']) < 1:
-            return {'message': 'service name can not be blank'}
+        name = request.json['name']
+        if not validStrChecker(name) or 'name' not in request.json.keys() or len(request.json['name']) < 1:
+            return {'message': 'service name can not be blank not accept special characters'}
         if 'state' not in request.json.keys() or\
                 len(request.json['state']) < 1:
             return {'message': 'state field can not be blank'}
