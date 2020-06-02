@@ -7,11 +7,10 @@ from functools import wraps
 from flask_jwt_extended import create_access_token, get_jwt_identity, \
     jwt_required
 
-"""request_header = {
+request_header = {
     item.split('/')[0]: item.split('/')[1]
     for item in os.environ['request_header'].split(';')
-}"""
-request_header = None
+}
 
 
 def admin_required(fn):
