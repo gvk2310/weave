@@ -174,7 +174,7 @@ class Role(Resource):
     def post(self):
         role = request.json['role'].strip()
         if not validStrChecker(role) or 'role' not in request.json.keys() or len(role) < 1:
-            return {'message': 'role name can not be blank not accept special characters'}, 422, \
+            return {'message': 'Role name can not be blank or special characters'}, 422, \
                 request_header
         role = request.json["role"].strip()
         read = []
@@ -264,7 +264,7 @@ class Service(Resource):
     def post(self):
         name = request.json['name'].strip()
         if not validStrChecker(name) or 'name' not in request.json.keys() or len(name) < 1:
-            return {'message': 'service name can not be blank and not accept special characters'}, 422, \
+            return {'message': 'service name can not be blank or special characters'}, 422, \
                 request_header
         endpoint = request.json['endpoint'] if 'endpoint' in request.json.keys() else ""        
         if db.createSvc(name, endpoint):
@@ -283,7 +283,7 @@ class Service(Resource):
         if serve:
             return {'message': 'Service is deleted'}, 200, request_header
         elif serve is False:
-            return {'message': ' Either Service in use or does not exists, cannot delete'}, 412, \
+            return {'message': 'Service in use or does not exists, cannot delete'}, 412, \
                 request_header
         return {'message': 'Unable to process this request'}, 500, \
             request_header
@@ -294,7 +294,7 @@ class Service(Resource):
     def put(self):
         name = request.json['name']
         if not validStrChecker(name) or 'name' not in request.json.keys() or len(request.json['name']) < 1:
-            return {'message': 'service name can not be blank not accept special characters'}
+            return {'message': 'service name can not be blank or special characters'}
         if 'state' not in request.json.keys() or\
                 len(request.json['state']) < 1:
             return {'message': 'state field can not be blank'}
