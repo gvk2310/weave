@@ -7,11 +7,11 @@ from functools import wraps
 from flask_jwt_extended import create_access_token, get_jwt_identity, \
     jwt_required
 
-"""request_header = {
+request_header = {
     item.split('/')[0]: item.split('/')[1]
     for item in os.environ['request_header'].split(';')
-}"""
-request_header = None
+}
+#request_header = None
 
 
 def admin_required(fn):
@@ -53,9 +53,7 @@ class IsAuthorized(Resource):
     # as Bearer token along with service,
     # and permission type.
     @jwt_required
-    def get(self):
-        svc = request.args['svc']
-        perm = request.args['perm']
+    def get(self, svc, perm):
         resp = db.verifyPermissions(get_jwt_identity(), svc, perm)
         if resp:
             return {'permission': 'granted'}, 200, request_header
@@ -174,17 +172,17 @@ class Role(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        role = request.json['role']
-        if not validStrChecker(role) or 'role' not in request.json.keys() or len(request.json['role']) < 1:
+        role = request.json['role'].strip()
+        if not validStrChecker(role) or 'role' not in request.json.keys() or len(role) < 1:
             return {'message': 'role name can not be blank not accept special characters'}, 422, \
                 request_header
-        role = request.json["role"]
+        role = request.json["role"].strip()
         read = []
         write = []
         if 'read' in request.json.keys():
-            read = request.json["read"]
+            read = request.json["read"].strip()
         if 'write' in request.json.keys():
-            write = request.json["write"]
+            write = request.json["write"].strip()
         resp = db.createRole(role, read, write)
         if resp:
             return {'message': 'Role Created'}, 200, request_header
@@ -264,12 +262,12 @@ class Service(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        name = request.json['name']
-        if not validStrChecker(name) or 'name' not in request.json.keys() or len(request.json['name']) < 1:
+        name = request.json['name'].strip()
+        if not validStrChecker(name) or 'name' not in request.json.keys() or len(name) < 1:
             return {'message': 'service name can not be blank and not accept special characters'}, 422, \
                 request_header
         endpoint = request.json['endpoint'] if 'endpoint' in request.json.keys() else ""        
-        if db.createSvc(request.json['name'], endpoint):
+        if db.createSvc(name, endpoint):
             return {'message': 'Service is created'}, 200, request_header
         return {'message': 'Unable to process this request'}, 500, \
             request_header
@@ -285,7 +283,7 @@ class Service(Resource):
         if serve:
             return {'message': 'Service is deleted'}, 200, request_header
         elif serve is False:
-            return {'message': 'Service in use, cannot delete'}, 412, \
+            return {'message': ' Either Service in use or does not exists, cannot delete'}, 412, \
                 request_header
         return {'message': 'Unable to process this request'}, 500, \
             request_header
