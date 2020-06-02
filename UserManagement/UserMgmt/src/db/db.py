@@ -163,6 +163,8 @@ def deleteSvcs(svc):
     elif check:
         return False
     try:
+        if not Services.objects(name=svc).first():
+            return False
         remSvcFrmRole('admin', read=[svc], write=[svc])
         Services.objects(name=svc).delete()
         return True

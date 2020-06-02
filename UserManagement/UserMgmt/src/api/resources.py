@@ -13,6 +13,7 @@ request_header = {
 }
 
 
+
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -34,6 +35,16 @@ def passChecker(passw):
         return False
     return True
 
+
+def validStrChecker(string):
+    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
+    if(regex.search(string) == None):
+        print("String is accepted")
+        return True
+    else:
+        print("String is not accepted.")
+        return False
+    
 
 class IsAuthorized(Resource):
     # This endpoint is to verify whether the token user is authorised for the
@@ -161,16 +172,17 @@ class Role(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        if 'role' not in request.json.keys() or len(request.json['role']) < 1:
-            return {'message': 'role name can not be blank'}, 422, \
+        role = request.json['role'].strip()
+        if not validStrChecker(role) or 'role' not in request.json.keys() or len(role) < 1:
+            return {'message': 'Role name cannot be blank or special characters'}, 422, \
                 request_header
-        role = request.json["role"]
+        role = request.json["role"].strip()
         read = []
         write = []
         if 'read' in request.json.keys():
-            read = request.json["read"]
+            read = request.json["read"].strip()
         if 'write' in request.json.keys():
-            write = request.json["write"]
+            write = request.json["write"].strip()
         resp = db.createRole(role, read, write)
         if resp:
             return {'message': 'Role Created'}, 200, request_header
@@ -221,7 +233,7 @@ class Role(Resource):
     @admin_required
     def delete(self):
         if 'role' not in request.json.keys() or len(request.json['role']) < 1:
-            return {'message': 'role name can not be blank'}, 422, \
+            return {'message': 'role name cannot be blank'}, 422, \
                 request_header
         resp = db.deleteRole(request.json['role'])
         if resp:
@@ -250,11 +262,12 @@ class Service(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        if 'name' not in request.json.keys() or len(request.json['name']) < 1:
-            return {'message': 'service name can not be blank'}, 422, \
+        name = request.json['name'].strip()
+        if not validStrChecker(name) or 'name' not in request.json.keys() or len(name) < 1:
+            return {'message': 'service name cannot be blank or special characters'}, 422, \
                 request_header
         endpoint = request.json['endpoint'] if 'endpoint' in request.json.keys() else ""        
-        if db.createSvc(request.json['name'], endpoint):
+        if db.createSvc(name, endpoint):
             return {'message': 'Service is created'}, 200, request_header
         return {'message': 'Unable to process this request'}, 500, \
             request_header
@@ -264,13 +277,13 @@ class Service(Resource):
     @admin_required
     def delete(self):
         if 'name' not in request.json.keys() or len(request.json['name']) < 1:
-            return {'message': 'service name can not be blank'}, 422, \
+            return {'message': 'service name cannot be blank'}, 422, \
                 request_header
         serve = db.deleteSvcs(request.json['name'])
         if serve:
             return {'message': 'Service is deleted'}, 200, request_header
         elif serve is False:
-            return {'message': 'Service in use, cannot delete'}, 412, \
+            return {'message': 'Service in use or does not exists, cannot delete'}, 412, \
                 request_header
         return {'message': 'Unable to process this request'}, 500, \
             request_header
@@ -279,8 +292,9 @@ class Service(Resource):
     @jwt_required
     @admin_required
     def put(self):
-        if 'name' not in request.json.keys() or len(request.json['name']) < 1:
-            return {'message': 'service name can not be blank'}
+        name = request.json['name']
+        if not validStrChecker(name) or 'name' not in request.json.keys() or len(request.json['name']) < 1:
+            return {'message': 'service name cannot be blank or special characters'}
         if 'state' not in request.json.keys() or\
                 len(request.json['state']) < 1:
             return {'message': 'state field can not be blank'}
