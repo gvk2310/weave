@@ -11,10 +11,7 @@ request_header = {
     item.split('/')[0]: item.split('/')[1]
     for item in os.environ['request_header'].split(';')
 }
-<<<<<<< HEAD
-#request_header = None
-=======
->>>>>>> 8cde78fd06dc007d9e82f7d3d1d6cd70bd799839
+
 
 
 def admin_required(fn):
