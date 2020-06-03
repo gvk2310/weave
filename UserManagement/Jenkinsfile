@@ -14,8 +14,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def Docker_Image = 'devnetops-usermgmt'
         def Image_Tag = 's2'
 		def K8s_Deployment = 'usermgmt'
-	    node(label) {
-		try{
+	   try{
        stage('Git Checkout'){
             git branch: Git_Branch,
             url: Git_Url,
@@ -128,7 +127,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         }
 
 	}
-}
 }
 def notifyBitbucket(String state) {
  
