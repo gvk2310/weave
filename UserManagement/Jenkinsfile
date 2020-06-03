@@ -24,6 +24,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
         }
+          /*
  	    stage('Python3+ and pep-8 coding standards compliance check') {
  	        container('python3'){
               sh '''#!/bin/sh
@@ -52,6 +53,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               '''
               }
  	    }
+        */
         stage('Sonar Analysis'){
             withSonarQubeEnv('SonarQube') {
             withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
@@ -66,6 +68,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                 waitForQualityGate abortPipeline: true
                 }
          }
+          /*
 		stage ('Encrypting Source codes'){
 		    container('python3'){
               sh '''#!/bin/sh
@@ -81,6 +84,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					mkdir tmp/UserMgmt/logs
               '''}
          }
+         */
 		 stage (' Create Docker image'){
 			container('docker'){
               sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserManagement/Dockerfile_Dev .")
