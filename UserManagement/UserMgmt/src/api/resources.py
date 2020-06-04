@@ -173,7 +173,7 @@ class Role(Resource):
     def post(self):
         role = request.json['role'].strip()
         if not validStrChecker(role) or 'role' not in request.json.keys() or len(role) < 1:
-            return {'message': 'role name can not be blank not accept special characters'}, 422, \
+            return {'message': 'Role name cannot be blank or special characters'}, 422, \
                 request_header
         role = request.json["role"].strip().lower()
         print(role)
@@ -239,7 +239,7 @@ class Role(Resource):
         role = request.json['role'].strip().lower()
         print(role)
         if 'role' not in request.json.keys() or len(role) < 1:
-            return {'message': 'role name can not be blank'}, 422, \
+            return {'message': 'role name cannot be blank'}, 422, \
                 request_header
         resp = db.deleteRole(role)
         if resp:
@@ -270,7 +270,7 @@ class Service(Resource):
     def post(self):
         name = request.json['name'].strip().lower()
         if not validStrChecker(name) or 'name' not in request.json.keys() or len(name) < 1:
-            return {'message': 'service name can not be blank and not accept special characters'}, 422, \
+            return {'message': 'service name cannot be blank or special characters'}, 422, \
                 request_header
         endpoint = request.json['endpoint'] if 'endpoint' in request.json.keys() else ""        
         if db.createSvc(name, endpoint):
@@ -290,7 +290,7 @@ class Service(Resource):
         if serve:
             return {'message': 'Service is deleted'}, 200, request_header
         elif serve is False:
-            return {'message': ' Either Service in use or does not exists, cannot delete'}, 412, \
+            return {'message': 'Service in use or does not exists, cannot delete'}, 412, \
                 request_header
         return {'message': 'Unable to process this request'}, 500, \
             request_header
@@ -302,7 +302,7 @@ class Service(Resource):
         name = request.json['name'].strip().lower()
         state = request.json['state'].strip().lower()
         if not validStrChecker(name) or 'name' not in request.json.keys() or len(name) < 1:
-            return {'message': 'service name can not be blank not accept special characters'}
+            return {'message': 'service name cannot be blank or special characters'}
         if 'state' not in request.json.keys() or\
                 len(state) < 1:
             return {'message': 'state field can not be blank'}
