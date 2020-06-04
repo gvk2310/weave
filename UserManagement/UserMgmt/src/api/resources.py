@@ -12,8 +12,6 @@ request_header = {
     for item in os.environ['request_header'].split(';')
 }
 
-
-
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -100,12 +98,12 @@ class User(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        user = request.json['email']
-        name = request.json['name']
+        user = request.json['email'].strip().lower()
+        name = request.json['name'].strip()
         passw = request.json['password']
         if not passChecker(passw):
             return {'message': self.passFormatMsg}, 417, request_header
-        roles = request.json['roles']
+        roles = request.json['roles'].strip().lower()
         resp = db.createUser(name, user, passw, roles)
         if resp:
             return {'message': 'User  created'}, 200, request_header
@@ -118,7 +116,7 @@ class User(Resource):
     @jwt_required
     @admin_required
     def put(self):
-        user = request.json['email']
+        user = request.json['email'].strip().lower()
         action = int(request.args['action'])
         if action == 3:
             passw = request.json['password']
@@ -127,11 +125,11 @@ class User(Resource):
             if db.changePass(user, passw):
                 return {'message': 'Password changed'}, 200, request_header
         elif action == 1:
-            roles = request.json['roles']
+            roles = request.json['roles'].strip().lower()
             if db.addRoleToUser(user, roles):
                 return {'message': 'Roles modified'}, 200, request_header
         elif action == 2:
-            roles = request.json['roles']
+            roles = request.json['roles'].strip().lower()
             if db.removeRoleFrmUser(user, roles):
                 return {'message': 'Roles modified'}, 200, request_header
         elif action == 4:
@@ -145,12 +143,13 @@ class User(Resource):
     @jwt_required
     @admin_required
     def delete(self):
+        user = request.json['email'].strip().lower()
         if 'email' not in request.json.keys() or \
-                len(request.json['email']) < 1:
+                len(user) < 1:
             return {'message': 'user name can not be blank'}, 422, \
                 request_header
         # user = request.json['email']
-        if db.deleteUser(request.json['email']):
+        if db.deleteUser(user):
             return {'message': 'User deleted'}, 200, request_header
         return {'message': 'Unable to delete user'}, 500, request_header
 
@@ -176,13 +175,16 @@ class Role(Resource):
         if not validStrChecker(role) or 'role' not in request.json.keys() or len(role) < 1:
             return {'message': 'Role name cannot be blank or special characters'}, 422, \
                 request_header
-        role = request.json["role"].strip()
+        role = request.json["role"].strip().lower()
+        print(role)
         read = []
         write = []
         if 'read' in request.json.keys():
-            read = request.json["read"].strip()
+            read = request.json["read"]
+            read = [x.strip().lower() for x in read]
         if 'write' in request.json.keys():
-            write = request.json["write"].strip()
+            write = request.json["write"]
+            write = [x.strip().lower() for x in write]
         resp = db.createRole(role, read, write)
         if resp:
             return {'message': 'Role Created'}, 200, request_header
@@ -201,14 +203,16 @@ class Role(Resource):
             return {'message': 'Missing fields! mandatory fields - action, '
                                'role and atleast one of read, write'}, 422, \
                 request_header
-        role = request.json['role']
+        role = request.json['role'].strip().lower()
         read = []
         write = []
         if 'read' in request.json.keys():
             read = request.json['read']
+            read = [x.strip().lower() for x in read]
             print(read)
         if 'write' in request.json.keys():
             write = request.json['write']
+            write = [x.strip().lower() for x in write]
             print(write)
         if len(read + write) < 1:
             return {'message': 'No services provided to process on'}, 422, \
@@ -232,10 +236,12 @@ class Role(Resource):
     @jwt_required
     @admin_required
     def delete(self):
-        if 'role' not in request.json.keys() or len(request.json['role']) < 1:
+        role = request.json['role'].strip().lower()
+        print(role)
+        if 'role' not in request.json.keys() or len(role) < 1:
             return {'message': 'role name cannot be blank'}, 422, \
                 request_header
-        resp = db.deleteRole(request.json['role'])
+        resp = db.deleteRole(role)
         if resp:
             return {'message': 'Role is deleted'}, 200, request_header
         elif resp is False:
@@ -262,7 +268,7 @@ class Service(Resource):
     @jwt_required
     @admin_required
     def post(self):
-        name = request.json['name'].strip()
+        name = request.json['name'].strip().lower()
         if not validStrChecker(name) or 'name' not in request.json.keys() or len(name) < 1:
             return {'message': 'service name cannot be blank or special characters'}, 422, \
                 request_header
@@ -276,10 +282,11 @@ class Service(Resource):
     @jwt_required
     @admin_required
     def delete(self):
-        if 'name' not in request.json.keys() or len(request.json['name']) < 1:
-            return {'message': 'service name cannot be blank'}, 422, \
+        name = request.json['name'].strip().lower()
+        if 'name' not in request.json.keys() or len(name) < 1:
+            return {'message': 'service name can not be blank'}, 422, \
                 request_header
-        serve = db.deleteSvcs(request.json['name'])
+        serve = db.deleteSvcs(name)
         if serve:
             return {'message': 'Service is deleted'}, 200, request_header
         elif serve is False:
@@ -292,13 +299,14 @@ class Service(Resource):
     @jwt_required
     @admin_required
     def put(self):
-        name = request.json['name']
-        if not validStrChecker(name) or 'name' not in request.json.keys() or len(request.json['name']) < 1:
+        name = request.json['name'].strip().lower()
+        state = request.json['state'].strip().lower()
+        if not validStrChecker(name) or 'name' not in request.json.keys() or len(name) < 1:
             return {'message': 'service name cannot be blank or special characters'}
         if 'state' not in request.json.keys() or\
-                len(request.json['state']) < 1:
+                len(state) < 1:
             return {'message': 'state field can not be blank'}
-        if db.changeServiceStatus(request.json['name'], request.json['state'], 
+        if db.changeServiceStatus(name, state, 
         request.json['endpoint']):
             return {'message': 'service state is updated'}, 200
         return {'message': 'Unable to process this request'}, 500
