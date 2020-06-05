@@ -309,7 +309,7 @@ def verifyPermissions(user, svc, perm):
 def initial_data_setup():
     users = getUsers()
     if not users:
-        svcs = ['OnBoard', 'Security', 'Test', 'Monitor']
+        svcs = ['onboard', 'security', 'test', 'monitor']
         for svc in svcs:
             createSvc(svc)
         createRole('admin', svcs, svcs)
