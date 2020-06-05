@@ -104,6 +104,7 @@ class User(Resource):
         if not passChecker(passw):
             return {'message': self.passFormatMsg}, 417, request_header
         roles = request.json['roles'].strip().lower()
+        roles = [x.strip().lower() for x in roles]
         resp = db.createUser(name, user, passw, roles)
         if resp:
             return {'message': 'User  created'}, 200, request_header
