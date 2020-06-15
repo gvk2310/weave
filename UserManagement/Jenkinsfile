@@ -67,7 +67,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                 waitForQualityGate abortPipeline: true
                 }
          }
-          /*
+          
 		stage ('Encrypting Source codes'){
 		    container('python3'){
               sh '''#!/bin/sh
@@ -83,7 +83,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					mkdir tmp/UserMgmt/logs
               '''}
          }
-         */
+         
 		 stage (' Create Docker image'){
 			container('docker'){
               sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserManagement/Dockerfile_Dev .")
