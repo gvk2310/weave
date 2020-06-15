@@ -103,8 +103,7 @@ class User(Resource):
         passw = request.json['password']
         if not passChecker(passw):
             return {'message': self.passFormatMsg}, 417, request_header
-        roles = request.json['roles']
-        roles = [x.strip().lower() for x in roles]
+        roles = [x.strip().lower() for x in request.json['roles']]
         resp = db.createUser(name, user, passw, roles)
         if resp:
             return {'message': 'User  created'}, 200, request_header
@@ -126,11 +125,11 @@ class User(Resource):
             if db.changePass(user, passw):
                 return {'message': 'Password changed'}, 200, request_header
         elif action == 1:
-            roles = request.json['roles'].strip().lower()
+            roles = [x.strip().lower() for x in request.json['roles']]
             if db.addRoleToUser(user, roles):
                 return {'message': 'Roles modified'}, 200, request_header
         elif action == 2:
-            roles = request.json['roles'].strip().lower()
+            roles = [x.strip().lower() for x in request.json['roles']]
             if db.removeRoleFrmUser(user, roles):
                 return {'message': 'Roles modified'}, 200, request_header
         elif action == 4:
