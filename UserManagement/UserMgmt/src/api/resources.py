@@ -32,6 +32,16 @@ def passChecker(passw):
             not re.search('[_@$]', passw):
         return False
     return True
+
+  
+def validStrChecker(string):
+    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
+    if(regex.search(string) == None):
+        print("String is accepted")
+        return True
+    else:
+        print("String is not accepted.")
+        return False  
      
 
 class IsAuthorized(Resource):
