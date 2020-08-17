@@ -32,26 +32,7 @@ def passChecker(passw):
             not re.search('[_@$]', passw):
         return False
     return True
-
-
-def validStrChecker(string):
-    regex = re.compile('[@!#$%^&*()<>?/\|}{~:]')
-    if(regex.search(string) == None):
-        print("String is accepted")
-        return True
-    else:
-        print("String is not accepted.")
-        return False
-
-      
-def adminPermissionsCheck(user):
-        temp = db.checkAdminPrivilege(user)
-        if temp:
-            x = "Admin"
-            return x
-        elif temp is False:
-            y = "Non_Admin"
-            return y      
+     
 
 class IsAuthorized(Resource):
     # This endpoint is to verify whether the token user is authorised for the
@@ -75,9 +56,9 @@ class Authenticate(Resource):
         passw = request.authorization['password']
         if db.authenticateUser(user, passw):
             access_token = create_access_token(
-                identity=adminPermissionsCheck(user),
+                identity=user,
                 expires_delta=datetime.timedelta(minutes=120))
-            return {'access_type': access_type,
+            return {'admin_access': db.checkAdminPrivilege(user),
               'token': access_token,
                     'token expiry(UTC time)':
                         (datetime.datetime.utcnow() + datetime.timedelta(
