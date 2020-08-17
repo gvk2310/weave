@@ -42,7 +42,16 @@ def validStrChecker(string):
     else:
         print("String is not accepted.")
         return False
-    
+
+      
+def adminPermissionsCheck(user):
+        temp = db.checkAdminPrivilege(user)
+        if temp:
+            x = "Admin"
+            return x
+        elif temp is False:
+            y = "Non_Admin"
+            return y      
 
 class IsAuthorized(Resource):
     # This endpoint is to verify whether the token user is authorised for the
@@ -66,9 +75,10 @@ class Authenticate(Resource):
         passw = request.authorization['password']
         if db.authenticateUser(user, passw):
             access_token = create_access_token(
-                identity=user,
+                identity=adminPermissionsCheck(user),
                 expires_delta=datetime.timedelta(minutes=120))
-            return {'token': access_token,
+            return {'access_type': access_type,
+              'token': access_token,
                     'token expiry(UTC time)':
                         (datetime.datetime.utcnow() + datetime.timedelta(
                             minutes=120)).strftime('%m-%d-%Y %H:%M:%S')}, \
