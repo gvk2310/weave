@@ -1,0 +1,119 @@
+import os
+import re
+import requests
+from ..log import logger
+from .jfrog import uploadToJfrog, deleteFromJfrog
+from .vault import retrieveUrl
+from .nexus import deleteFromNexus
+from ..db import db
+from flask_restful import request
+from ..config.config import app
+from functools import wraps
+
+token_auth_url = os.environ['usermgmtUrl']
+
+request_header = {
+    item.split('/')[0]: item.split('/')[1]
+    for item in os.environ['request_header'].split(';')}
+
+
+def non_empty_string(string):
+    if not string:
+        raise ValueError("Must not be empty string")
+    return string
+
+
+def validStrChecker(string):
+    regex = re.match("^[A-Za-z0-9_-]*$", string)
+    if (regex == None):
+        return False
+    else:
+        return True
+
+
+def assetDeletefromRepo(asset):
+    repo_details = retrieveUrl(asset["asset_repository"].lower())
+    if not repo_details:
+        return {"msg": "Unable to retrieve repo details"}, 500
+    if repo_details['repo_type'].lower() == 'local' and repo_details[
+        'repo_vendor'].lower() == 'jfrog':
+        resp = deleteFromJfrog(asset['asset_link'], repo_details)
+    if repo_details['repo_type'].lower() == 'local' and repo_details[
+        'repo_vendor'].lower() == 'nexus':
+        resp = deleteFromNexus(asset['asset_link'], repo_details)
+        if not resp:
+            return {"msg": "Unable to delete asset from repository"}, 500
+    check = db.delete(assetid=asset['asset_id'])
+    if check:
+        return {'msg': 'Asset Deleted'}, 200
+
+
+def format_bytes(size):
+    power = 2 ** 10
+    n = 0
+    power_labels = {0: 'bytes', 1: 'KB', 2: 'MB', 3: 'GB', 4: 'TB'}
+    while size > power:
+        size /= power
+        n += 1
+    return str(round(size, 1)) + power_labels[n]
+
+
+def verifyToken(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if 'Authorization' not in request.headers.keys() or \
+                request.headers['Authorization'].split()[0] != 'Bearer':
+            return {"msg": "Token required"}, 500
+        token = request.headers['Authorization'].split()[1]
+        perm = 'read' if request.method == 'GET' else 'write'
+        resp = requests.get(
+            f"{token_auth_url}/isauthorized/vault/{perm}",
+            headers={f'Authorization': f'Bearer {token}',
+                     'Content-Type': 'application/json'},
+        )
+        if resp.status_code != 200:
+            return resp.json(), resp.status_code
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
+def scanFile(args):
+    try:
+        resp = os.popen(f"clamscan {args['asset_file_loc']}").read()
+        if not "Infected files" in resp:
+            return False
+        return_val = \
+            [int(item.split(':')[1].strip()) < 1 for item in resp.split('\n')
+             if item.split(':')[0] == 'Infected files'][0]
+        return return_val
+    except Exception as e:
+        logger.error(e)
+
+
+def localAssetOnboarding(args, repo_details):
+    secured = scanFile(args)
+    if not secured:
+        logger.error('Insecured File. Aborting Asset Onboarding.')
+        db.update(assetid=args['assetid'],
+                  scan_result='Vulnerable',
+                  onboard_status='Aborted')
+        os.remove(args['asset_file_loc'])
+        return False
+    db.update(assetid=args['assetid'],
+              scan_result='Safe')
+    if repo_details['repo_vendor'] == 'jfrog':
+        resp = uploadToJfrog(args, repo_details)
+        if not resp:
+            logger.error('Failed to push to repository')
+            db.update(assetid=args['assetid'],
+                      onboard_status='Repo upload Failed')
+            os.remove(args['asset_file_loc'])
+            return False
+        (link, size) = resp
+        size = format_bytes(int(size))
+        db.update(assetid=args['assetid'],
+                  link=link,
+                  size=size,
+                  onboard_status='Done')
+        os.remove(args['asset_file_loc'])

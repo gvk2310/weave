@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: security
+  labels:
+    app: security
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: security
+  template:
+    metadata:
+      labels:
+        app: security
+    spec:
+      imagePullSecrets:
+      - name: devnetops
+      containers:
+      - name: security
+        image: devnetops.azurecr.io/devnetops-onboardmgmt-test:s2
+        imagePullPolicy: Always
+        env:
+        - name: usermgmtUrl
+          value: http://usermgmt.devnetops.svc.cluster.local:8080
+        - name: vaultToken
+          value: devnetops
+        - name: vaultUrl
+          value: http://vault1.devnetops.svc.cluster.local:80
+        - name: mongohost
+          value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops?authSource=admin
+        - name: secretkey
+          value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
+        - name: request_header
+          value: Access-Control-Allow-Origin/*;Access-Control-Expose-Headers/access-control-allow-origin
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: security
+  labels:
+    app: security
+spec:
+  selector:
+    app: security
+  ports:
+  - port: 8080
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: security
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-body-size: 8g
+spec:
+  rules:
+  - host: dno-dev.acndevopsengineering.com
+    http:
+      paths:
+      - path: /onb-test(/|$)(.*)
+        backend:
+          serviceName: security
+          servicePort: 8080
