@@ -76,6 +76,24 @@ class Authenticate(Resource):
                 200, request_header
         return {'message': 'Invalid credentials'}, 500, request_header
 
+      
+class NormalUser(Resource):
+    passFormatMsg = "Password must be minimum 8 characters long and must \
+        contain at least 1 uppercase, 1 lowercase character, 1 number \
+            and 1 of the special characters <_@$>"
+
+    @jwt_required
+    def put(self):
+        user = request.json['email'].strip().lower()
+        action = int(request.args['action'])
+        if action == 3:
+            passw = request.json['password']
+            if not passChecker(passw):
+                return {'message': self.passFormatMsg}, 417, request_header
+            if db.changePass(user, passw):
+                return {'message': 'Password changed'}, 200, request_header
+      
+      
 
 class User(Resource):
     # For all admin task requests, token generated while admin authentication
