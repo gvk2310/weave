@@ -1,4 +1,4 @@
-def label = "mypod-${UUID.randomUUID().toString()}"
+def label = "Devnetops-${UUID.randomUUID().toString()}"
 def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
            containers: [containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
