@@ -1,14 +1,17 @@
-from distutils.core import setup
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
-ext_modules = [
-	Extension("UserMgmt.src.api.resources",  ["UserMgmt/src/api/resources.py"]),
-		Extension("UserMgmt.src.db.db",  ["UserMgmt/src/db/db.py"]),
-		Extension("UserMgmt.src.config.config",  ["UserMgmt/src/config/config.py"]),
-		Extension("UserMgmt.src.log",  ["UserMgmt/src/log.py"])
-]
+from setuptools import setup, find_packages
+
 setup(
-	name = 'devnetops',
-	cmdclass = {'build_ext': build_ext},
-	ext_modules = ext_modules
+    name='DevNetOps',
+    version='1.3',
+    description="DevNetOps scripts",
+    long_description="DevNetOps scripts",
+    license='Accenture',
+    url='http://Accenture.com/',
+    packages=find_packages(exclude=['bin', 'tests', 'tests.*']),
+    platforms='Ubuntu',
+    install_requires=[],
+    classifiers=[
+        'Operating System :: POSIX :: Linux',
+        'Programming Language :: Python :: 3.6'
+    ]
 )
