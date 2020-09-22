@@ -15,6 +15,7 @@ class testUser(unittest.TestCase):
         payload = "{\"role\": \"testrolek\",\"write\": [\"Test\"],\"read\":[\"Test\"]}"
         headers = {"Authorization": "Bearer {}".format(token),'Content-Type': 'application/json'}
         response = requests.request("POST", url, headers=headers, data = payload,verify=False)
+        print(response.text)
         self.assertEqual(response.status_code, 200)
 
         payload1= "{\"role\": \"testrolev\",\"write\": [\"Test\"],\"read\":[\"Test\"]}"
