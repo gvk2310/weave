@@ -2,8 +2,10 @@ def label = "Devnetops-${UUID.randomUUID().toString()}"
 def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
            containers: [containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
+                        containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
                containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
-				volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')])
+				volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')],
+           imagePullSecrets: ['devnetops'])
 
 {
     node(label)
@@ -67,6 +69,16 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                 waitForQualityGate abortPipeline: true
                 }
          }
+         
+         stage ('Running functional tests [TOX]')
+         {
+            container('tox') {
+             sh 'pip list'
+             sh 'pip3 list'
+              sh 'cd UserManagement && tox -e DNO'
+                }
+         }
+         
           /*
 		stage ('Encrypting Source codes'){
 		    container('python3'){
