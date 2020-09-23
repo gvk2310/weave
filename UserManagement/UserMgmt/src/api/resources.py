@@ -68,7 +68,7 @@ class Authenticate(Resource):
             access_token = create_access_token(
                 identity=user,
                 expires_delta=datetime.timedelta(minutes=120))
-            return {'admin_access': db.checkAdminPrivilege(user),
+            return {'admin_access': 'true',
               'token': access_token,
                     'token expiry(UTC time)':
                         (datetime.datetime.utcnow() + datetime.timedelta(
