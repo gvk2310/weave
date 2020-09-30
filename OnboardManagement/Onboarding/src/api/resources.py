@@ -49,7 +49,6 @@ class Asset(Resource):
         parser.add_argument('asset_file', type=FileStorage,
                                 location='files')
         args = parser.parse_args()
-        print(args)
         if not validStrChecker(args['asset_name']):
             return {
                        'message': 'Asset name cannot have special '
