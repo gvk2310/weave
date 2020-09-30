@@ -45,7 +45,11 @@ class Asset(Resource):
         parser.add_argument('asset_version', type=int, required=True)
         parser.add_argument('asset_repository', nullable=False,
                             type=non_empty_string, required=True)
+        parser.add_argument('asset_path', type=non_empty_string)
+        parser.add_argument('asset_file', type=FileStorage,
+                                location='files')
         args = parser.parse_args()
+        print(args)
         if not validStrChecker(args['asset_name']):
             return {
                        'message': 'Asset name cannot have special '
@@ -54,6 +58,9 @@ class Asset(Resource):
             return {
                        'message': 'Asset group cannot have special '
                                   'characters'}, 422
+        if not args['asset_path'] and not args['asset_file']:
+            return {
+                       'message': 'either asset file or asset path should be provided'}, 422
         repo_details = retrieveUrl(args['asset_repository'].lower())
         if not repo_details:
             return {"msg": "Unable to retrieve repo details"}, 500
@@ -71,9 +78,7 @@ class Asset(Resource):
                            'either delete the version or create with a '
                            'different version'}, 403
 
-        if repo_details['repo_type'].lower() in ['remote']:
-            parser.add_argument('asset_path', type=str, required=True)
-            args = parser.parse_args()
+        if args['asset_path']:
             if repo_details['repo_vendor'] == 'jfrog':
                 size = checkJfrogRemote(args, repo_details)
             if not size:
@@ -97,11 +102,7 @@ class Asset(Resource):
                 return {'msg': 'Onboarding successfully'}, 200
             else:
                 return {'msg': 'Internal Server Error'}, 500
-        elif repo_details['repo_type'].lower() in ['local']:
-            parser.add_argument('asset_file', type=FileStorage,
-                                location='files',
-                                required=True)
-            args = parser.parse_args()
+        elif args['asset_file']:
             args['assetid'] = datetime.datetime.now().strftime("AS%Y%m%d%H%M%S")
             args['asset_file_name'] = args['asset_file'].filename
             args['asset_file_loc'] = os.path.join(app.config['upload_folder'],
@@ -139,32 +140,27 @@ class Asset(Resource):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_id', nullable=False, type=non_empty_string,
                             required=True)
-        parser.add_argument('force_delete', type=inputs.boolean, default=False)
+        parser.add_argument('delete_from_repo', type=inputs.boolean, default=False)
         args = parser.parse_args()
         resp = db.get(assetid=args['asset_id'])
         if not resp:
             return {"msg": "Unable to fetch asset details"}, 500
-        if not args['force_delete'] and resp['onboard_status'] != 'Done':
+        if resp['onboard_status'] != 'Done':
             return {"msg": "Asset onboard not complete yet"}, 400
         repo_details = retrieveUrl(resp["asset_repository"].lower())
         if not repo_details:
             return {
                        "msg": "Unable to retrieve repo details"}, 500
-        if repo_details['repo_type'].lower() == 'local' and repo_details[
+        if args['delete_from_repo'] and repo_details[
             'repo_vendor'].lower() == 'jfrog':
             resp = deleteFromJfrog(resp['asset_link'], repo_details)
-        if repo_details['repo_type'].lower() == 'local' and repo_details[
+        if args['delete_from_repo'] and repo_details[
             'repo_vendor'].lower() == 'nexus':
             resp = deleteFromNexus(resp['asset_link'], repo_details)
             if not resp:
                 return {"msg": "Unable to delete asset from repository"}, 500
         check = db.delete(assetid=args['asset_id'])
         if check:
-            if args['force_delete'] and repo_details[
-                'repo_type'].lower() == 'local':
-                return {
-                           'msg': 'Asset force deleted. Manual deletion might '
-                                  'be required in the repository'}, 200
             return {'msg': 'Asset Deleted'}, 200
         return {'msg': 'Internal Server Error'}, 500
 
