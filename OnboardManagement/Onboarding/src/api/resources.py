@@ -222,11 +222,9 @@ class Repository(Resource):
                               "user doesnt have enough previliges to access "
                               "the repository"}, 400
         if repolist and (args['repo_url'] in [item['repo_url'] for item in
-                                              repolist]) and ((
-                args['repo_name'] not in [item['repo_name'] for item in
-                                          repolist]) and action == 'create') or 
-                ((args['repo_name'] in [item['repo_name'] for item in
-                                          repolist]) and action == 'modify'):
+                                              repolist]) and (((args['repo_name'] not in [item['repo_name'] for item in
+                                          repolist]) and action == 'create') or ((args['repo_name'] in [item['repo_name'] for item in
+                                          repolist]) and action == 'modify')):
             return {
                        "msg": "Repository already exists, please create an "
                               "another one"}, 400
