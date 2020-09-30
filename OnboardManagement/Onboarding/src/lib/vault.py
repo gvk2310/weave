@@ -60,8 +60,6 @@ def getRepoList():
                             'repo_name'],
                         "repo_vendor": repoInfo.json()['data']['data'][
                             'repo_vendor'],
-                        "repo_type": repoInfo.json()['data']['data'][
-                            'repo_type'],
                         "repo_url": repoInfo.json()['data']['data'][
                             'repo_url'], "repo_username": repoInfo.json()['data']['data'][
                             'repo_username'], "repo_password": decoded_repopassword, "assets_info": repo_assets})
