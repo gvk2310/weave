@@ -185,26 +185,33 @@ class Repository(Resource):
         parser.add_argument('repo_vendor', nullable=False,
                             type=non_empty_string, required=True,
                             choices=('nexus', 'jfrog'))
-        parser.add_argument('repo_type', nullable=False, type=non_empty_string,
-                            required=True, choices=('remote', 'local'))
         parser.add_argument('repo_url', type=inputs.url, required=True)
         parser.add_argument('repo_username', nullable=False,
                             type=non_empty_string, required=True)
         parser.add_argument('repo_password', nullable=False,
                             type=non_empty_string, required=True)
+        parser.add_argument('action', nullable=False,
+                            type=non_empty_string, required=True)                   
+        args = parser.parse_args()
+        action = args['action']
+        parser.remove_argument('action')
         args = parser.parse_args()
         repodata = {"data": args}
-        if not validStrChecker(args['repo_name']):
-            return {
-                       'message': 'Repo name cannot have special '
-                                  'characters'}, 422
-        if args['repo_vendor'].lower() not in ['jfrog']:
-            return {'msg': 'Repository not supported'}, 400
-        else:
-            if args['repo_vendor'].lower() == 'jfrog':
-                resp = validateJfrog(args)
-            # elif args['repo_vendor'].lower() == 'nexus':
-            #     resp = validateNexus(args)
+        repolist = getRepoList()
+        if action == 'create':
+            if not validStrChecker(args['repo_name']):
+                return {
+                        'message': 'Repo name cannot have special '
+                                    'characters'}, 422
+            if repolist and (args['repo_name'] in [item['repo_name'] for item in repolist]):
+                return {
+                       "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400 
+            if args['repo_vendor'].lower() not in ['jfrog']:
+                return {'msg': 'Repository not supported'}, 400
+        if args['repo_vendor'].lower() == 'jfrog':
+            resp = validateJfrog(args)
+        # elif args['repo_vendor'].lower() == 'nexus':
+        #     resp = validateNexus(args)      
         if not resp:
             return {"msg": "Repository validation failed"}, 500
         if args['repo_url'] not in [item['url'] for item in resp.json()]:
@@ -212,7 +219,6 @@ class Repository(Resource):
                        "msg": "Either the repository does not exist or the "
                               "user doesnt have enough previliges to access "
                               "the repository"}, 400
-        repolist = getRepoList()
         if repolist and (args['repo_url'] in [item['repo_url'] for item in
                                               repolist]) and (
                 args['repo_name'] not in [item['repo_name'] for item in
@@ -234,12 +240,12 @@ class Repository(Resource):
         resp = addDataToVault(args, repodata, 'Repo')
         if not resp:
             return {
-                       "msg": f"Data could not be added for infra {args['repo_name']}"}, 500
-        elif resp and repolist and (
-                args['repo_name'] in [item['repo_name'] for item in repolist]):
-            return {"msg": "Repository data updated successfully"}, 200
+                       "msg": f"Request not processed for repo {args['repo_name']}"}, 500
         else:
-            return {"msg": "Repository onboarding successful"}, 200
+            if action == 'modify':
+                return {"msg": "Repository data updated successfully"}, 200
+            elif action == 'create':
+                return {"msg": "Repository onboarding successful"}, 200
 
     #@verifyToken
     def delete(self):
