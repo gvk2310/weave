@@ -21,7 +21,7 @@ from ..lib.commonfunctions import (verifyToken, localAssetOnboarding,
 class Asset(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         data = db.get()
         if data:
@@ -30,7 +30,7 @@ class Asset(Resource):
             return {'msg': 'No assets onboarded yet'}, 404
         return {'msg': 'Internal Server Error'}, 500
 
-    @verifyToken
+    #@verifyToken
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_name', nullable=False, type=non_empty_string,
@@ -134,7 +134,7 @@ class Asset(Resource):
                            'msg': 'Failed to initiate asset onboarding'}, 500
             return {'asset_id': args['assetid']}, 200
 
-    @verifyToken
+    #@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_id', nullable=False, type=non_empty_string,
@@ -172,7 +172,7 @@ class Asset(Resource):
 class Repository(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         data = getRepoList()
         if data:
@@ -181,7 +181,7 @@ class Repository(Resource):
             return {'msg': 'No repositories onboarded yet'}, 404
         return {"msg": "Unable to retrieve repository list"}, 500
 
-    @verifyToken
+    #@verifyToken
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('repo_name', nullable=False, type=non_empty_string,
@@ -245,7 +245,7 @@ class Repository(Resource):
         else:
             return {"msg": "Repository onboarding successful"}, 200
 
-    @verifyToken
+    #@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('repo_name', type=str, required=True)
@@ -292,7 +292,7 @@ class Repository(Resource):
 class Infra(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         data = getInfraList()
         if data:
@@ -304,7 +304,7 @@ class Infra(Resource):
         return {
                    "msg": "Unable to retrieve infra list"}, 500
 
-    @verifyToken
+    #@verifyToken
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('infra_name', nullable=False, type=non_empty_string,
@@ -392,7 +392,7 @@ class Infra(Resource):
         return {
                    "msg": "Cloud validation failed, data could not be added "}, 500
 
-    @verifyToken
+    #@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('infra_name', type=str, required=True)
@@ -416,7 +416,7 @@ class Infra(Resource):
 class AssetDownloadDetails(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('assets', type=str, required=True, location='args')
