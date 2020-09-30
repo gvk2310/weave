@@ -207,6 +207,10 @@ class Repository(Resource):
                        "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400 
             if args['repo_vendor'].lower() not in ['jfrog']:
                 return {'msg': 'Repository not supported'}, 400
+        if action == 'modify':
+            if repolist and (args['repo_name'] not in [item['repo_name'] for item in repolist]):
+                return {
+                       "msg": f"Repo with the name '{args['repo_name']}' does not exist to update"}, 400
         if args['repo_vendor'].lower() == 'jfrog':
             resp = validateJfrog(args)
         # elif args['repo_vendor'].lower() == 'nexus':
@@ -316,11 +320,29 @@ class Infra(Resource):
         parser.add_argument('environment', nullable=False,
                             type=non_empty_string, required=True, choices=(
                 'Demo', 'Test', 'Development', 'Stage', 'Production'))
+        parser.add_argument('action', nullable=False,
+                            type=non_empty_string, required=True)                   
         args = parser.parse_args()
-        if not validStrChecker(args['infra_name']):
-            return {
-                       'message': 'Infra name cannot have special '
-                                  'characters'}, 422
+        action = args['action']
+        parser.remove_argument('action')
+        args = parser.parse_args()
+        infralist = getInfraList()
+        if action == 'create':
+            if not validStrChecker(args['infra_name']):
+                return {
+                        'message': 'Infra name cannot have special '
+                                    'characters'}, 422
+            if infralist and (
+                    args['infra_name'] in [item['infra_name'] for item in
+                                           infralist]):
+                return {
+                       "msg": f"Infra with the name '{args['infra_name']}' already onboarded"}, 400
+        if action == 'modify':
+            if infralist and (
+                    args['infra_name'] not in [item['infra_name'] for item in
+                                           infralist]):
+                return {
+                       "msg": f"Infra with the name '{args['infra_name']}' does not exist to update"}, 400
         if args['cloud_type'].lower() == 'aws':
             parser.add_argument('orchestrator', nullable=False,
                                 type=non_empty_string, required=True,
@@ -354,9 +376,6 @@ class Infra(Resource):
                     return {
                                "msg": "OSM validation failed, data could not "
                                       "be added"}, 500
-        infralist = getInfraList()
-        print(infralist)
-        print(args)
         check = []
         if (infralist):
             for item in infralist:
@@ -381,18 +400,16 @@ class Infra(Resource):
             resp = addDataToVault(args, repodata, 'infra')
             if not resp:
                 return {
-                           "msg": "Data could not be added for infra "
+                           "msg": "Request not processed for infra "
                                   "{args['infra_name']"}, 500
-            elif resp and infralist and (
-                    args['infra_name'] in [item['infra_name'] for item in
-                                           infralist]):
-                return {
-                           "msg": "Infra data updated successfully"}, 200
             else:
-                return {
-                           "msg": "Infra onboarding successful"}, 200
+                if action == 'modify':
+                    return {"msg": "Infra data updated successfully"}, 200
+                elif action == 'create':
+                    return {"msg": "Infra onboarding successful"}, 200
         return {
                    "msg": "Cloud validation failed, data could not be added "}, 500
+
 
     #@verifyToken
     def delete(self):
