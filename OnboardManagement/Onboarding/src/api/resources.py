@@ -196,7 +196,6 @@ class Repository(Resource):
         action = args['action']
         parser.remove_argument('action')
         args = parser.parse_args()
-        repodata = {"data": args}
         repolist = getRepoList()
         if action == 'create':
             if not validStrChecker(args['repo_name']):
@@ -237,6 +236,7 @@ class Repository(Resource):
                               "onboarded"}, 400
         args['repo_password'] = str(
             base64.b64encode(args['repo_password'].encode("utf-8")), "utf-8")
+        repodata = {"data": args}
         resp = addDataToVault(args, repodata, 'Repo')
         if not resp:
             return {
