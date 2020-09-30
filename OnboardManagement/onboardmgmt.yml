@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: security
+  name: onboard
   labels:
-    app: security
+    app: onboard
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: security
+      app: onboard
   template:
     metadata:
       labels:
-        app: security
+        app: onboard
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: security
+      - name: onboard
         image: devnetops.azurecr.io/devnetops-onboardmgmt-test:s2
         imagePullPolicy: Always
         env:
@@ -40,12 +40,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: security
+  name: onboard
   labels:
-    app: security
+    app: onboard
 spec:
   selector:
-    app: security
+    app: onboard
   ports:
   - port: 8080
     targetPort: 8080
@@ -53,7 +53,7 @@ spec:
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: security
+  name: onboard
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-body-size: 8g
@@ -62,7 +62,7 @@ spec:
   - host: dno-dev.acndevopsengineering.com
     http:
       paths:
-      - path: /onb-test(/|$)(.*)
+      - path: /onb-v2(/|$)(.*)
         backend:
-          serviceName: security
+          serviceName: onboard
           servicePort: 8080
