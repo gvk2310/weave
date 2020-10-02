@@ -206,10 +206,20 @@ class Repository(Resource):
                        "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400 
             if args['repo_vendor'].lower() not in ['jfrog']:
                 return {'msg': 'Repository not supported'}, 400
-        if action == 'modify':
-            if repolist and (args['repo_name'] not in [item['repo_name'] for item in repolist]):
+            if repolist and (args['repo_url'] in [item['repo_url'] for item in
+                                              repolist]) and (args['repo_name'] not in [item['repo_name'] for item in
+                                          repolist]):
+                return {
+                        "msg": "Repository already exists, please create an "
+                                "another one"}, 400
+        if action == 'modify' and repolist:
+            if args['repo_name'] not in [item['repo_name'] for item in repolist]:
                 return {
                        "msg": f"Repo with the name '{args['repo_name']}' does not exist to update"}, 400
+            for item in repolist:
+                if (item['repo_url'] == args['repo_url']) and (item['repo_name'] != args['repo_name']):
+                    return {
+                            "msg": "Repository already exists, please create an another one"}, 400
         if args['repo_vendor'].lower() == 'jfrog':
             resp = validateJfrog(args)
         # elif args['repo_vendor'].lower() == 'nexus':
@@ -221,19 +231,12 @@ class Repository(Resource):
                        "msg": "Either the repository does not exist or the "
                               "user doesnt have enough previliges to access "
                               "the repository"}, 400
-        if repolist and (args['repo_url'] in [item['repo_url'] for item in
-                                              repolist]) and (((args['repo_name'] not in [item['repo_name'] for item in
-                                          repolist]) and action == 'create') or ((args['repo_name'] in [item['repo_name'] for item in
-                                          repolist]) and action == 'modify')):
-            return {
-                       "msg": "Repository already exists, please create an "
-                              "another one"}, 400
         check = []
         if (repolist):
             for item in repolist:
                 check.append(all(
                     item.get(key, None) == val for key, val in args.items()))
-        if True in check:
+        if True in check and action == 'create':
             return {
                        "msg": "Repository with the same data is already "
                               "onboarded"}, 400
@@ -245,11 +248,13 @@ class Repository(Resource):
             return {
                        "msg": f"Request not processed for repo {args['repo_name']}"}, 500
         else:
-            if action == 'modify':
+            if action == 'modify' and repolist:
                 return {"msg": "Repository data updated successfully"}, 200
-            elif action == 'create':
+            else:
                 return {"msg": "Repository onboarding successful"}, 200
-
+              
+              
+              
     #@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
