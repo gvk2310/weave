@@ -385,7 +385,7 @@ class Infra(Resource):
             for item in infralist:
                 check.append(all(
                     item.get(key, None) == val for key, val in args.items()))
-        if True in check:
+        if True in check and action == 'create':
             return {
                        "msg": "Infrastructure with the same data is already "
                               "onboarded"}, 400
@@ -413,7 +413,7 @@ class Infra(Resource):
                     return {"msg": "Infra onboarding successful"}, 200
         return {
                    "msg": "Cloud validation failed, data could not be added "}, 500
-
+                  
 
     #@verifyToken
     def delete(self):
