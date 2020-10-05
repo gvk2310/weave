@@ -86,6 +86,11 @@ def update(**kwargs):
             asset.update(scan_result=kwargs['scan_result'])
         if 'onboard_status' in kwargs:
             asset.update(onboard_status=kwargs['onboard_status'])
+        if 'version' in kwargs:
+            asset.update(version=kwargs['version'])
+        if 'group' in kwargs:
+            asset.update(group=kwargs['group'])
+        return True
     except Exception as e:
         logger.error("Unable to update asset details")
         logger.debug(traceback)
@@ -95,6 +100,8 @@ def update(**kwargs):
 def delete(**kwargs):
     try:
         asset = Assets.objects(__raw__=kwargs).first()
+        if not asset:
+        	return True
         asset.delete()
         return True
     except Exception as e:
