@@ -147,7 +147,6 @@ class Asset(Resource):
         done = db.update(assetid=args['asset_id'],
                          version=args['asset_version'],
                          group=args['asset_group'])
-        # print (done)
         if done:
             publish_event_message(args)
             return {"msg": "asset_version and asset_group got updated"}, 200
