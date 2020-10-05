@@ -132,7 +132,29 @@ class Asset(Resource):
                           onboard_status='Failed')
                 return {
                            'msg': 'Failed to initiate asset onboarding'}, 500
-            return {'asset_id': args['assetid']}, 200
+            return {'asset_id': args['assetid']}, 200     
+          
+    # @verifyToken
+    def put(self):
+        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+        parser.add_argument('asset_id', type=str, required=True)
+        parser.add_argument('asset_group', type=str, required=True)
+        parser.add_argument('asset_version', type=str, required=True)
+        args = parser.parse_args()
+
+        if not args['asset_version'] and not args['asset_group'] :
+            return {"msg": "Nothing to modify"}, 400
+        done = db.update(assetid=args['asset_id'],
+                         version=args['asset_version'],
+                         group=args['asset_group'])
+        # print (done)
+        if done:
+            publish_event_message(args)
+            return {"msg": "asset_version and asset_group got updated"}, 200
+
+        if done is False:
+            return {"msg": "Asset ID does not exist"}, 400
+        return {"msg": "asset_version and asset_group update failed"}, 500
 
     #@verifyToken
     def delete(self):
