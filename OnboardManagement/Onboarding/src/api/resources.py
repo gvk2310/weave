@@ -3,11 +3,13 @@ import base64
 import datetime
 from ..db import db
 from ..log import logger
+from flask import Response
 from ..config.config import app
 from ..lib.nexus import deleteFromNexus
 from threading import Thread, ThreadError
 from werkzeug.datastructures import FileStorage
 from flask_restful import Resource, reqparse, inputs
+from ..lib.sse import SSEGenerator, publish_asset_events
 from ..lib.jfrog import checkJfrogRemote, deleteFromJfrog, validateJfrog
 from ..lib.cloud_validate import aws_validate, openstack_validate, osm_validate
 from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
@@ -130,6 +132,9 @@ class Asset(Resource):
                 db.update(assetid=args['assetid'],
                           scan_result='Unknown',
                           onboard_status='Failed')
+                publish_asset_events(assetid=args['assetid'],
+                                     scan_result='Unknown',
+                                     onboard_status='Failed')
                 return {
                            'msg': 'Failed to initiate asset onboarding'}, 500
             return {'asset_id': args['assetid']}, 200     
@@ -148,7 +153,6 @@ class Asset(Resource):
                          version=args['asset_version'],
                          group=args['asset_group'])
         if done:
-            publish_event_message(args)
             return {"msg": "asset_version and asset_group got updated"}, 200
 
         if done is False:
@@ -477,3 +481,13 @@ class AssetDownloadDetails(Resource):
                                base64.b64decode(repo_details['repo_password']),
                                "utf-8")})
         return output
+
+
+class ServerEventMessage(Resource):
+
+
+    # @verifyToken
+    def get(self):
+        stream = Response(SSEGenerator(), mimetype="text/event-stream",
+                          headers={'Cache-Control': 'no-cache'})
+        return stream
