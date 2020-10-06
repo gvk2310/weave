@@ -34,6 +34,8 @@ spec:
           value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
         - name: request_header
           value: Access-Control-Allow-Origin/*;Access-Control-Expose-Headers/access-control-allow-origin
+        - name: redis_url
+          value: redis-ls.devnetops.svc.cluster.local:6378
         ports:
         - containerPort: 8080
 ---
