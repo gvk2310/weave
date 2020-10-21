@@ -27,9 +27,8 @@ class Tests(db.Document):
     description = db.StringField(required=True)
     category = db.StringField(required=True)
     scripttype = db.StringField(required=True)
-    entrypoint = db.StringField(required=True)
+    commands = db.StringField(required=True)
     parameters = db.StringField(required=True)
-    type = db.StringField(required=True)
     repository = db.StringField(required=True)
     link = db.StringField(default='')
     scan_result = db.StringField()
@@ -130,9 +129,8 @@ def getTest(**kwargs):
                     "test_name": test.name,
                     "test_description": test.description,
                     "test_category": test.category,
-                    "test_type": test.type,
                     "test_scripttype": test.scripttype,
-                    "test_entrypoint": test.entrypoint,
+                    "test_commands": test.commands,
                     "test_parameters": test.parameters,
                     "test_link": test.link,
                     "test_repository": test.repository,
@@ -142,9 +140,8 @@ def getTest(**kwargs):
                     "test_name": test.name,
                     "test_description": test.description,
                     "test_category": test.category,
-                    "test_type": test.type,
                     "test_scripttype": test.scripttype,
-                    "test_entrypoint": test.entrypoint,
+                    "test_commands": test.commands,
                     "test_parameters": test.parameters,
                     "test_link": test.link,
                     "test_repository": test.repository,
@@ -163,9 +160,8 @@ def createTest(**kwargs):
                      name=kwargs['name'],
                      description=kwargs['description'],
                      category=kwargs['category'],
-                     type=kwargs['type'],
                      scripttype=kwargs['scripttype'],
-                     entrypoint=kwargs['entrypoint'],
+                     commands=kwargs['commands'],
                      parameters=kwargs['parameters'],
                      repository=kwargs['repository'],
                      link=kwargs['link'],
