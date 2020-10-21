@@ -20,7 +20,7 @@ class SSEGenerator:
         self.closed = True
 
     def __iter__(self):
-        event = 'assets'
+        event = 'onboard'
         client = redis.Redis(host=redis_host, port=redis_port)
         p = client.pubsub()
         p.subscribe(event)
@@ -41,10 +41,10 @@ class SSEGenerator:
         return msg
 
 
-def publish_asset_events(**kwargs):
+def publish_onboard_events(**kwargs):
     try:
         client = redis.Redis(host=redis_host, port=redis_port)
-        client.publish('assets', json.dumps(kwargs))
+        client.publish('onboard', json.dumps(kwargs))
         return True
     except Exception as e:
         logger.error("Unable to publish message in redis")
