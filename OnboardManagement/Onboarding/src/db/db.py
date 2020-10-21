@@ -19,6 +19,23 @@ class Assets(db.Document):
     scan_result = db.StringField()
     onboard_status = db.StringField()
 
+    
+
+class Tests(db.Document):
+    testcaseid = db.StringField(unique=True, required=True)
+    name = db.StringField(required=True)
+    description = db.StringField(required=True)
+    category = db.StringField(required=True)
+    scripttype = db.StringField(required=True)
+    entrypoint = db.StringField(required=True)
+    parameters = db.StringField(required=True)
+    type = db.StringField(required=True)
+    repository = db.StringField(required=True)
+    link = db.StringField(default='')
+    scan_result = db.StringField()
+    onboard_status = db.StringField()
+
+
 
 def get(**kwargs):
     try:
@@ -86,11 +103,6 @@ def update(**kwargs):
             asset.update(scan_result=kwargs['scan_result'])
         if 'onboard_status' in kwargs:
             asset.update(onboard_status=kwargs['onboard_status'])
-        if 'version' in kwargs:
-            asset.update(version=kwargs['version'])
-        if 'group' in kwargs:
-            asset.update(group=kwargs['group'])
-        return True
     except Exception as e:
         logger.error("Unable to update asset details")
         logger.debug(traceback)
@@ -100,11 +112,104 @@ def update(**kwargs):
 def delete(**kwargs):
     try:
         asset = Assets.objects(__raw__=kwargs).first()
-        if not asset:
-        	return True
         asset.delete()
         return True
     except Exception as e:
         logger.error("Unable to delete an asset details")
         logger.debug(traceback)
         logger.error(e)
+        
+        
+        
+        
+def getTest(**kwargs):
+    try:
+        if len(kwargs) > 0:
+            test = Tests.objects(__raw__=kwargs).first()
+            return {"test_id": test.testcaseid,
+                    "test_name": test.name,
+                    "test_description": test.description,
+                    "test_category": test.category,
+                    "test_type": test.type,
+                    "test_scripttype": test.scripttype,
+                    "test_entrypoint": test.entrypoint,
+                    "test_parameters": test.parameters,
+                    "test_link": test.link,
+                    "test_repository": test.repository,
+                    "scan_result": test.scan_result,
+                    "onboard_status": test.onboard_status} if test else False
+        return [{"test_id": test.testcaseid,
+                    "test_name": test.name,
+                    "test_description": test.description,
+                    "test_category": test.category,
+                    "test_type": test.type,
+                    "test_scripttype": test.scripttype,
+                    "test_entrypoint": test.entrypoint,
+                    "test_parameters": test.parameters,
+                    "test_link": test.link,
+                    "test_repository": test.repository,
+                    "scan_result": test.scan_result,
+                    "onboard_status": test.onboard_status} for test in
+                Tests.objects()] if Tests.objects() else False
+    except Exception as e:
+        logger.error("Unable to get test details")
+        logger.debug(traceback)
+        logger.error(e)
+
+
+def createTest(**kwargs):
+    try:
+        test = Tests(testcaseid=kwargs['testcaseid'],
+                     name=kwargs['name'],
+                     description=kwargs['description'],
+                     category=kwargs['category'],
+                     type=kwargs['type'],
+                     scripttype=kwargs['scripttype'],
+                     entrypoint=kwargs['entrypoint'],
+                     parameters=kwargs['parameters'],
+                     repository=kwargs['repository'],
+                     link=kwargs['link'],
+                     scan_result=kwargs['scan_result'],
+                     onboard_status=kwargs['onboard_status'] )
+        test.save()
+        return True
+    except Exception as e:
+        logger.error("Unable to save the test details")
+        logger.debug(traceback)
+        logger.error(e)
+
+
+def updateTest(**kwargs):
+    try:
+        test = Tests.objects(testcaseid=kwargs['testcaseid']).first()
+        if 'link' in kwargs:
+            test.update(link=kwargs['link'])
+        if 'description' in kwargs:
+            test.update(description=kwargs['description'])
+        if 'category' in kwargs:
+            test.update(category=kwargs['category'])
+        #if 'parameters' in kwargs:
+        #    test.update(parameters=kwargs['parameters'])
+        if 'scan_result' in kwargs:
+            test.update(scan_result=kwargs['scan_result'])
+        if 'onboard_status' in kwargs:
+            test.update(onboard_status=kwargs['onboard_status'])
+        return True
+    except Exception as e:
+        logger.error("Unable to update test details")
+        logger.debug(traceback)
+        logger.error(e)
+
+
+def deleteTest(**kwargs):
+    try:
+        test = Tests.objects(__raw__=kwargs).first()
+        if not test:
+            return True
+        test.delete()
+        return True
+    except Exception as e:
+        logger.error("Unable to delete the testcase details")
+        logger.debug(traceback)
+        logger.error(e)
+
