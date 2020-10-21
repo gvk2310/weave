@@ -22,24 +22,24 @@ def validateJfrog(args):
         logger.error(e)
 
 
-def uploadToJfrog(arg, repo):
+def uploadToJfrog(**kwargs):
     try:
-        targetFilePath = f"{repo['repo_url']}/{arg['asset_vendor']}/" \
-                         f"{arg['asset_group']}/" \
-                         f"{arg['asset_file_name']}-V{arg['asset_version']}"
-        with open(arg['asset_file_loc'], 'rb') as rf:
-           resp = requests.put(targetFilePath,
-                            auth=(repo['repo_username'], repo['repo_password']),
-                            data=rf.read())
+        targetFilePath = f"{kwargs['repo']['repo_url']}/" \
+                         f"{kwargs['relTargetPath']}"
+        with open(kwargs['fileLoc'], 'rb') as rf:
+            resp = requests.put(targetFilePath,
+                                auth=(kwargs['repo']['repo_username'],
+                                      kwargs['repo']['repo_password']),
+                                data=rf.read())
         if resp.status_code != 201:
             raise Exception(
                 logger.error(
-                    f"Unable to upload {arg['asset_file'].filename} to Jfrog "
+                    f"Unable to upload {kwargs['filename']} to Jfrog "
                     f"artifactory"),
                 logger.debug(traceback.format_exc()),
                 logger.error(resp.json()))
         logger.info(
-            f"File {arg['asset_file'].filename} uploaded to Jfrog artifactory")
+            f"File {kwargs['filename']} uploaded to Jfrog artifactory")
         return resp.json()['downloadUri'], resp.json()['size']
     except Exception as e:
         logger.error('Unable to push file to repo')
@@ -91,3 +91,55 @@ def deleteFromJfrog(link, repo):
         logger.error('Unable to delete file from repo')
         logger.debug(traceback.format_exc())
         logger.error(e)
+          
+          
+def checkJfrogUrl(arg, repo):
+    try:
+        checkUrl = arg['test_path'].split('artifactory')
+        checkUrl.insert(1, 'artifactory/api/storage')
+        checkUrl = ''.join(checkUrl)
+
+        resp = requests.get(checkUrl,
+                            auth=(repo['repo_username'], repo['repo_password']))
+        if resp.status_code != 200:
+            raise Exception(
+                logger.error(
+                    f"Test file path {arg['test_path']} could not be "
+                    f"accessed"),
+                logger.debug(traceback.format_exc()),
+                logger.error(resp.json()))
+        logger.info(
+            f"Test file path {arg['test_path']} is accessible")
+        return True
+    except Exception as e:
+        logger.error(
+            f"Test file path {arg['test_path']} could not be accessed")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
+          
+          
+def uploadTestToJfrog(**kwargs):
+    try:
+        targetFilePath = f"{kwargs['repo']['repo_url']}/" \
+                         f"{kwargs['relTargetPath']}"
+        with open(kwargs['fileLoc'], 'rb') as rf:
+            resp = requests.put(targetFilePath,
+                                auth=(kwargs['repo']['repo_username'],
+                                      kwargs['repo']['repo_password']),
+                                data=rf.read())
+        if resp.status_code != 201:
+            raise Exception(
+                logger.error(
+                    f"Unable to upload {kwargs['filename']} to Jfrog "
+                    f"artifactory"),
+                logger.debug(traceback.format_exc()),
+                logger.error(resp.json()))
+        logger.info(
+            f"File {kwargs['filename']} uploaded to Jfrog artifactory")
+#        print(resp.json()['downloadUri'])
+        return resp.json()['downloadUri']
+    except Exception as e:
+        logger.error('Unable to push file to repo')
+        logger.debug(traceback.format_exc())
+        logger.error(e)
+
