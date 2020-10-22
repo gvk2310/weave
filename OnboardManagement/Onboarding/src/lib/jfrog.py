@@ -118,28 +118,5 @@ def checkJfrogUrl(arg, repo):
         logger.error(e)
           
           
-def uploadTestToJfrog(**kwargs):
-    try:
-        targetFilePath = f"{kwargs['repo']['repo_url']}/" \
-                         f"{kwargs['relTargetPath']}"
-        with open(kwargs['fileLoc'], 'rb') as rf:
-            resp = requests.put(targetFilePath,
-                                auth=(kwargs['repo']['repo_username'],
-                                      kwargs['repo']['repo_password']),
-                                data=rf.read())
-        if resp.status_code != 201:
-            raise Exception(
-                logger.error(
-                    f"Unable to upload {kwargs['filename']} to Jfrog "
-                    f"artifactory"),
-                logger.debug(traceback.format_exc()),
-                logger.error(resp.json()))
-        logger.info(
-            f"File {kwargs['filename']} uploaded to Jfrog artifactory")
-#        print(resp.json()['downloadUri'])
-        return resp.json()['downloadUri']
-    except Exception as e:
-        logger.error('Unable to push file to repo')
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+
 
