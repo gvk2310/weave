@@ -151,8 +151,7 @@ def scanTestFile(args):
 
 
 def localTestOnboarding(args, repo_details):
-#    secured = scanTestFile(args)
-    secured = True
+    secured = scanTestFile(args)
     if not secured:
         logger.error('Insecured File. Aborting Test Onboarding.')
         publish_onboard_events(testcaseid=args['test_id'],
