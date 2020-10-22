@@ -10,13 +10,13 @@ from threading import Thread, ThreadError
 from werkzeug.datastructures import FileStorage
 from flask_restful import Resource, reqparse, inputs
 from ..lib.sse import SSEGenerator, publish_onboard_events
-from ..lib.jfrog import checkJfrogRemote, deleteFromJfrog, validateJfrog
+from ..lib.jfrog import checkJfrogRemote, deleteFromJfrog, validateJfrog, checkJfrogUrl
 from ..lib.cloud_validate import aws_validate, openstack_validate, osm_validate
 from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
                          addDataToVault)
-from ..lib.commonfunctions import (verifyToken, localAssetOnboarding,
+from ..lib.commonfunctions import (verifyToken, localAssetOnboarding, localTestOnboarding,
                                    non_empty_string, retrieveUrl,
-                                   validStrChecker, format_bytes,
+                                   validStrChecker, format_bytes, zipFileType,
                                    assetDeletefromRepo)
 
 
