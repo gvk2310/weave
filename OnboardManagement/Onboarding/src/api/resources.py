@@ -9,7 +9,7 @@ from ..lib.nexus import deleteFromNexus
 from threading import Thread, ThreadError
 from werkzeug.datastructures import FileStorage
 from flask_restful import Resource, reqparse, inputs
-from ..lib.sse import SSEGenerator, publish_asset_events
+from ..lib.sse import SSEGenerator, publish_onboard_events
 from ..lib.jfrog import checkJfrogRemote, deleteFromJfrog, validateJfrog
 from ..lib.cloud_validate import aws_validate, openstack_validate, osm_validate
 from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
@@ -491,3 +491,181 @@ class ServerEventMessage(Resource):
         stream = Response(SSEGenerator(), mimetype="text/event-stream",
                           headers={'Cache-Control': 'no-cache'})
         return stream
+                  
+                  
+                  
+
+class Tests(Resource):
+              
+    ##@verifyToken
+    def get(self):
+        data = db.getTest()
+        if data:
+             return data, 200
+        elif data is False:
+             return {'msg': 'No testcases onboarded yet'}, 404
+        return {'msg': 'Internal Server Error'}, 500
+
+    ##@verifyToken
+    def post(self):
+        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+        parser.add_argument('test_name', nullable=False, type=non_empty_string,
+                            required=True)
+        parser.add_argument('test_description', nullable=False,
+                            type=str, required=True)
+        parser.add_argument('test_category', nullable=False,
+                            type=non_empty_string, required=True)
+        parser.add_argument('test_repository', nullable=False,
+                            type=non_empty_string, required=True)
+        parser.add_argument('test_scripttype', nullable=False,
+                            type=non_empty_string, required=True,
+                            choices=('python', 'ansible'))
+        # parser.add_argument('test_parameters', type=dict, action='append', required=True)
+        parser.add_argument('test_parameters', nullable=False,
+                            type=non_empty_string,required=True)
+        parser.add_argument('test_path', type=non_empty_string)
+        parser.add_argument('test_file', type=zipFileType,
+                            location='files')
+        args = parser.parse_args()
+        args['test_parameters'] = json.loads(args['test_parameters'])
+        if args['test_scripttype'] == 'ansible':
+            parser.add_argument('test_commands', type=non_empty_string,
+                                required=True)
+            args = parser.parse_args()
+        if not validStrChecker(args['test_name']):
+            return {
+                       'message': 'Test name cannot have special '
+                                  'characters'}, 422
+        if not args['test_description']:
+            return {
+                       'message': 'Test description cannot have special '
+                                  'characters'}, 422
+        if not validStrChecker(args['test_category']):
+            return {
+                       'message': 'Test category cannot have special '
+                                  'characters'}, 422
+        check = db.getTest(name=args['test_name'])
+        if check:
+            return {'msg': 'Testcase with same name already exists'}, 403
+
+        repo_details = retrieveUrl(args['test_repository'].lower())
+        if not repo_details:
+            return {"msg": "Unable to retrieve repo details"}, 500
+        if args['test_path']:
+            if args['test_path'].split('.')[-1] not in ['zip', 'gz']:
+                return {"msg": "Provided path is not a  zip or gz"},400
+            if checkJfrogUrl(args, repo_details) != True:
+                return {"msg": "Invalid test path details"}, 500
+            args['test_id'] = datetime.datetime.now().strftime("TC%Y%m%d%H%M%S")
+            check = db.createTest(
+                testcaseid=args['test_id'],
+                name=args['test_name'],
+                description=args['test_description'],
+                category=args['test_category'],
+                scripttype=args['test_scripttype'],
+                commands=args[
+                    'test_commands'] if 'test_commands' in args else 'None',
+                parameters=args['test_parameters'],
+                repository=args['test_repository'],
+                link=args['test_path'],
+                scan_result='Unknown',
+                onboard_status='Done')
+            if check:
+                return {'test_id': args['test_id']}, 200
+            else:
+                return {'msg': 'Internal Server Error'}, 500
+        elif args['test_file']:
+            args['test_id'] = datetime.datetime.now().strftime("TC%Y%m%d%H%M%S")
+            args['test_file_name'] = args['test_file'].filename
+            args['test_file_loc'] = os.path.join(app.config['upload_folder'] \
+                                                 , args['test_id'])
+            args['test_file'].save(args['test_file_loc'])
+            check = db.createTest(
+                testcaseid=args['test_id'],
+                name=args['test_name'],
+                description=args['test_description'],
+                category=args['test_category'],
+                scripttype=args['test_scripttype'],
+                commands=args[
+                    'test_commands'] if 'test_commands' in args else 'None',
+                parameters=args['test_parameters'],
+                repository=args['test_repository'],
+                link=None,
+                scan_result='Scanning',
+                onboard_status='In progress')
+            if not check:
+                return {'msg': 'Failed to initiate test onboarding'}, 500
+            try:
+                Thread(target=localTestOnboarding,
+                       args=(args, repo_details)).start()
+            except ThreadError as e:
+                logger.error(e)
+                # publish_onboard_events(assetid=args['test_id'],
+                #                        scan_result='Unknown',
+                #                        onboard_status='Failed')
+                db.updateTest(testcaseid=args['test_id'],
+                                 scan_result='Unknown',
+                                 onboard_status='Failed')
+                return {
+                           'msg': 'Failed to initiate test onboarding'}, 500
+            return {'test_id': args['test_id']}, 200
+              
+              
+    
+    ##@verifyToken
+    def put(self):
+        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+        parser.add_argument('test_id', type=str, required=True)
+        parser.add_argument('test_description', type=str, required=True)
+        parser.add_argument('test_category', type=str, required=True)
+        args = parser.parse_args()
+
+        if not args['test_description'] and not args['test_category']:
+            return {"msg": "Nothing to modify"}, 400
+        done = db.updateTest(testcaseid=args['test_id'],
+                              description=args['test_description'],
+                              category=args['test_category'])
+        if done:
+            return {"msg": "test_category and test_description got updated"} \
+                , 200
+
+        if done is False:
+            return {"msg": "Test ID does not exist"}, 400
+        return {"msg": "test_category and test_description update failed"}, 500
+
+
+    ##@verifyToken
+    def delete(self):
+        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+        parser.add_argument('test_id', nullable=False, type=non_empty_string,
+                            required=True)
+        parser.add_argument('delete_from_repo', type=inputs.boolean, default=False)
+        args = parser.parse_args()
+        resp = db.getTest(testcaseid=args['test_id'])
+        if not resp:
+            return {"msg": "Unable to fetch test details"}, 500
+        if not args['delete_from_repo'] \
+                and resp['onboard_status'] not in ['Done', 'Aborted']:
+            return {"msg": "Test onboard not completed or successful"}, 400
+        repo_details = retrieveUrl(resp["test_repository"].lower())
+        if not repo_details:
+            return {
+                       "msg": "Unable to retrieve repo details"}, 500
+        if resp['test_link']:
+            resp = deleteFromJfrog(resp['test_link'], repo_details)
+            if not resp:
+                return {"msg": "Unable to delete test from repository"}, 500
+        check = db.deleteTest(testcaseid=args['test_id'])
+        if check:
+            if args['delete_from_repo']:
+                return {
+                           'msg': 'Testcase force deleted. Manual deletion '
+                                  'might be required in the repository'}, 200
+            return {'msg': 'Testcase Deleted'}, 200
+        return {'msg': 'Internal Server Error'}, 500
+              
+              
+              
+              
+
+
