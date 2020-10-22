@@ -600,9 +600,9 @@ class Tests(Resource):
                        args=(args, repo_details)).start()
             except ThreadError as e:
                 logger.error(e)
-                # publish_onboard_events(assetid=args['test_id'],
-                #                        scan_result='Unknown',
-                #                        onboard_status='Failed')
+                publish_onboard_events(testcaseid=args['test_id'],
+                                        scan_result='Unknown',
+                                        onboard_status='Failed')
                 db.updateTest(testcaseid=args['test_id'],
                                  scan_result='Unknown',
                                  onboard_status='Failed')
