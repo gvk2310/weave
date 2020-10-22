@@ -132,7 +132,7 @@ class Asset(Resource):
                 db.update(assetid=args['assetid'],
                           scan_result='Unknown',
                           onboard_status='Failed')
-                publish_asset_events(assetid=args['assetid'],
+                publish_onboard_events(assetid=args['assetid'],
                                      scan_result='Unknown',
                                      onboard_status='Failed')
                 return {
@@ -149,6 +149,9 @@ class Asset(Resource):
 
         if not args['asset_version'] and not args['asset_group'] :
             return {"msg": "Nothing to modify"}, 400
+        publish_asset_events(assetid=args['assetid'],
+                             version=args['asset_version'],
+                             group=args['asset_group'])
         done = db.update(assetid=args['asset_id'],
                          version=args['asset_version'],
                          group=args['asset_group'])
@@ -622,6 +625,9 @@ class Tests(Resource):
 
         if not args['test_description'] and not args['test_category']:
             return {"msg": "Nothing to modify"}, 400
+        publish_onboard_events(testcaseid=args['test_id'],
+                              description=args['test_description'],
+                              category=args['test_category'])
         done = db.updateTest(testcaseid=args['test_id'],
                               description=args['test_description'],
                               category=args['test_category'])
