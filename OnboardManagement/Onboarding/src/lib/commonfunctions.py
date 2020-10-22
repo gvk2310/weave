@@ -116,7 +116,12 @@ def localAssetOnboarding(args, repo_details):
     db.update(assetid=args['assetid'],
               scan_result='Safe')
     if repo_details['repo_vendor'] == 'jfrog':
-        resp = uploadToJfrog(args, repo_details)
+        relTargetPath = f"{args['asset_vendor']}/{args['asset_group']}/" \
+                         f"{args['asset_file_name']}-V{args['asset_version']}"
+        resp = uploadToJfrog(relTargetPath=relTargetPath,
+                             fileLoc=args['asset_file_loc'],
+                             filename=args['asset_file'].filename,
+                             repo=repo_details)
         if not resp:
             logger.error('Failed to push to repository')
             publish_onboard_events(assetid=args['assetid'],
