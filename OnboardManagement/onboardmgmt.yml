@@ -19,7 +19,7 @@ spec:
       - name: devnetops
       containers:
       - name: onboard-testversion
-        image: devnetops.azurecr.io/devnetops-onboardmgmt-test:s2
+        image: devnetops.azurecr.io/devnetops-onboardmgmt-testversion:s2
         imagePullPolicy: Always
         env:
         - name: usermgmtUrl
