@@ -1,5 +1,4 @@
 import os
-#import json
 import base64
 import datetime
 from ..db import db
@@ -531,7 +530,6 @@ class Tests(Resource):
         parser.add_argument('test_file', type=zipFileType,
                             location='files')
         args = parser.parse_args()
-        #args['test_parameters'] = json.loads(args['test_parameters'])
         if args['test_scripttype'] == 'ansible':
             parser.add_argument('test_commands', type=non_empty_string,
                                 required=True)
