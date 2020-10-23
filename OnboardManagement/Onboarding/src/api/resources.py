@@ -149,7 +149,7 @@ class Asset(Resource):
 
         if not args['asset_version'] and not args['asset_group'] :
             return {"msg": "Nothing to modify"}, 400
-        publish_onboard_events(assetid=args['assetid'],
+        publish_onboard_events(assetid=args['asset_id'],
                              version=args['asset_version'],
                              group=args['asset_group'])
         done = db.update(assetid=args['asset_id'],
