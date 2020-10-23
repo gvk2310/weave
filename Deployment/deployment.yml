@@ -1,25 +1,25 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: deployment-testversion
 metadata:
-  name: deployment
+  name: deployment-testversion
   labels:
-    app: deployment
+    app: deployment-testversion
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deployment
+      app: deployment-testversion
   template:
     metadata:
       labels:
-        app: deployment
+        app: deployment-testversion
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: deployment
-        image: devnetops.azurecr.io/devnetops-deployment:s2
+      - name: deployment-testversion
+        image: devnetops.azurecr.io/devnetops-deployment-testversion:s2
         imagePullPolicy: Always
         env:
         - name: jenkins_url
@@ -31,9 +31,9 @@ spec:
         - name: jenkins_token
           value: 11d2cc12486764cb4e2862d2388b70a826
         - name: jenkins_cft_deploy_job
-          value: Deployment/pipelines/cft_deploy
+          value: deployment-testversion/pipelines/cft_deploy
         - name: jenkins_cft_delete_job
-          value: Deployment/pipelines/cft_delete
+          value: deployment-testversion/pipelines/cft_delete
         - name: onboarding_url
           value: http://onboardmgmt.devnetops.svc.cluster.local:8080
         - name: usermgmtUrl
@@ -41,7 +41,7 @@ spec:
         - name: mongohost
           value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops37?authSource=admin
         - name: status_url
-          value: http://deployment.devnetops.svc.cluster.local:8080
+          value: http://deployment-testversion.devnetops.svc.cluster.local:8080
         - name: secretkey
           value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
         - name: vault_url
@@ -56,12 +56,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployment
+  name: deployment-testversion
   labels:
-    app: deployment
+    app: deployment-testversion
 spec:
   selector:
-    app: deployment
+    app: deployment-testversion
   ports:
   - port: 8080
     targetPort: 8080
@@ -69,7 +69,7 @@ spec:
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: deployment
+  name: deployment-testversion
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/enable-cors: "true"
@@ -82,7 +82,7 @@ spec:
   - host: dno-dev.acndevopsengineering.com
     http:
       paths:
-      - path: /deploy(/|$)(.*)
+      - path: /deploy-testversion(/|$)(.*)
         backend:
-          serviceName: deployment
+          serviceName: deployment-testversion
           servicePort: 8080
