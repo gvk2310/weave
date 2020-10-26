@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment
+  name: deployment-testversion
   labels:
-    app: deployment
+    app: deployment-testversion
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deployment
+      app: deployment-testversion
   template:
     metadata:
       labels:
-        app: deployment
+        app: deployment-testversion
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: deployment
-        image: devnetops.azurecr.io/devnetops-deployment:latest
+      - name: deployment-testversion
+        image: devnetops.azurecr.io/devnetops-deployment-testversion:S1
         imagePullPolicy: Always
         env:
         - name: jenkins_url
@@ -41,7 +41,7 @@ spec:
         - name: mongohost
           value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops37?authSource=admin
         - name: status_url
-          value: http://deployment.devnetops.svc.cluster.local:8080
+          value: http://deployment-testversion.devnetops.svc.cluster.local:8080
         - name: secretkey
           value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
         - name: vault_url
@@ -56,12 +56,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployment
+  name: deployment-testversion
   labels:
-    app: deployment
+    app: deployment-testversion
 spec:
   selector:
-    app: deployment
+    app: deployment-testversion
   ports:
   - port: 8080
     targetPort: 8080
@@ -69,7 +69,7 @@ spec:
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: deployment
+  name: deployment-testversion
   annotations:
     ingress.kubernetes.io/configuration-snippet: |
       if ($http_origin ~* (^https?://([^/]+\.)*(localhost|dno.acndevopsengineering.com))) {
@@ -98,7 +98,7 @@ spec:
   - host: dno-dev.acndevopsengineering.com
     http:
       paths:
-      - path: /deploy(/|$)(.*)
+      - path: /deploy-testversion(/|$)(.*)
         backend:
-          serviceName: deployment
+          serviceName: deployment-testversion
           servicePort: 8080
