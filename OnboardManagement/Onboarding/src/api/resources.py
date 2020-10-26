@@ -480,9 +480,7 @@ class AssetDownloadDetails(Resource):
             output.append({"asset_link": asst_det['asset_link'],
                            "asset_type": asst_det['asset_type'],
                            "repo_username": repo_details['repo_username'],
-                           "repo_password": str(
-                               base64.b64decode(repo_details['repo_password']),
-                               "utf-8")})
+                           "repo_password": repo_details['repo_password']})
         return output
 
 
