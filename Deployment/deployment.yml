@@ -34,6 +34,8 @@ spec:
           value: deployment-testversion/pipelines/cft_deploy
         - name: jenkins_cft_delete_job
           value: deployment-testversion/pipelines/cft_delete
+        - name: jenkins_testversion_job
+          value: deployment-testversion/pipelines/testversion
         - name: onboarding_url
           value: http://onboardmgmt.devnetops.svc.cluster.local:8080
         - name: usermgmtUrl
