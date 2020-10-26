@@ -35,7 +35,7 @@ spec:
         - name: jenkins_cft_delete_job
           value: Deployment/pipelines/cft_delete
         - name: onboarding_url
-          value: http://onboardmgmt.devnetops.svc.cluster.local:8080
+          value: http://onboard-testversion.devnetops.svc.cluster.local:8080
         - name: usermgmtUrl
           value: http://usermgmt.devnetops.svc.cluster.local:8080
         - name: mongohost
