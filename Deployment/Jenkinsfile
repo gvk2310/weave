@@ -1,4 +1,4 @@
-def label = "Devnetops-${UUID.randomUUID().toString()}"
+def label = "mypod-${UUID.randomUUID().toString()}"
 def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
            containers: [containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
@@ -13,9 +13,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		def Commit_Id
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
-        def Docker_Image = 'devnetops-deployment-testversion'
-        def Image_Tag = 's2'
-		def K8s_Deployment = 'deployment-testversion'
+        def Docker_Image = 'devnetops-deployment'
+        def Image_Tag = 'latest'
+		def K8s_Deployment = 'deployment'
 		try{
        stage('Git Checkout'){
             git branch: Git_Branch,

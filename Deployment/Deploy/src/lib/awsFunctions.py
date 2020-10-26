@@ -1,4 +1,3 @@
-import io
 import csv
 import json
 import base64
@@ -15,18 +14,16 @@ jenkins_cft_delete_job = os.environ['jenkins_cft_delete_job']
 status_url = os.environ['status_url']
 
 
-def verifyParameters(file, templateInfo):
+def verifyParameters(config, templateInfo):
     try:
         template = requests.get(templateInfo['asset_link'], auth=(
             templateInfo['repo_username'],
             templateInfo['repo_password'])).json()
         parameters = template['Parameters'].keys()
-        with open(file, 'r') as rf:
-            r = csv.DictReader(rf)
-            if not set(parameters) <= set(r.fieldnames) or sum(
-                    1 for row in r for parm in parameters if
-                    not row[parm].strip()) > 0:
-                return False
+        if not set(parameters) <= set(config[0].keys()) or sum(
+                1 for field in config for parm in parameters if
+                not field[parm].strip()) > 0:
+            return False
         return True
     except Exception as e:
         logger.error("Parameters verification failed")
@@ -54,9 +51,8 @@ def getInfraDetails(infra):
 
 def createConfigJson(file, infra, templateInfo):
     try:
-        csvfile = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(csvfile)
-        if not verifyParameters(csvfile, templateInfo):
+        config_json = xlsToJson(file)
+        if not verifyParameters(config_json, templateInfo):
             logger.error("Config parameters verification failed")
             return 1001
         config = defaultdict(lambda: defaultdict(str))
@@ -65,11 +61,8 @@ def createConfigJson(file, infra, templateInfo):
             return 1002
         config['defaults']['aws_access_key_id'] = resp[0]
         config['defaults']['aws_secret_access_key'] = resp[1]
-        with open(csvfile, 'r') as rf:
-            r = csv.DictReader(rf)
-            for row in r:
-                config['branch'][row.pop('Name')] = row
-        os.remove(csvfile)
+        for row in config_json:
+            config['branch'][row.pop('Name')] = row
         config = {k: dict(v) for k, v in config.items()}
         return config
     except Exception as e:
@@ -132,13 +125,13 @@ def deleteDeployment(depl_details):
         return triggerJenkins(parameters, job_name)
 
 
-
-def generateCSV(type, asset_id):
+def generateSpreadsheet(type, asset_id):
     try:
         if type == 'generic':
-            templateInfo = assetDownloadDetails(asset_id)[0]
-            if not templateInfo:
+            resp = assetDownloadDetails(asset_id)
+            if not resp:
                 return 1001
+            templateInfo = resp[0]
             resp = requests.get(templateInfo['asset_link'], auth=(
                 templateInfo['repo_username'],
                 templateInfo['repo_password']))
@@ -148,24 +141,16 @@ def generateCSV(type, asset_id):
             conf_params = {item: template['Parameters'][item]['Default']
             if 'Default' in template['Parameters'][item]
             else '' for item in template['Parameters']}
-            config = {"Name": "", "Region": ""}
-            config.update(conf_params)
-            output = io.StringIO()
-            writer = csv.writer(output)
-            writer.writerow(config.keys())
-            writer.writerow(config.values())
+            conf_params = {**{"Name": "", "Region": ""}, **conf_params}
         if type == 'versa':
             headers = ['Name', 'Ami', 'WsAmi', 'Region', 'KeyPairName',
                        'GatewayIp', 'VPCCIDR', 'DirectorManagementIP',
                        'DirectorSouthboundIP', 'ManagementIP', 'InternetIP',
                        'LanIP', 'WSLanIp', 'WSMgmtIp', 'ConToWS', 'SerialNum',
                        'SiteId']
-            output = io.StringIO()
-            writer = csv.writer(output)
-            writer.writerow(headers)
-        output.seek(0)
-        return output
+            conf_params = {item: '' for item in headers}
+        return dictToXls(conf_params)
     except Exception as e:
-        logger.error("CSV generation failed")
+        logger.error("Excel generation failed")
         logger.debug(traceback.format_exc())
         logger.error(e)

@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-testversion
+  name: deployment
   labels:
-    app: deployment-testversion
+    app: deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deployment-testversion
+      app: deployment
   template:
     metadata:
       labels:
-        app: deployment-testversion
+        app: deployment
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: deployment-testversion
-        image: devnetops.azurecr.io/devnetops-deployment-testversion:s2
+      - name: deployment
+        image: devnetops.azurecr.io/devnetops-deployment:latest
         imagePullPolicy: Always
         env:
         - name: jenkins_url
@@ -41,7 +41,7 @@ spec:
         - name: mongohost
           value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops37?authSource=admin
         - name: status_url
-          value: http://deployment-testversion.devnetops.svc.cluster.local:8080
+          value: http://deployment.devnetops.svc.cluster.local:8080
         - name: secretkey
           value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
         - name: vault_url
@@ -56,12 +56,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployment-testversion
+  name: deployment
   labels:
-    app: deployment-testversion
+    app: deployment
 spec:
   selector:
-    app: deployment-testversion
+    app: deployment
   ports:
   - port: 8080
     targetPort: 8080
@@ -69,20 +69,36 @@ spec:
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: deployment-testversion
+  name: deployment
   annotations:
+    ingress.kubernetes.io/configuration-snippet: |
+      if ($http_origin ~* (^https?://([^/]+\.)*(localhost|dno.acndevopsengineering.com))) {
+        set $allow_origin $http_origin;
+      }
+      if ($request_method = 'OPTIONS') {
+        more_set_headers 'Access-Control-Allow-Origin: $allow_origin';
+        more_set_headers 'Access-Control-Allow-Credentials: true';
+        more_set_headers 'Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS';
+        more_set_headers 'Access-Control-Allow-Headers: DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,X-Client-Identifier';
+        more_set_headers 'Access-Control-Max-Age: 1728000';
+        more_set_headers 'Content-Type: text/plain charset=UTF-8';
+        more_set_headers 'Content-Length: 0';
+        return 204;
+      }
+      more_set_headers 'Access-Control-Allow-Origin: $allow_origin';
+      more_set_headers 'Access-Control-Allow-Credentials: true';
+      more_set_headers 'Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS';
+      more_set_headers 'Access-Control-Allow-Headers: DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,X-Client-Identifier';
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "1800"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, DELETE"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/eventsource: "true"
 spec:
   rules:
   - host: dno-dev.acndevopsengineering.com
     http:
       paths:
-      - path: /deploy-testversion(/|$)(.*)
+      - path: /deploy(/|$)(.*)
         backend:
-          serviceName: deployment-testversion
+          serviceName: deployment
           servicePort: 8080

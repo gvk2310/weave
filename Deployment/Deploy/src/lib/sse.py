@@ -1,96 +1,64 @@
 import os
+import time
 import json
 import redis
-import queue
 import datetime
 import traceback
+from ..db import db
 from ..log import logger
-from threading import Thread, ThreadError
+
 
 redis_url = os.environ['redis_url']
 redis_host = redis_url.split(':')[0]
 redis_port = redis_url.split(':')[1]
 
 
-class SSE:
-
-
+class SSEGenerator:
     def __init__(self):
-        self.listeners = []
-        self.listener_expiry = {}
+        self.closed = False
+        self.expiry = datetime.datetime.now() + datetime.timedelta(minutes=30)
 
-    def listen(self):
-        q = queue.Queue(maxsize=3)
-        self.listeners.append(q)
-        self.listener_expiry[q] = datetime.datetime.now() + datetime.timedelta(
-            minutes=30)
-        return q
+    def close(self):
+        self.closed = True
 
-    def stream(self, msg):
-        for i in reversed(range(len(self.listeners))):
-            try:
-                if datetime.datetime.now() > self.listener_expiry[
-                    self.listeners[i]]:
-                    self.listeners[i].put_nowait('End-Of-Stream')
-                    del self.listener_expiry[self.listeners[i]]
-                    del self.listeners[i]
-                else:
-                    self.listeners[i].put_nowait(msg)
-            except queue.Full:
-                del self.listeners[i]
-
-
-sse = SSE()
-
-
-def format_sse(data, event):
-    msg = f'data: {data}\n\n'
-    if event:
-        msg = f'event: {event}\n{msg}'
-    return msg
-
-
-def load_channel():
-    try:
+    def __iter__(self):
         event = 'deploy'
         client = redis.Redis(host=redis_host, port=redis_port)
         p = client.pubsub()
         p.subscribe(event)
-        for resp in p.listen():
+        while not self.closed and datetime.datetime.now() < self.expiry:
+            resp = p.get_message()
             if resp and not resp['data'] == 1:
+                event = resp['channel'].decode('utf-8')
                 msg = resp['data'].decode('utf-8')
-                payload = format_sse(data=msg, event=event)
-                sse.stream(payload)
-    except Exception as e:
-        logger.error("Unable to get message from redis")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+                payload = self.format_sse(data=msg, event=event)
+                yield payload
+            else:
+                time.sleep(1)
+
+    @staticmethod
+    def format_sse(data, event):
+        msg = f'data: {data} \n\n'
+        if event:
+            msg = f'event: {event}\n{msg}'
+        return msg
 
 
 def publish_event_message(args, event='deploy'):
     payload = {'deployment_id': args['deployment_id'],
                'status': args['status'],
                'message': args['message']}
+    if args['status'] not in ['DELETE_IN_PROGRESS', 'DELETE_COMPLETE']:
+        data = db.get(id=args['deployment_id'])
+        if not data:
+            logger(f"Failed to publish sse for {args['deployment_id']}")
+        payload['stage_info'] = data['stage_info']
     try:
         client = redis.Redis(host=redis_host, port=redis_port)
         client.publish(event, json.dumps(payload))
         return True
     except Exception as e:
-        logger.error("Unable to publish message in redis")
+        logger.error(
+            f"Unable to publish message in redis for {args['deployment_id']}")
         logger.debug(traceback.format_exc())
         logger.error(e)
-
-
-def stream_response():
-    messages = sse.listen()
-    while True:
-        msg = messages.get()
-        if msg == 'End-Of-Stream':
-            break
-        yield msg
-
-
-try:
-    Thread(target=load_channel).start()
-except ThreadError as e:
-    logger.error(e)

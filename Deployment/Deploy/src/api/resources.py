@@ -1,15 +1,15 @@
 from ..db import db
+from flask import Response
 from ..lib.awsFunctions import *
 from ..lib.commonFunctions import *
-from ..lib.sse import publish_event_message, stream_response
-from flask import Response
 from flask_restful import Resource, reqparse, inputs
+from ..lib.sse import publish_event_message, SSEGenerator
 
 
 class SingleDeployInfo(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self, id):
         data = db.get(id=id)
         if data:
@@ -22,7 +22,7 @@ class SingleDeployInfo(Resource):
 class Deploy(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         data = db.get()
         if data:
@@ -31,7 +31,7 @@ class Deploy(Resource):
             return {'msg': 'No deployments record found'}, 404
         return {'msg': 'Internal Server Error'}, 500
 
-    @verifyToken
+    #@verifyToken
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('name', type=nonEmptyString, required=True)
@@ -40,7 +40,7 @@ class Deploy(Resource):
         parser.add_argument('infra', type=nonEmptyString, required=True)
         parser.add_argument('orchestrator', type=nonEmptyString, required=True)
         parser.add_argument('assets', type=str, required=True)
-        parser.add_argument('config', type=csvFileType, location='files',
+        parser.add_argument('config', type=excelFileType, location='files',
                             required=True)
         args = parser.parse_args()
         invalid_choices = {}
@@ -71,9 +71,10 @@ class Deploy(Resource):
                 return {
                            "msg": "Template not provided in assets or "
                                   "multiple Template id provided"}, 400
-            template = assetDownloadDetails(assets['template'])[0]
-            if not template:
+            data = assetDownloadDetails(assets['template'])
+            if not data:
                 return {"msg": "Unable to get template download details"}, 400
+            template = data[0]
             config = createConfigJson(args['config'], args['infra'], template)
             if config == 1001:
                 return {"msg": "Config parameters verification failed"}, 400
@@ -81,7 +82,8 @@ class Deploy(Resource):
                 return {"msg": "Error retrieving Infra details"}, 400
             if config is None:
                 return {"msg": "Unable to save config details"}, 500
-            check = db.check_deployment(orchestrator=args['orchestrator'],
+            check = db.check_deployment(name=args['name'],
+                                        orchestrator=args['orchestrator'],
                                         infra=args['infra'],
                                         config={k: v for k, v in config.items()
                                                 if
@@ -122,31 +124,33 @@ class Deploy(Resource):
             return {"msg": "Deployment triggered but failed to save "
                            "deployment details"}, 500
 
-    @verifyJenkins
+    #@verifyJenkins
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('deployment_id', type=nonEmptyString, required=True)
         parser.add_argument('status', type=nonEmptyString, required=True)
         parser.add_argument('message', type=str, required=True)
+        parser.add_argument('stage_info', type=str, default=None)
         parser.add_argument('instances', type=dict, action="append")
         args = parser.parse_args()
         if args['instances'] == []:
             args['instances'] = None
-        publish_event_message(args)
         if args['status'] == "DELETE_COMPLETE":
             done = db.delete(id=args['deployment_id'])
         else:
             done = db.update(id=args['deployment_id'],
-                              status=args['status'],
-                              message=args['message'],
-                              instances=args['instances'])
+                             status=args['status'],
+                             message=args['message'],
+                             stage_info=args['stage_info'],
+                             instances=args['instances'])
         if done:
+            publish_event_message(args)
             return {"msg": "Deploy status updated"}, 200
         if done is False:
             return {"msg": "Deployment Id does not exist"}, 400
         return {"msg": "Deployment update failed"}, 500
 
-    @verifyToken
+    #@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('id', type=nonEmptyString, required=True)
@@ -177,32 +181,37 @@ class Deploy(Resource):
             done = db.update(id=args['id'],
                              status='DELETE_IN_PROGRESS',
                              message='Deployment deletion initiated',
+                             stage_info=None,
                              instances=None)
             if done:
                 return {"msg": "Deployment deletion initiated."}, 200
         return {"msg": "Deployment deletion failed"}, 500
 
 
-class ConfigCsvGenerator(Resource):
+class ConfigSpreadsheetGenerator(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self, orchestrator, type, asset_id):
-        print(orchestrator, type, asset_id)
         if orchestrator != 'cloudformation' or type not in ['versa', 'generic']:
             return {"msg": "Not Supported"}, 400
-        output = generateCSV(type, asset_id)
+        output = generateSpreadsheet(type, asset_id)
         if output == 1001:
             return {"msg": "Error retrieving template details"}, 500
         elif output == 1002:
-            return {"msg": "Error retrieving template"}, 500
+            return {"msg": "Error processing template"}, 500
         elif output:
-            return Response(output, mimetype="text/csv", headers={
-                "Content-Disposition": "attachment;filename=sample.csv"})
+            return Response(output, mimetype="application/vnd.ms-excel",
+                            headers={"Content-Disposition":
+                                         "attachment;filename=config.xls"})
         return {"msg": "Spreadsheet generation failed"}, 500
 
+
 class ServerEventMessage(Resource):
-    @verifyToken
+
+
+    #@verifyToken
     def get(self):
-        stream = Response(stream_response(), mimetype="text/event-stream")
+        stream = Response(SSEGenerator(), mimetype="text/event-stream",
+                          headers={'Cache-Control': 'no-cache'})
         return stream

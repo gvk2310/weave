@@ -1,5 +1,8 @@
+from io import BytesIO
 import os
 import re
+import xlwt
+import xlrd
 import jenkins
 import requests
 import traceback
@@ -35,10 +38,10 @@ def genericString(value):
             'string with special characters (-_) allowed')
 
 
-def csvFileType(file):
-    if not isinstance(file, FileStorage) or file.filename.split('.')[
-        -1] != 'csv':
-        raise ValueError('Not a valid file input')
+def excelFileType(file):
+    if not isinstance(file, FileStorage) or \
+            file.filename.split('.')[-1] not in ['xls']:
+        raise ValueError('Not a excel file input')
     return file
 
 
@@ -64,7 +67,7 @@ def verifyToken(fn):
         token = request.headers['Authorization'].split()[1]
         perm = 'read' if request.method == 'GET' else 'write'
         resp = requests.get(
-            f"{token_auth_url}/isauthorized/vault/{perm}",
+            f"{token_auth_url}/isauthorized/deployment/{perm}",
             headers={f'Authorization': f'Bearer {token}',
                      'Content-Type': 'application/json'},
         )
@@ -80,7 +83,9 @@ def assetDownloadDetails(assets):
         token = request.headers['Authorization'].split()[-1]
         data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}",
                             headers={f'Authorization': f'Bearer {token}'})
-        return data.json()
+        if data.status_code == 200:
+            return data.json()
+        logger.error("Failed to retrieve asset download detail")
     except Exception as e:
         logger.error("Unable to get asset download detail")
         logger.debug(traceback.format_exc())
@@ -96,5 +101,49 @@ def triggerJenkins(parameters, job_name):
         return True
     except Exception as e:
         logger.error("Unable to trigger Jenkins Job")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
+
+
+def dictToXls(config):
+    try:
+        book = xlwt.Workbook()
+        sheet = book.add_sheet('Sheet 1')
+
+        header_style = xlwt.easyxf(
+            'font: height 240,name Calibri, colour_index black, bold on; '
+            'align: wrap on, vert centre, horiz center;'
+            'borders: top thin, bottom thin, left thin, right thin;'
+            'pattern: pattern solid, fore_color 44;')
+        data_style = xlwt.easyxf(
+            'font: name Calibri, colour_index black, bold off; align: wrap on, '
+            'vert centre, horiz center;'
+            'borders: top thin, bottom thin, left thin, right thin;')
+
+        for i in range(len(config)):
+            sheet.write(0, i, list(config.keys())[i], header_style)
+            sheet.write(1, i, list(config.values())[i], data_style)
+            if len(list(config.keys())[i]) * 367 > sheet.col(i).width:
+                sheet.col(i).width = len(list(config.keys())[i]) * 367
+        wb = BytesIO()
+        book.save(wb)
+        wb.seek(0)
+        return wb
+    except Exception as e:
+        logger.error("Error while creating the config excel file")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
+
+
+def xlsToJson(xls_file):
+    try:
+        book = xlrd.open_workbook(file_contents=xls_file.read())
+        sheet = book.sheet_by_index(0)
+        headers = [sheet.cell_value(0, col) for col in range(sheet.ncols)]
+        return [dict(zip(headers, [sheet.cell_value(row, col) for col in
+                                   range(sheet.ncols)])) for row in
+                range(1, sheet.nrows)]
+    except Exception as e:
+        logger.error("Error while opening the config excel file")
         logger.debug(traceback.format_exc())
         logger.error(e)
