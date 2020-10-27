@@ -1,7 +1,7 @@
 FROM python:3.8-alpine
 MAINTAINER "Devnetops Team"
 RUN apk add --no-cache --virtual .build-deps openssl-dev libffi-dev gcc musl-dev
-COPY OnboardManagement/Onboarding /Onboarding
+COPY OnboardManagement/tmp/Onboarding /Onboarding
 WORKDIR /Onboarding
 RUN mkdir tmp
 RUN pip install wheel & pip install -r requirements.txt
