@@ -37,6 +37,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                     find . -name '*.so' -exec cp --parents \\{\\} tmp \\;
                     find . -name "__init__.py" | python3 -m py_compile -
                     find . -name "__init__*.pyc" -exec cp "{}" tmp/Onboarding/src/__init__.pyc \\;
+                    find . -name \*.pyc -delete
                     find . -name "uwsgi.ini" -exec cp --parents \\{\\} tmp \\;
                     find . -name "requirements.txt" -exec cp --parents \\{\\} tmp \\;
                     mkdir tmp/Onboarding/logs
