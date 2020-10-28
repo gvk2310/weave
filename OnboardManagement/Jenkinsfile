@@ -31,7 +31,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             container('python3'){
               sh '''#!/bin/sh
                     pip3 install cython
-                    find -name "requirements.txt" | pip3 install -r -
+                    find -name "requirements.txt" | xargs pip3 install -r
                     cd OnboardManagement && python3 setup.py build_ext --inplace
                     mkdir tmp
                     find . -name '*.so' -exec cp --parents \\{\\} tmp \\;
