@@ -30,6 +30,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         stage ('Encrypting Source codes'){
             container('python3'){
               sh '''#!/bin/sh
+              		apk add --no-cache --virtual .build-deps openssl-dev libffi-dev gcc musl-dev
                     pip3 install cython
                     pip3 install -r OnboardManagement/Onboarding/requirements.txt
                     cd OnboardManagement && python3 setup.py build_ext --inplace
