@@ -1,7 +1,7 @@
 def label = "Devnetops-${UUID.randomUUID().toString()}"
 def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
-           containers: [containerTemplate(name: 'python3', image: 'devnetops.azurecr.io/python3_devnetops:27072020', ttyEnabled: true, command: 'cat'),
+           containers: [containerTemplate(name: 'python3', image: 'python:3.8-alpine', ttyEnabled: true, command: 'cat'),
              containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
                         containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
                containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
