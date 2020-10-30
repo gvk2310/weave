@@ -12,8 +12,7 @@ ext_modules = [
   				Extension("Onboarding.src.lib.sse",  ["Onboarding/src/lib/sse.py"]),
   				Extension("Onboarding.src.lib.vault",  ["Onboarding/src/lib/vault.py"]),
   				Extension("Onboarding.src.__init__",  ["Onboarding/src/__init__.py"]),
-  				Extension("Onboarding.run",  ["Onboarding/run.py"]),
-                Extension("Onboarding.src.log",  ["Onboarding/src/log.py"])
+  				Extension("Onboarding.src.log",  ["Onboarding/src/log.py"])
 ]
 setup(
         name = 'devnetops',
