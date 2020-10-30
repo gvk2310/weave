@@ -43,10 +43,10 @@ def assetDeletefromRepo(asset):
     repo_details = retrieveUrl(asset["asset_repository"].lower())
     if not repo_details:
         return {"msg": "Unable to retrieve repo details"}, 500
-    if repo_details['repo_type'].lower() == 'local' and repo_details[
+    if repo_details[
         'repo_vendor'].lower() == 'jfrog':
         resp = deleteFromJfrog(asset['asset_link'], repo_details)
-    if repo_details['repo_type'].lower() == 'local' and repo_details[
+    if repo_details[
         'repo_vendor'].lower() == 'nexus':
         resp = deleteFromNexus(asset['asset_link'], repo_details)
         if not resp:
