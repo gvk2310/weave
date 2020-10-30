@@ -187,7 +187,7 @@ def localTestOnboarding(args, repo_details):
         os.remove(args['test_file_loc'])
         return False
     link, _ = resp
-    publish_onboard_events(assetid=args['test_id'],
+    publish_onboard_events(testcaseid=args['test_id'],
                               link=link,
                               onboard_status='Done')
     db.updateTest(testcaseid=args['test_id'],
