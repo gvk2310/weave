@@ -3,6 +3,5 @@ MAINTAINER "Devnetops Team"
 RUN apk add --no-cache --virtual .build-deps openssl-dev libffi-dev gcc musl-dev
 COPY Deployment/tmp/Deploy /Deploy
 WORKDIR /Deploy
-RUN mkdir temp
 RUN pip install -r requirements.txt
 CMD ["uwsgi", "--ini", "uwsgi.ini"]
