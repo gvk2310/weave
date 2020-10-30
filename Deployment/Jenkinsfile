@@ -25,6 +25,21 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.notifyBitbucket('INPROGRESS')
         }
+        
+         stage ('Encrypting Source codes'){
+            container('python3'){
+              sh '''#!/bin/sh
+              		apk add --no-cache --virtual .build-deps openssl-dev libffi-dev gcc musl-dev
+                    pip3 install cython
+                    pip3 install -r Deployment/Deploy/requirements.txt
+                    cd Deployment && python3 setup.py build_ext --inplace
+                    mkdir tmp
+                    find . -name '*.so' -exec cp --parents \\{\\} tmp \\;
+                    find . -name "requirements.txt" -exec cp --parents \\{\\} tmp \\;
+                    find . -name "uwsgi.ini" -exec cp --parents \\{\\} tmp \\;
+                    mkdir tmp/Deploy/logs
+              '''}
+         }
      /*  stage('Sonar Analysis'){
             withSonarQubeEnv('SonarQube') {
             withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
