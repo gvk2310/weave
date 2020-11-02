@@ -14,7 +14,7 @@ from ..lib.jfrog import checkJfrogRemote, deleteFromJfrog, validateJfrog, checkJ
 from ..lib.cloud_validate import aws_validate, openstack_validate, osm_validate
 from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
                          addDataToVault)
-from ..lib.commonfunctions import (verifyToken, localAssetOnboarding, localTestOnboarding,
+from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
                                    non_empty_string, retrieveUrl,
                                    validStrChecker, format_bytes, zipFileType,
                                    assetDeletefromRepo)
