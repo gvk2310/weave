@@ -647,8 +647,7 @@ class Tests(Resource):
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
             return {"msg": "Unable to fetch test details"}, 500
-        if not args['delete_from_repo'] \
-                and resp['onboard_status'] not in ['Done', 'Aborted']:
+        if resp['onboard_status'] != 'Done':
             return {"msg": "Test onboard not completed or successful"}, 400
         repo_details = retrieveUrl(resp["test_repository"].lower())
         if not repo_details:
