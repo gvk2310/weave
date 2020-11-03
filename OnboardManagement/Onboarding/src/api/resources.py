@@ -659,10 +659,6 @@ class Tests(Resource):
                 return {"msg": "Unable to delete test from repository"}, 500
         check = db.deleteTest(testcaseid=args['test_id'])
         if check:
-            if args['delete_from_repo']:
-                return {
-                           'msg': 'Testcase force deleted. Manual deletion '
-                                  'might be required in the repository'}, 200
             return {'msg': 'Testcase Deleted'}, 200
         return {'msg': 'Internal Server Error'}, 500
               
