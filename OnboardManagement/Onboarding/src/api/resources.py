@@ -648,7 +648,13 @@ class Tests(Resource):
         if not resp:
             return {"msg": "Unable to fetch test details"}, 500
         if resp['onboard_status'] != 'Done':
-            return {"msg": "Test onboard not completed or successful"}, 400
+            if resp['onboard_status'] = 'In Progress':     
+               return {"msg": "Test onboard not completed"}, 400
+            if resp['onboard_status'] in ['Aborted', 'Repo upload failed']:
+                  check = db.deleteTest(testcaseid=args['test_id'])
+                  if check:
+                     return {'msg': 'Testcase Deleted'}, 200
+                  return {'msg': 'Internal Server Error'}, 500                  
         repo_details = retrieveUrl(resp["test_repository"].lower())
         if not repo_details:
             return {
