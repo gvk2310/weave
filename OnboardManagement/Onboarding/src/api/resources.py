@@ -172,7 +172,7 @@ class Asset(Resource):
         resp = db.get(assetid=args['asset_id'])
         if not resp:
             return {"msg": "Unable to fetch asset details"}, 500
-        if resp['onboard_status'] != 'Done':
+        if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
             return {"msg": "Asset onboard not complete yet"}, 400
         repo_details = retrieveUrl(resp["asset_repository"].lower())
         if not repo_details:
@@ -647,7 +647,7 @@ class Tests(Resource):
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
             return {"msg": "Unable to fetch test details"}, 500
-        if resp['onboard_status'] != 'Done':
+        if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
             return {"msg": "Test onboard not completed or Successful"}, 400                  
         repo_details = retrieveUrl(resp["test_repository"].lower())
         if not repo_details:
