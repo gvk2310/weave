@@ -661,9 +661,3 @@ class Tests(Resource):
         if check:
             return {'msg': 'Testcase Deleted'}, 200
         return {'msg': 'Internal Server Error'}, 500
-              
-              
-              
-              
-
-
