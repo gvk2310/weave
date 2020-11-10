@@ -233,7 +233,7 @@ class Repository(Resource):
                 return {
                        "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400 
             if args['repo_vendor'].lower() not in ['jfrog']:
-                return {'msg': 'Repository not supported'}, 400
+                return {'msg': f"'{args['repo_vendor']}' as repo vendor is not supported"}, 400
             if repolist and (args['repo_url'] in [item['repo_url'] for item in
                                               repolist]) and (args['repo_name'] not in [item['repo_name'] for item in
                                           repolist]):
