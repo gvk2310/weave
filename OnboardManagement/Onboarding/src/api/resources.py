@@ -64,7 +64,7 @@ class Asset(Resource):
                        'message': 'either asset file or asset path should be provided'}, 422
         repo_details = retrieveUrl(args['asset_repository'].lower())
         if not repo_details:
-            return {"msg": "Unable to retrieve repo details"}, 500
+            return {"msg": "Unable to retrieve repo details"}, 400
         # Currently only supporting Jfrog repo
         if repo_details['repo_vendor'].lower() != 'jfrog':
             return {
@@ -171,13 +171,13 @@ class Asset(Resource):
         args = parser.parse_args()
         resp = db.get(assetid=args['asset_id'])
         if not resp:
-            return {"msg": "Unable to fetch asset details"}, 500
+            return {"msg": "Unable to fetch asset details"}, 400
         if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
             return {"msg": "Asset onboard not complete yet"}, 400
         repo_details = retrieveUrl(resp["asset_repository"].lower())
         if not repo_details:
             return {
-                       "msg": "Unable to retrieve repo details"}, 500
+                       "msg": "Unable to retrieve repo details"}, 400
         if args['delete_from_repo'] and repo_details[
             'repo_vendor'].lower() == 'jfrog':
             resp = deleteFromJfrog(resp['asset_link'], repo_details)
