@@ -378,7 +378,7 @@ class Infra(Resource):
         if args['cloud_type'].lower() == 'aws':
             parser.add_argument('orchestrator', nullable=False,
                                 type=non_empty_string, required=True,
-                                choices=('Cloudformation'))
+                                choices=['Cloudformation'])
             parser.add_argument('access_key', nullable=False,
                                 type=non_empty_string, required=True)
             parser.add_argument('secret_key', nullable=False,
