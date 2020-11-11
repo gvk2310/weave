@@ -520,7 +520,7 @@ class Tests(Resource):
                             type=non_empty_string, required=True)
         parser.add_argument('test_scripttype', nullable=False,
                             type=non_empty_string, required=True,
-                            choices=('python', 'ansible'))
+                            choices=['python', 'ansible'])
         # parser.add_argument('test_parameters', type=dict, action='append', required=True)
         parser.add_argument('test_parameters', nullable=False,
                             type=non_empty_string,required=True)
