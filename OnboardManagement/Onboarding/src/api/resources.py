@@ -524,9 +524,9 @@ class Tests(Resource):
         # parser.add_argument('test_parameters', type=dict, action='append', required=True)
         parser.add_argument('test_parameters', nullable=False,
                             type=non_empty_string,required=True)
-        parser.add_argument('test_path', type=non_empty_string)
+        parser.add_argument('test_path', type=non_empty_string, nullable=False)
         parser.add_argument('test_file', type=zipFileType,
-                            location='files')
+                            location='files', nullable=False, help="test_file must contain a valid file to proceed")
         args = parser.parse_args()
         if args['test_scripttype'] == 'ansible':
             parser.add_argument('test_commands', type=non_empty_string,
@@ -619,7 +619,9 @@ class Tests(Resource):
         parser.add_argument('test_description', type=str, required=True)
         parser.add_argument('test_category', type=str, required=True)
         args = parser.parse_args()
-
+		resp = db.getTest(testcaseid=args['test_id'])
+        if not resp:
+            return {"msg": "Unable to fetch test details"}, 400
         if not args['test_description'] and not args['test_category']:
             return {"msg": "Nothing to modify"}, 400
         publish_onboard_events(testcaseid=args['test_id'],
@@ -646,7 +648,7 @@ class Tests(Resource):
         args = parser.parse_args()
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
-            return {"msg": "Unable to fetch test details"}, 500
+            return {"msg": "Unable to fetch test details"}, 400
         if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
             return {"msg": "Test onboard not completed or Successful"}, 400                  
         repo_details = retrieveUrl(resp["test_repository"].lower())
