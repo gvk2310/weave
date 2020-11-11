@@ -211,7 +211,7 @@ class Repository(Resource):
                             required=True)
         parser.add_argument('repo_vendor', nullable=False,
                             type=non_empty_string, required=True,
-                            choices=('nexus', 'jfrog'))
+                            choices=['nexus', 'jfrog'])
         parser.add_argument('repo_url', type=inputs.url, required=True)
         parser.add_argument('repo_username', nullable=False,
                             type=non_empty_string, required=True)
