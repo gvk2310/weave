@@ -348,10 +348,10 @@ class Infra(Resource):
         parser.add_argument('infra_name', nullable=False, type=non_empty_string,
                             required=True)
         parser.add_argument('cloud_type', nullable=False, type=non_empty_string,
-                            required=True, choices=('AWS', 'Openstack'))
+                            required=True, choices=['AWS', 'Openstack'])
         parser.add_argument('environment', nullable=False,
-                            type=non_empty_string, required=True, choices=(
-                'Demo', 'Test', 'Development', 'Stage', 'Production'))
+                            type=non_empty_string, required=True, choices=[
+                'Demo', 'Test', 'Development', 'Stage', 'Production'])
         parser.add_argument('action', nullable=False,
                             type=non_empty_string, required=True)                   
         args = parser.parse_args()
