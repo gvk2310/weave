@@ -42,8 +42,8 @@ class Asset(Resource):
         parser.add_argument('asset_group', nullable=False,
                             type=non_empty_string, required=True)
         parser.add_argument('asset_type', nullable=False, type=non_empty_string,
-                            required=True, choices=(
-                'key files', 'template', 'nsd', 'vnfd', 'qcow'))
+                            required=True, choices=[
+                'key files', 'template', 'nsd', 'vnfd', 'qcow'])
         parser.add_argument('asset_version', type=int, required=True)
         parser.add_argument('asset_repository', nullable=False,
                             type=non_empty_string, required=True)
