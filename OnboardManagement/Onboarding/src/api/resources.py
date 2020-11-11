@@ -618,25 +618,24 @@ class Tests(Resource):
         parser.add_argument('test_id', type=str, required=True)
         parser.add_argument('test_description', type=str, required=True)
         parser.add_argument('test_category', type=str, required=True)
-		args = parser.parse_args()
-                  resp = db.getTest(testcaseid=args['test_id'])
-                  if not resp:
-        		      return {"msg": "Unable to fetch test details"}, 400
-                  if not args['test_description'] and not args['test_category']:
-                      return {"msg": "Nothing to modify"}, 400
-                  publish_onboard_events(testcaseid=args['test_id'],
-                              description=args['test_description'],
-                              category=args['test_category'])
-                  done = db.updateTest(testcaseid=args['test_id'],
-                              description=args['test_description'],
-                              category=args['test_category'])
-                  if done:
-                      return {"msg": "test_category and test_description got updated"}, 200
+        args = parser.parse_args()
+        resp = db.getTest(testcaseid=args['test_id'])
+        if not resp:
+            return {"msg": "Unable to fetch test details"}, 400
+        if not args['test_description'] and not args['test_category']:
+            return {"msg": "Nothing to modify"}, 400
+        publish_onboard_events(testcaseid=args['test_id'],
+                               description=args['test_description'],
+                               category=args['test_category'])
+        done = db.updateTest(testcaseid=args['test_id'],
+                             description=args['test_description'],
+                             category=args['test_category'])
+        if done:
+            return {"msg": "test_category and test_description got updated"}, 200
 
-                  if done is False:
-                      return {"msg": "Test ID does not exist"}, 400
-                  return {"msg": "test_category and test_description update failed"}, 500
-                  
+        if done is False:
+            return {"msg": "Test ID does not exist"}, 400
+        return {"msg": "test_category and test_description update failed"}, 500
 		
 		
 
