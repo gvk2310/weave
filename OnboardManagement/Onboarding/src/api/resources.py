@@ -389,7 +389,7 @@ class Infra(Resource):
         if args['cloud_type'].lower() == 'openstack':
             parser.add_argument('orchestrator', nullable=False,
                                 type=non_empty_string,
-                                choices=('OSM', 'Cloudify'))
+                                choices=['OSM', 'Cloudify'])
             parser.add_argument('RcFile', nullable=False, type=non_empty_string,
                                 required=True)
             parser.add_argument('orchestrator_url', nullable=False,
