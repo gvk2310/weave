@@ -618,10 +618,10 @@ class Tests(Resource):
         parser.add_argument('test_id', type=str, required=True)
         parser.add_argument('test_description', type=str, required=True)
         parser.add_argument('test_category', type=str, required=True)
-        args = parser.parse_args()
+		args = parser.parse_args()           
 		resp = db.getTest(testcaseid=args['test_id'])
-        if not resp:
-            return {"msg": "Unable to fetch test details"}, 400
+		if not resp:
+        	return {"msg": "Unable to fetch test details"}, 400
         if not args['test_description'] and not args['test_category']:
             return {"msg": "Nothing to modify"}, 400
         publish_onboard_events(testcaseid=args['test_id'],
