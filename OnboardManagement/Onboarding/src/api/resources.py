@@ -307,9 +307,9 @@ class Repository(Resource):
             return {'msg': 'No repository information onboarded yet'}, 404
         if not data:
             return {
-                       "msg": "Invalid Repo name"}, 404
+                       "msg": "Unable to fetch Repository details"}, 404
         if args['repo_name'] not in [item['repo_name'] for item in data]:
-            return {'msg': 'Repository is not onboarded'}, 404
+            return {'msg': 'Invalid Repo name'}, 404
         if args['delete_assets'] == "True":
             asset_todelete_list = []
             asset_list = db.get()
@@ -467,9 +467,9 @@ class Infra(Resource):
                    404
         if not data:
             return {
-                       "msg": "Invalid infra name"}, 404
+                       "msg": "Unable to fetch Infra details"}, 404
         if args['infra_name'] not in [item['infra_name'] for item in data]:
-            return {'msg': 'Infra is not onboarded'}, 404
+            return {'msg': 'Invalid Infra name'}, 404
         if removeFromVault(args, 'infra'):
             return {'msg': 'Infra data deleted'}, 200
         return {
