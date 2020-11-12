@@ -184,7 +184,7 @@ class Asset(Resource):
         args = parser.parse_args()
         resp = db.get(assetid=args['asset_id'])
         if not resp:
-            return {"msg": "Invalid assset id"}, 400
+            return {"msg": "Invalid assset id"}, 404
         if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
             return {"msg": "Asset onboard not complete yet"}, 400
         repo_details = retrieveUrl(resp["asset_repository"].lower())
