@@ -17,7 +17,7 @@ from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
 from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
                                    non_empty_string, retrieveUrl,
                                    validStrChecker, format_bytes, zipFileType,
-                                   assetDeletefromRepo)
+                                   assetDeletefromRepo, checkStringLength)
 
 
 class Asset(Resource):
@@ -59,6 +59,12 @@ class Asset(Resource):
             return {
                        'message': 'Asset group cannot have special '
                                   'characters'}, 422
+        if not checkStringLength(args['asset_group']):
+            return {
+                       'message': 'Asset group cannot have more than 25 characters'}, 422
+        if not checkStringLength(args['asset_name']):
+            return {
+                       'message': 'Asset name cannot have more than 25 characters'}, 422
         if not args['asset_path'] and not args['asset_file']:
             return {
                        'message': 'either asset file or asset path should be provided'}, 422
@@ -149,6 +155,13 @@ class Asset(Resource):
 
         if not args['asset_version'] and not args['asset_group'] :
             return {"msg": "Nothing to modify"}, 400
+        if not validStrChecker(args['asset_group']):
+            return {
+                       'message': 'Asset group cannot have special '
+                                  'characters'}, 422
+        if not checkStringLength(args['asset_group']):
+            return {
+                       'message': 'Asset group cannot have more than 25 characters'}, 422
         publish_onboard_events(assetid=args['asset_id'],
                              version=args['asset_version'],
                              group=args['asset_group'])
@@ -226,9 +239,9 @@ class Repository(Resource):
         repolist = getRepoList()
         if action == 'create':
             if not validStrChecker(args['repo_name']):
-                return {
-                        'message': 'Repo name cannot have special '
-                                    'characters'}, 422
+                return {'message': 'Repo name cannot have special characters'}, 422
+            if not checkStringLength(args['repo_name']):
+                return {'message': 'Repo name cannot have more than 25 characters'}, 422
             if repolist and (args['repo_name'] in [item['repo_name'] for item in repolist]):
                 return {
                        "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400 
@@ -361,14 +374,13 @@ class Infra(Resource):
         infralist = getInfraList()
         if action == 'create':
             if not validStrChecker(args['infra_name']):
-                return {
-                        'message': 'Infra name cannot have special '
-                                    'characters'}, 422
+                return {'message': 'Infra name cannot have special characters'}, 422
+            if not checkStringLength(args['infra_name']):
+                return {'message': 'Infra name cannot have more than 25 characters'}, 422
             if infralist and (
                     args['infra_name'] in [item['infra_name'] for item in
                                            infralist]):
-                return {
-                       "msg": f"Infra with the name '{args['infra_name']}' already onboarded"}, 400
+                return {"msg": f"Infra with the name '{args['infra_name']}' already onboarded"}, 400
         if action == 'modify':
             if infralist and (
                     args['infra_name'] not in [item['infra_name'] for item in
@@ -623,8 +635,8 @@ class Tests(Resource):
                            'msg': 'Failed to initiate test onboarding'}, 500
             return {'test_id': args['test_id']}, 201
               
-              
-    
+
+                  
     ##@verifyToken
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
@@ -649,8 +661,6 @@ class Tests(Resource):
         if done is False:
             return {"msg": "Test ID does not exist"}, 400
         return {"msg": "test_category and test_description update failed"}, 500
-		
-		
 
 
     ##@verifyToken
