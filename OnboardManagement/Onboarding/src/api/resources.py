@@ -59,12 +59,12 @@ class Asset(Resource):
             return {
                        'message': 'Asset group cannot have special '
                                   'characters'}, 422
-        if not checkStringLength(args['asset_group']):
-            return {
-                       'message': 'Asset group cannot have more than 25 characters'}, 422
-        if not checkStringLength(args['asset_name']):
-            return {
-                       'message': 'Asset name cannot have more than 25 characters'}, 422
+#        if not checkStringLength(args['asset_group']):
+#            return {
+#                       'message': 'Asset group cannot have more than 25 characters'}, 422
+#        if not checkStringLength(args['asset_name']):
+#            return {
+#                       'message': 'Asset name cannot have more than 25 characters'}, 422
         if not args['asset_path'] and not args['asset_file']:
             return {
                        'message': 'either asset file or asset path should be provided'}, 422
@@ -159,9 +159,9 @@ class Asset(Resource):
             return {
                        'message': 'Asset group cannot have special '
                                   'characters'}, 422
-        if not checkStringLength(args['asset_group']):
-            return {
-                       'message': 'Asset group cannot have more than 25 characters'}, 422
+#        if not checkStringLength(args['asset_group']):
+#            return {
+#                       'message': 'Asset group cannot have more than 25 characters'}, 422
         publish_onboard_events(assetid=args['asset_id'],
                              version=args['asset_version'],
                              group=args['asset_group'])
@@ -184,7 +184,7 @@ class Asset(Resource):
         args = parser.parse_args()
         resp = db.get(assetid=args['asset_id'])
         if not resp:
-            return {"msg": "Unable to fetch asset details"}, 400
+            return {"msg": "Invalid assset id"}, 400
         if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
             return {"msg": "Asset onboard not complete yet"}, 400
         repo_details = retrieveUrl(resp["asset_repository"].lower())
@@ -240,8 +240,8 @@ class Repository(Resource):
         if action == 'create':
             if not validStrChecker(args['repo_name']):
                 return {'message': 'Repo name cannot have special characters'}, 422
-            if not checkStringLength(args['repo_name']):
-                return {'message': 'Repo name cannot have more than 25 characters'}, 422
+#            if not checkStringLength(args['repo_name']):
+#                return {'message': 'Repo name cannot have more than 25 characters'}, 422
             if repolist and (args['repo_name'] in [item['repo_name'] for item in repolist]):
                 return {
                        "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400 
@@ -307,7 +307,7 @@ class Repository(Resource):
             return {'msg': 'No repository information onboarded yet'}, 404
         if not data:
             return {
-                       "msg": "Unable to retrieve repository list"}, 500
+                       "msg": "Invalid Repo name"}, 404
         if args['repo_name'] not in [item['repo_name'] for item in data]:
             return {'msg': 'Repository is not onboarded'}, 404
         if args['delete_assets'] == "True":
@@ -375,8 +375,8 @@ class Infra(Resource):
         if action == 'create':
             if not validStrChecker(args['infra_name']):
                 return {'message': 'Infra name cannot have special characters'}, 422
-            if not checkStringLength(args['infra_name']):
-                return {'message': 'Infra name cannot have more than 25 characters'}, 422
+#            if not checkStringLength(args['infra_name']):
+#                return {'message': 'Infra name cannot have more than 25 characters'}, 422
             if infralist and (
                     args['infra_name'] in [item['infra_name'] for item in
                                            infralist]):
@@ -467,7 +467,7 @@ class Infra(Resource):
                    404
         if not data:
             return {
-                       "msg": "Unable to retrieve infra list"}, 500
+                       "msg": "Invalid infra name"}, 404
         if args['infra_name'] not in [item['infra_name'] for item in data]:
             return {'msg': 'Infra is not onboarded'}, 404
         if removeFromVault(args, 'infra'):
@@ -548,17 +548,17 @@ class Tests(Resource):
             return {
                        'message': 'Test name cannot have special '
                                   'characters'}, 422
-        if not checkStringLength(args['test_name']):
-            return {
-                       'message': 'Test name cannot have more than 25 characters'}, 422
+#        if not checkStringLength(args['test_name']):
+#            return {
+#                       'message': 'Test name cannot have more than 25 characters'}, 422
         
         if not validStrChecker(args['test_description']):
             return {
                        'message': 'Test description cannot have special '
                                   'characters'}, 422
-        if not checkStringLength(args['test_description']):
-            return {
-                       'message': 'Test description cannot have more than 25 characters'}, 422
+#        if not checkStringLength(args['test_description']):
+#            return {
+#                       'message': 'Test description cannot have more than 25 characters'}, 422
         if not args['test_file'] and not args['test_path']:
             return {
                        'message': 'either test file or test path should be provided'}, 422
@@ -566,9 +566,9 @@ class Tests(Resource):
             return {
                        'message': 'Test category cannot have special '
                                   'characters'}, 422
-        if not checkStringLength(args['test_category']):
-            return {
-                       'message': 'Test category cannot have more than 25 characters'}, 422
+#        if not checkStringLength(args['test_category']):
+#            return {
+#                       'message': 'Test category cannot have more than 25 characters'}, 422
         check = db.getTest(name=args['test_name'])
         if check:
             return {'msg': 'Testcase with same name already exists'}, 403
@@ -646,7 +646,7 @@ class Tests(Resource):
         args = parser.parse_args()
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
-            return {"msg": "Unable to fetch test details"}, 400
+            return {"msg": "Invalid testcase id"}, 404
         if not args['test_description'] and not args['test_category']:
             return {"msg": "Nothing to modify"}, 400
         publish_onboard_events(testcaseid=args['test_id'],
@@ -672,7 +672,7 @@ class Tests(Resource):
         args = parser.parse_args()
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
-            return {"msg": "Unable to fetch test details"}, 400
+            return {"msg": "Invalid testcase id"}, 404
         if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
             return {"msg": "Test onboard not completed or Successful"}, 400                  
         repo_details = retrieveUrl(resp["test_repository"].lower())
