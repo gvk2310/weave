@@ -536,14 +536,27 @@ class Tests(Resource):
             return {
                        'message': 'Test name cannot have special '
                                   'characters'}, 422
-        if not args['test_description']:
+        if not checkStringLength(args['test_name']):
+            return {
+                       'message': 'Test name cannot have more than 25 characters'}, 422
+        
+        if not validStrChecker(args['test_description']):
             return {
                        'message': 'Test description cannot have special '
                                   'characters'}, 422
+        if not checkStringLength(args['test_description']):
+            return {
+                       'message': 'Test description cannot have more than 25 characters'}, 422
+        if not args['test_file'] and not args['test_path']:
+            return {
+                       'message': 'either test file or test path should be provided'}, 422
         if not validStrChecker(args['test_category']):
             return {
                        'message': 'Test category cannot have special '
                                   'characters'}, 422
+        if not checkStringLength(args['test_category']):
+            return {
+                       'message': 'Test category cannot have more than 25 characters'}, 422
         check = db.getTest(name=args['test_name'])
         if check:
             return {'msg': 'Testcase with same name already exists'}, 403
