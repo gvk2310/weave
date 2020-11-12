@@ -25,7 +25,13 @@ def validStrChecker(string):
         return False
     else:
         return True
-            
+
+      
+def checkStringLength(string):
+    if (len(string) <= 25):
+        return True
+    else:
+        return False
       
 def zipFileType(file):
     if not isinstance(file, FileStorage) or \
