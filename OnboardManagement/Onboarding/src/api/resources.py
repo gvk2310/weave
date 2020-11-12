@@ -17,7 +17,7 @@ from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
 from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
                                    non_empty_string, retrieveUrl,
                                    validStrChecker, format_bytes, zipFileType,
-                                   assetDeletefromRepo, checkStringLength)
+                                   assetDeletefromRepo)
 
 
 class Asset(Resource):
