@@ -636,6 +636,9 @@ class Tests(Resource):
             return {"msg": "Invalid testcase id"}, 404
         if not args['test_description'] and not args['test_category']:
             return {"msg": "Nothing to modify"}, 400
+        if (resp['test_description'] == args['test_description']) and \
+                (resp['test_category'] == args['test_category']):
+            return {'msg': "Test description and Test category details are already updated"}, 400
         publish_onboard_events(testcaseid=args['test_id'],
                                description=args['test_description'],
                                category=args['test_category'])
