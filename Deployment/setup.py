@@ -6,7 +6,7 @@ ext_modules = [
                 Extension("Deploy.src.db.db",  ["Deploy/src/db/db.py"]),
                 Extension("Deploy.src.config.config",  ["Deploy/src/config/config.py"]),
   				Extension("Deploy.src.lib.awsFunctions",  ["Deploy/src/lib/awsFunctions.py"]),
-  				Extension("Deploy.src.lib.commonfunctions",  ["Deploy/src/lib/commonfunctions.py"]),
+  				Extension("Deploy.src.lib.commonFunctions",  ["Deploy/src/lib/commonFunctions.py"]),
   				Extension("Deploy.src.lib.sse",  ["Deploy/src/lib/sse.py"]),
   				Extension("Deploy.src.__init__",  ["Deploy/src/__init__.py"]),
                 Extension("Deploy.src.log",  ["Deploy/src/log.py"])
