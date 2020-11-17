@@ -11,7 +11,7 @@ from .config import config
 from .db import db
 from .api import resources
 
-app_api.add_resource(resources.Deploy, '/deploy')
+app_api.add_resource(resources.Deploy, '/')
 app_api.add_resource(resources.SingleDeployInfo, '/<string:id>/details')
 app_api.add_resource(resources.ServerEventMessage, '/events')
 app_api.add_resource(resources.ConfigSpreadsheetGenerator,
