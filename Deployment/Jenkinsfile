@@ -40,22 +40,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                     mkdir tmp/Deploy/logs
               '''}
          }
-     /*  stage('Sonar Analysis'){
-            withSonarQubeEnv('SonarQube') {
-            withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
-            {   def scannerHome = tool 'Sonar Scanner';
-                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$username -Dsonar.password=$password -Dproject.settings=Deployment/sonar-project.properties";
-            }
-        }
-        }
-		stage ('Quality Gate Check')
-         {
-            timeout(time: 5, unit: 'MINUTES') {
-                waitForQualityGate abortPipeline: true
-                }
-         }
-       */
-    
+   
 	 stage (' Create Docker image'){
 			container('docker'){
               sh 'pwd'
@@ -74,8 +59,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
              }
          }
 		
-			}
-		}
+
 		currentBuild.result = 'SUCCESS'
         echo "RESULT: ${currentBuild.result}"
         echo "Finished: ${currentBuild.result}"
