@@ -16,7 +16,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-deployment-testversion'
         def Image_Tag = 'S1'
-		def K8s_Deployment = 'deployment-testversion'
 		try{
        stage('Git Checkout'){
             git branch: Git_Branch,
@@ -55,12 +54,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                 waitForQualityGate abortPipeline: true
                 }
          }
-          /*stage ('Running functional tests [TOX]')
-         {
-            container('tox') {
-             sh 'cd UserManagement && tox -e DNO'
-                }
-         }*/
+       */
     
 	 stage (' Create Docker image'){
 			container('docker'){
@@ -79,21 +73,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          }
              }
          }
-		stage('Deploying to Kubernetes') {
-				container('kubectl') {
-				try{
-					sh("kubectl get deployment ${K8s_Deployment}")
-					if(true){
-						//sh ("kubectl set image deployment/${K8s_Deployment} ${K8s_Deployment}=${DockerReg_Url}/${Docker_Image}:${Image_Tag}")
-                      	//sh ("kubectl get pods | grep 'onboardmgmt-' | grep -v grep | awk '{print $1}' | xargs kubectl delete po")
-						sh ("kubectl delete deployment ${K8s_Deployment}")
-                      	sh("kubectl apply -f Deployment/deployment.yml")
-					}
-				} 
-				catch(e){
-                  	sh("kubectl apply -f Deployment/deployment.yml")
-					echo "deploying"
-              }
+		
 			}
 		}
 		currentBuild.result = 'SUCCESS'
