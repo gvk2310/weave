@@ -521,7 +521,7 @@ class Tests(Resource):
         parser.add_argument('test_description', nullable=False,
                             type=str, required=True)
         parser.add_argument('test_category', nullable=False,type=non_empty_string, required=True
-                           choices=['performance','sanity','smoke','unit','regression','functional','integration'])
+                            choices=['performance','sanity','smoke','unit','regression','functional','integration'])
         parser.add_argument('test_repository', nullable=False,
                             type=non_empty_string, required=True)
         parser.add_argument('test_scripttype', nullable=False,
