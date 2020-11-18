@@ -16,7 +16,7 @@ from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
                          addDataToVault)
 from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
                                    non_empty_string, retrieveUrl,
-                                   validStrChecker, format_bytes, zipFileType,
+                                   validStrChecker, format_bytes, 
                                    assetDeletefromRepo, checkStringLength)
 
 
@@ -109,6 +109,8 @@ class Asset(Resource):
             args['asset_file_loc'] = os.path.join(app.config['upload_folder'],
                                                   args['assetid'])
             args['asset_file'].save(args['asset_file_loc'])
+            if (os.path.getsize(args['asset_file_loc'])== 0):
+                return {"msg": "Upload non empty file"}, 422
             check = db.create(
                 assetid=args['assetid'],
                 name=args['asset_name'],
@@ -518,8 +520,8 @@ class Tests(Resource):
                             required=True)
         parser.add_argument('test_description', nullable=False,
                             type=str, required=True)
-        parser.add_argument('test_category', nullable=False,
-                            type=non_empty_string, required=True)
+        parser.add_argument('test_category', nullable=False,type=non_empty_string, required=True
+                           choices=['performance','sanity','smoke','unit','regression','functional','integration'])
         parser.add_argument('test_repository', nullable=False,
                             type=non_empty_string, required=True)
         parser.add_argument('test_scripttype', nullable=False,
@@ -592,6 +594,10 @@ class Tests(Resource):
             args['test_file_loc'] = os.path.join(app.config['upload_folder'] \
                                                  , args['test_id'])
             args['test_file'].save(args['test_file_loc'])
+            if (args['test_file_name'].split('.')[-1] not in ['zip', 'gz']):
+                return {'msg':'Not a zip or gzip file input'}, 422
+            if (os.path.getsize(args['test_file_loc'])<= 22):
+                return{"msg": "Upload non empty file"}, 422
             check = db.createTest(
                 testcaseid=args['test_id'],
                 name=args['test_name'],
