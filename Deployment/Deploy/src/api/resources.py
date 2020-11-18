@@ -43,6 +43,8 @@ class Deploy(Resource):
         parser.add_argument('config', type=excelFileType, location='files',
                             required=True)
         args = parser.parse_args()
+        if not checkStringLength(args['name']):
+            return {'message': 'Deployment name cannot have more than 25 characters'}, 422
         invalid_choices = {}
         if args['type'] not in ('generic', 'versa'):
             invalid_choices['type'] = f"'{args['type']}' is not a valid choice"
