@@ -16,7 +16,7 @@ from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
                          addDataToVault)
 from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
                                    non_empty_string, retrieveUrl,
-                                   validStrChecker, format_bytes, 
+                                   validStrChecker, format_bytes,
                                    assetDeletefromRepo, checkStringLength)
 
 
@@ -520,8 +520,8 @@ class Tests(Resource):
                             required=True)
         parser.add_argument('test_description', nullable=False,
                             type=str, required=True)
-        parser.add_argument('test_category', nullable=False,type=non_empty_string, required=True
-                            choices=['performance','sanity','smoke','unit','regression','functional','integration'])
+        parser.add_argument('test_category', nullable=False,type=non_empty_string, required=True,
+                           choices=['performance','sanity','smoke','unit','regression','functional','integration'])
         parser.add_argument('test_repository', nullable=False,
                             type=non_empty_string, required=True)
         parser.add_argument('test_scripttype', nullable=False,
@@ -531,8 +531,7 @@ class Tests(Resource):
         parser.add_argument('test_parameters', nullable=False,
                             type=non_empty_string,required=True)
         parser.add_argument('test_path', type=non_empty_string, nullable=False)
-        parser.add_argument('test_file', type=zipFileType,
-                            location='files', nullable=False, help="test_file must contain a valid file to proceed")
+        parser.add_argument('test_file', type=FileStorage, location='files', nullable=False)
         args = parser.parse_args()
         if args['test_scripttype'] == 'ansible':
             parser.add_argument('test_commands', type=non_empty_string,
