@@ -38,6 +38,12 @@ def genericString(value):
         raise ValueError(
             'The string value is either empty or not allowed. Alphanumeric '
             'string with special characters (-_) allowed')
+        
+def checkStringLength(string):
+    if (len(string) <= 25):
+        return True
+    else:
+        return False
 
 
 def excelFileType(file):
