@@ -117,7 +117,7 @@ class Deploy(Resource):
                               timestamp=timestamp)
             if check:
                 return {"Deployment Name": args['name'],
-                        "Deployment Id": id}, 200
+                        "Deployment Id": id}, 201
             if check is False:
                 return {"msg": "Deployment with same configurations already "
                                "exists"}, 400
