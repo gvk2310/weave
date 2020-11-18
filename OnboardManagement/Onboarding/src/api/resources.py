@@ -548,6 +548,8 @@ class Tests(Resource):
             return {
                        'message': 'Test description cannot have special '
                                   'characters'}, 422
+        if not checkStringLength(args['test_description']):
+            return {'message': 'Test description cannot have more than 25 characters'}, 422
         if not args['test_file'] and not args['test_path']:
             return {
                        'message': 'either test file or test path should be provided'}, 422
