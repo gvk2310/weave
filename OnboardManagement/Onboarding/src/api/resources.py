@@ -147,9 +147,14 @@ class Asset(Resource):
         parser.add_argument('asset_group', type=str, required=True)
         parser.add_argument('asset_version', type=str, required=True)
         args = parser.parse_args()
-
+        resp = db.get(assetid=args['asset_id'])
+        if not resp:
+            return {"msg": "Invalid asset id"}, 404
         if not args['asset_version'] and not args['asset_group'] :
             return {"msg": "Nothing to modify"}, 400
+        if (str(resp['asset_version']) == args['asset_version']) and \
+                (resp['asset_group'] == args['asset_group']):
+            return {'msg': "Details are already updated"}, 400
         if not validStrChecker(args['asset_group']):
             return {
                        'message': 'Asset group cannot have special '
@@ -557,8 +562,6 @@ class Tests(Resource):
             return {
                        'message': 'Test category cannot have special '
                                   'characters'}, 422
-        if not checkStringLength(args['test_category']):
-            return {'message': 'Test category cannot have more than 25 characters'}, 422
         check = db.getTest(name=args['test_name'])
         if check:
             return {'msg': 'Testcase with same name already exists'}, 403
