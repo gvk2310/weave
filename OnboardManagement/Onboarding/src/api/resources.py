@@ -1,4 +1,5 @@
 import os
+import ast
 import base64
 import datetime
 from ..db import db
@@ -17,7 +18,7 @@ from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
 from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
                                    non_empty_string, retrieveUrl,
                                    validStrChecker, format_bytes,
-                                   assetDeletefromRepo, checkStringLength)
+                                   assetDeletefromRepo, checkStringLength,ast_literal_eval)
 
 
 class Asset(Resource):
@@ -532,9 +533,7 @@ class Tests(Resource):
         parser.add_argument('test_scripttype', nullable=False,
                             type=non_empty_string, required=True,
                             choices=['python', 'ansible'])
-        # parser.add_argument('test_parameters', type=dict, action='append', required=True)
-        parser.add_argument('test_parameters', nullable=False,
-                            type=non_empty_string,required=True)
+        parser.add_argument('test_parameters', type=ast_literal_eval, action='append',required=True)
         parser.add_argument('test_path', type=non_empty_string, nullable=False)
         parser.add_argument('test_file', type=FileStorage, location='files', nullable=False)
         args = parser.parse_args()
@@ -583,7 +582,7 @@ class Tests(Resource):
                 scripttype=args['test_scripttype'],
                 commands=args[
                     'test_commands'] if 'test_commands' in args else 'None',
-                parameters=args['test_parameters'],
+                parameters=args['test_parameters'][0],
                 repository=args['test_repository'],
                 link=args['test_path'],
                 scan_result='Unknown',
@@ -610,7 +609,7 @@ class Tests(Resource):
                 scripttype=args['test_scripttype'],
                 commands=args[
                     'test_commands'] if 'test_commands' in args else 'None',
-                parameters=args['test_parameters'],
+                parameters=args['test_parameters'][0],
                 repository=args['test_repository'],
                 link=None,
                 scan_result='Scanning',
