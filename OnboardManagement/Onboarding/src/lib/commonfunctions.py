@@ -1,5 +1,6 @@
 import os
 import re
+import ast
 import requests
 from ..log import logger
 from .jfrog import uploadToJfrog, deleteFromJfrog
@@ -17,7 +18,13 @@ def non_empty_string(string):
     if not string:
         raise ValueError("Must not be empty string")
     return string
-
+  
+def ast_literal_eval(list):
+    val = ast.literal_eval(list)
+    for item in val:
+        if not ('name' in item.keys() and 'default' in item.keys()):
+            raise ValueError("Missing required keys in test_parameters")
+    return val
 
 def validStrChecker(string):
     regex = re.match("^[A-Za-z0-9_-]*$", string)
