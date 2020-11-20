@@ -28,7 +28,7 @@ class Tests(db.Document):
     category = db.StringField(required=True)
     scripttype = db.StringField(required=True)
     commands = db.StringField(required=True)
-    parameters = db.StringField(required=True)
+    parameters = db.ListField(required=True)
     repository = db.StringField(required=True)
     link = db.StringField(default='')
     scan_result = db.StringField()
