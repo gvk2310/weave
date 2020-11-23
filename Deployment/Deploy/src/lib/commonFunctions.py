@@ -88,11 +88,9 @@ def verifyJenkins(fn):
 
 def assetDownloadDetails(assets):
     try:
-#        token = request.headers['Authorization'].split()[-1]
-#        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}",
-#                            headers={f'Authorization': f'Bearer {token}'})
-		
-  		data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}")
+        token = request.headers['Authorization'].split()[-1]
+        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}",
+                            headers={f'Authorization': f'Bearer {token}'})
         if data.status_code == 200:
             return data.json()
         logger.error("Failed to retrieve asset download detail")
@@ -100,7 +98,6 @@ def assetDownloadDetails(assets):
         logger.error("Unable to get asset download detail")
         logger.debug(traceback.format_exc())
         logger.error(e)
-
 
 def triggerJenkins(parameters, job_name):
     try:
