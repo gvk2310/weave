@@ -121,6 +121,7 @@ def update(**kwargs):
             return False
         timestamp = datetime.datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
         logs = f"{timestamp} | {kwargs['message']}\n" + obj.logs
+        logs = logs.replace(" | Deployment initiated","")
         obj.update(status=kwargs['status'],
                    logs=logs)
         if kwargs['stage_info']:
