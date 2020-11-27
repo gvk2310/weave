@@ -216,7 +216,7 @@ class Repository(Resource):
             return data, 200
         if data is False:
             return {'msg': 'No repositories onboarded yet'}, 404
-        return {"msg": "Unable to retrieve repository list"}, 500
+        return {"msg": "Unable to retrieve repository list"}, 404
 
     #@verifyToken
     def post(self):
