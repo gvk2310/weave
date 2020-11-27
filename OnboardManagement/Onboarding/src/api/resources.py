@@ -18,7 +18,7 @@ from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
 from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
                                    non_empty_string, retrieveUrl,
                                    validStrChecker, format_bytes,
-                                   assetDeletefromRepo, checkStringLength,ast_literal_eval)
+                                   assetDeletefromRepo, checkStringLength,json_loads)
 
 
 class Asset(Resource):
@@ -533,10 +533,15 @@ class Tests(Resource):
         parser.add_argument('test_scripttype', nullable=False,
                             type=non_empty_string, required=True,
                             choices=['python', 'ansible'])
-        parser.add_argument('test_parameters', type=ast_literal_eval, action='append',required=True)
+        parser.add_argument('test_parameters', type=json_loads, action='append',required=True, 
+                            help="Invalid test_parameters input")
         parser.add_argument('test_path', type=non_empty_string, nullable=False)
         parser.add_argument('test_file', type=FileStorage, location='files', nullable=False)
         args = parser.parse_args()
+        if isinstance(args['test_parameters'],list):
+            args['test_parameters'] = args['test_parameters'][0]
+        else:
+            return {'msg':'Invalid test_parameters input'}, 400
         if args['test_scripttype'] == 'ansible':
             parser.add_argument('test_commands', type=non_empty_string,
                                 required=True)
@@ -582,7 +587,7 @@ class Tests(Resource):
                 scripttype=args['test_scripttype'],
                 commands=args[
                     'test_commands'] if 'test_commands' in args else 'None',
-                parameters=args['test_parameters'][0],
+                parameters=args['test_parameters'],
                 repository=args['test_repository'],
                 link=args['test_path'],
                 scan_result='Unknown',
@@ -609,7 +614,7 @@ class Tests(Resource):
                 scripttype=args['test_scripttype'],
                 commands=args[
                     'test_commands'] if 'test_commands' in args else 'None',
-                parameters=args['test_parameters'][0],
+                parameters=args['test_parameters'],
                 repository=args['test_repository'],
                 link=None,
                 scan_result='Scanning',
