@@ -572,7 +572,7 @@ class Tests(Resource):
 
         repo_details = retrieveUrl(args['test_repository'].lower())
         if not repo_details:
-            return {"msg": "Unable to retrieve repo details"}, 500
+            return {"msg": "Unable to retrieve repo details"}, 404
         if args['test_path']:
             if args['test_path'].split('.')[-1] not in ['zip', 'gz']:
                 return {"msg": "Provided path is not a  zip or gz"},400
