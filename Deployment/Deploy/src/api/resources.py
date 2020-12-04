@@ -9,7 +9,7 @@ from ..lib.sse import publish_event_message, SSEGenerator
 class SingleDeployInfo(Resource):
 
 
-    #@verifyToken
+    @verifyToken
     def get(self, id):
         data = db.get(id=id)
         if data:
@@ -193,7 +193,7 @@ class Deploy(Resource):
 class ConfigSpreadsheetGenerator(Resource):
 
 
-    #@verifyToken
+    @verifyToken
     def get(self, orchestrator, type, asset_id):
         if orchestrator != 'cloudformation' or type not in ['versa', 'generic']:
             return {"msg": "Not Supported"}, 400
@@ -212,7 +212,7 @@ class ConfigSpreadsheetGenerator(Resource):
 class ServerEventMessage(Resource):
 
 
-    #@verifyToken
+    @verifyToken
     def get(self):
         stream = Response(SSEGenerator(), mimetype="text/event-stream",
                           headers={'Cache-Control': 'no-cache'})
