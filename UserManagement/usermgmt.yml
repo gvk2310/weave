@@ -19,7 +19,7 @@ spec:
       - name: devnetops
       containers:
       - name: Accessmgmt
-        image: devnetops.azurecr.io/devnetops-Accessmgmt:S1
+        image: devnetops.azurecr.io/devnetops-accessmgmt:S1
         imagePullPolicy: Always
         env:
         - name: mongohost
