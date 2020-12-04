@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: usmg-testversion
+  labels:
+    app: usmg-testversion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: usmg-testversion
+  template:
+    metadata:
+      labels:
+        app: usmg-testversion
+    spec:
+      imagePullSecrets:
+      - name: devnetops
+      containers:
+      - name: usmg-v2
+        image: devnetops.azurecr.io/devnetops-usmg-testversion:v2
+        imagePullPolicy: Always
+        env:
+        - name: mongohost
+          value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops?authSource=admin
+        - name: secretkey
+          value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
+        - name: jwtsecretkey
+          value: eKHjwE761qUucC7FXtHKkeFI5O7c8GJ41PVcfLrMFA7oE-tINxTCB78SwyoNPhN7iHE
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: usmg-testversion
+  labels:
+    app: usmg-testversion
+spec:
+  selector:
+    app: usmg-v2
+  ports:
+  - port: 8080
+    targetPort: 8080
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: usmg-testversion
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+  - host: dno-dev.acndevopsengineering.com
+    http:
+      paths:
+      - path: /umgtest(/|$)(.*)
+        backend:
+          serviceName: usmg-testversion
+          servicePort: 8080
