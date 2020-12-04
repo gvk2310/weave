@@ -6,8 +6,8 @@ ext_modules = [
                 Extension("UserMgmt.src.db.db",  ["UserMgmt/src/db/db.py"]),
                 Extension("UserMgmt.src.config.config",  ["UserMgmt/src/config/config.py"]),
   				Extension("UserMgmt.src.lib.commonFunctions",  ["UserMgmt/src/lib/commonFunctions.py"]),
-  				Extension("Onboarding.src.__init__",  ["Onboarding/src/__init__.py"]),
-  				Extension("Onboarding.src.log",  ["Onboarding/src/log.py"])
+  				Extension("UserMgmt.src.__init__",  ["UserMgmt/src/__init__.py"]),
+  				Extension("UserMgmt.src.log",  ["UserMgmt/src/log.py"])
 ]
 setup(
         name = 'devnetops',
