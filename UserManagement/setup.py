@@ -7,7 +7,6 @@ ext_modules = [
                 Extension("UserMgmt.src.config.config",  ["UserMgmt/src/config/config.py"]),
   				Extension("UserMgmt.src.lib.commonFunctions",  ["UserMgmt/src/lib/commonFunctions.py"]),
   				Extension("UserMgmt.src.__init__",  ["UserMgmt/src/__init__.py"]),
-  				Extension("UserMgmt.run",  ["UserMgmt/run.py"]),
   				Extension("UserMgmt.src.log",  ["UserMgmt/src/log.py"])
 ]
 setup(
