@@ -47,9 +47,8 @@ def checkStringLength(string):
 
 
 def excelFileType(file):
-    if not isinstance(file, FileStorage) or \
-            file.filename.split('.')[-1] not in ['xls']:
-        raise ValueError('Not a excel file input')
+    if not isinstance(file, FileStorage) or file.filename.split('.')[-1] not in ['xls']:
+        raise ValueError('Config file not provided or not an excel file input')
     return file
 
 
