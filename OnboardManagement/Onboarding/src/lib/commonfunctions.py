@@ -12,7 +12,11 @@ from ..lib.sse import publish_onboard_events
 from functools import wraps
 from werkzeug.datastructures import FileStorage
 
+token_auth_url = os.environ['usermgmtUrl']
 
+request_header = {
+    item.split('/')[0]: item.split('/')[1]
+    for item in os.environ['request_header'].split(';')}
 
 def non_empty_string(string):
     if not string:
@@ -46,7 +50,26 @@ def zipFileType(file):
         raise ValueError('Not a zip or gzip file input')
     return file
 
+def verifyToken(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if 'Authorization' not in request.headers.keys() or \
+                request.headers['Authorization'].split()[0] != 'Bearer':
+            return {"msg": "Token required"}, 500
+        token = request.headers['Authorization'].split()[1]
+        perm = 'read' if request.method == 'GET' else 'write'
+        resp = requests.get(
+            f"{token_auth_url}/isauthorized/vault/{perm}",
+            headers={f'Authorization': f'Bearer {token}',
+                     'Content-Type': 'application/json'},
+        )
+        if resp.status_code != 200:
+            return resp.json(), resp.status_code
+        return fn(*args, **kwargs)
 
+    return wrapper
+  
+  
 def assetDeletefromRepo(asset):
     repo_details = retrieveUrl(asset["asset_repository"].lower())
     if not repo_details:
