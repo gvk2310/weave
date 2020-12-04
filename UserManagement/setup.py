@@ -5,7 +5,7 @@ ext_modules = [
         Extension("UserMgmt.src.api.resources",  ["UserMgmt/src/api/resources.py"]),
                 Extension("UserMgmt.src.db.db",  ["UserMgmt/src/db/db.py"]),
                 Extension("UserMgmt.src.config.config",  ["UserMgmt/src/config/config.py"]),
-  				Extension("UserMgmt.src.lib.commonfunctions",  ["UserMgmt/src/lib/commonfunctions.py"]),
+  				Extension("UserMgmt.src.lib.commonFunctions",  ["UserMgmt/src/lib/commonFunctions.py"]),
   				Extension("Onboarding.src.__init__",  ["Onboarding/src/__init__.py"]),
   				Extension("Onboarding.src.log",  ["Onboarding/src/log.py"])
 ]
