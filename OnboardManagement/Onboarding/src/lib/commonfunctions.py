@@ -59,7 +59,7 @@ def verifyToken(fn):
         token = request.headers['Authorization'].split()[1]
         perm = 'read' if request.method == 'GET' else 'write'
         resp = requests.get(
-            f"{token_auth_url}/isauthorized/vault/{perm}",
+            f"{token_auth_url}/isauthorized/onboard/{perm}",
             headers={f'Authorization': f'Bearer {token}',
                      'Content-Type': 'application/json'},
         )
