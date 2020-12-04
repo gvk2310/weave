@@ -22,7 +22,7 @@ class SingleDeployInfo(Resource):
 class Deploy(Resource):
 
 
-    #@verifyToken
+    @verifyToken
     def get(self):
         data = db.get()
         if data:
@@ -31,7 +31,7 @@ class Deploy(Resource):
             return {'msg': 'No deployments record found'}, 404
         return {'msg': 'Internal Server Error'}, 500
 
-    #@verifyToken
+    @verifyToken
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('name', type=nonEmptyString, required=True)
@@ -126,7 +126,7 @@ class Deploy(Resource):
             return {"msg": "Deployment triggered but failed to save "
                            "deployment details"}, 500
 
-    #@verifyJenkins
+    @verifyJenkins
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('deployment_id', type=nonEmptyString, required=True)
@@ -152,7 +152,7 @@ class Deploy(Resource):
             return {"msg": "Deployment Id does not exist"}, 400
         return {"msg": "Deployment update failed"}, 500
 
-    #@verifyToken
+    @verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('id', type=nonEmptyString, required=True)
