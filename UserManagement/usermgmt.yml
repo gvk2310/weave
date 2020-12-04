@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: Accessmgmt
+  name: accessmgmt
   labels:
-    app: Accessmgmt
+    app: accessmgmt
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: Accessmgmt
+      app: accessmgmt
   template:
     metadata:
       labels:
-        app: Accessmgmt
+        app: accessmgmt
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: Accessmgmt
+      - name: accessmgmt
         image: devnetops.azurecr.io/devnetops-accessmgmt:S1
         imagePullPolicy: Always
         env:
@@ -34,12 +34,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: Accessmgmt
+  name: accessmgmt
   labels:
-    app: Accessmgmt
+    app: accessmgmt
 spec:
   selector:
-    app: Accessmgmt
+    app: accessmgmt
   ports:
   - port: 8080
     targetPort: 8080
