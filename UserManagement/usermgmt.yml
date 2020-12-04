@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: usmg-testversion
+  name: Accessmgmt
   labels:
-    app: usmg-testversion
+    app: Accessmgmt
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: usmg-testversion
+      app: Accessmgmt
   template:
     metadata:
       labels:
-        app: usmg-testversion
+        app: Accessmgmt
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: usmg-v2
-        image: devnetops.azurecr.io/devnetops-usmg-testversion:v2
+      - name: Accessmgmt
+        image: devnetops.azurecr.io/devnetops-Accessmgmt:S1
         imagePullPolicy: Always
         env:
         - name: mongohost
@@ -34,28 +34,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: usmg-testversion
+  name: Accessmgmt
   labels:
-    app: usmg-testversion
+    app: Accessmgmt
 spec:
   selector:
-    app: usmg-v2
+    app: Accessmgmt
   ports:
   - port: 8080
     targetPort: 8080
 ---
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: usmg-testversion
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-spec:
-  rules:
-  - host: dno-dev.acndevopsengineering.com
-    http:
-      paths:
-      - path: /umgtest(/|$)(.*)
-        backend:
-          serviceName: usmg-testversion
-          servicePort: 8080
