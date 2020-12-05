@@ -14,10 +14,6 @@ from werkzeug.datastructures import FileStorage
 
 token_auth_url = os.environ['usermgmtUrl']
 
-request_header = {
-    item.split('/')[0]: item.split('/')[1]
-    for item in os.environ['request_header'].split(';')}
-
 def non_empty_string(string):
     if not string:
         raise ValueError("Must not be empty string")
