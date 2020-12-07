@@ -15,7 +15,7 @@ class IsAuthorized(Resource):
     # Token provided to the user while user authentication needs to be passed
     # as Bearer token along with service,
     # and permission type.
-    @jwt_required
+    #@jwt_required
     def get(self, svc, perm):
         if perm not in ['read', 'write']:
             return {'message': 'Invalid permission type requested for'}, 400
@@ -49,7 +49,7 @@ class Authenticate(Resource):
 
 
 class SelfChanges(Resource):
-    @jwt_required
+    #@jwt_required
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('action', type=int, required=True, location='args')
@@ -84,8 +84,8 @@ class User(Resource):
     #         and 1 of the special characters <_@$>"
 
     # Getting List of user Available
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def get(self):
         users = db.getUsers()
         if users:
@@ -95,8 +95,8 @@ class User(Resource):
         return {'message': 'Unable to fetch users'}, 500
 
     # Creating user
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=nonEmptyEmail, required=True)
@@ -118,8 +118,8 @@ class User(Resource):
         return {'message': 'Unable to create user '}, 500
 
     # Updating User details
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=nonEmptyEmail, required=True)
@@ -157,8 +157,8 @@ class User(Resource):
         return {'message': 'Unable to process the request'}, 500
 
     # Deleting user
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=nonEmptyEmail, required=True)
@@ -186,8 +186,8 @@ class Role(Resource):
         return {'message': 'Unable to fetch roles'}, 500
 
     # Creating Role
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=nonEmptyString, required=True)
@@ -207,8 +207,8 @@ class Role(Resource):
         return {'message': 'Request not processed'}, 500
 
     # Adding Service to role
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=nonEmptyString, required=True)
@@ -230,8 +230,8 @@ class Role(Resource):
         return {'message': 'Unable to process this request'}, 500
 
     # Deleting roles
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=nonEmptyString, required=True)
@@ -251,8 +251,8 @@ class Service(Resource):
     # will only be accepted and must be
     # passed as bearer token.
     # Getting list of Services
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def get(self):
         svcs = db.getServices()
         if svcs:
@@ -262,8 +262,8 @@ class Service(Resource):
         return {'message': 'Unable to fetch services'}, 500
 
     # Creating Service
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('service', type=nonEmptyString, required=True)
@@ -278,8 +278,8 @@ class Service(Resource):
         return {'message': 'Unable to process this request'}, 500
 
     # status change
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('service', type=nonEmptyString, required=True)
@@ -294,8 +294,8 @@ class Service(Resource):
         return {'message': 'Unable to process this request'}, 500
 
     # Deleting Service
-    @jwt_required
-    @admin_required
+    #@jwt_required
+    #@admin_required
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('service', type=nonEmptyString, required=True)
