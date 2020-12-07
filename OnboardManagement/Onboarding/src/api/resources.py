@@ -24,7 +24,7 @@ from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
 class Asset(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         data = db.get()
         if data:
@@ -33,7 +33,7 @@ class Asset(Resource):
             return {'msg': 'No assets onboarded yet'}, 404
         return {'msg': 'Internal Server Error'}, 500
 
-    @verifyToken
+    #@verifyToken
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_name', nullable=False, type=non_empty_string,
@@ -142,7 +142,7 @@ class Asset(Resource):
                            'msg': 'Failed to initiate asset onboarding'}, 500
             return {'asset_id': args['assetid']}, 201     
           
-    @verifyToken
+    #@verifyToken
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_id', type=str, required=True)
@@ -177,7 +177,7 @@ class Asset(Resource):
             return {"msg": "Asset ID does not exist"}, 400
         return {"msg": "asset_version and asset_group update failed"}, 500
 
-    @verifyToken
+    #@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_id', nullable=False, type=non_empty_string,
@@ -210,7 +210,7 @@ class Asset(Resource):
 class Repository(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         data = getRepoList()
         if data:
@@ -219,7 +219,7 @@ class Repository(Resource):
             return {'msg': 'No repositories onboarded yet'}, 404
         return {"msg": "Unable to retrieve repository list"}, 404
 
-    @verifyToken
+    #@verifyToken
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('repo_name', nullable=False, type=non_empty_string,
@@ -298,7 +298,7 @@ class Repository(Resource):
               
               
               
-    @verifyToken
+    #@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('repo_name', type=str, required=True)
@@ -344,7 +344,7 @@ class Repository(Resource):
 class Infra(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         data = getInfraList()
         if data:
@@ -356,7 +356,7 @@ class Infra(Resource):
         return {
                    "msg": "Unable to retrieve infra list"}, 500
 
-    @verifyToken
+    #@verifyToken
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('infra_name', nullable=False, type=non_empty_string,
@@ -456,7 +456,7 @@ class Infra(Resource):
                    "msg": "Cloud validation failed, data could not be added "}, 500
                   
 
-    @verifyToken
+    #@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('infra_name', type=str, required=True)
@@ -480,7 +480,7 @@ class Infra(Resource):
 class AssetDownloadDetails(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('assets', type=str, required=True, location='args')
@@ -500,7 +500,7 @@ class AssetDownloadDetails(Resource):
 class ServerEventMessage(Resource):
 
 
-    @verifyToken
+    #@verifyToken
     def get(self):
         stream = Response(SSEGenerator(), mimetype="text/event-stream",
                           headers={'Cache-Control': 'no-cache'})
@@ -511,7 +511,7 @@ class ServerEventMessage(Resource):
 
 class Tests(Resource):
               
-    @verifyToken
+    #@verifyToken
     def get(self):
         data = db.getTest()
         if data:
@@ -520,7 +520,7 @@ class Tests(Resource):
              return {'msg': 'No testcases onboarded yet'}, 404
         return {'msg': 'Internal Server Error'}, 500
 
-    @verifyToken
+    #@verifyToken
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_name', nullable=False, type=non_empty_string,
@@ -639,7 +639,7 @@ class Tests(Resource):
               
 
                   
-    @verifyToken
+    #@verifyToken
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_id', type=str, required=True)
@@ -668,7 +668,7 @@ class Tests(Resource):
         return {"msg": "test_category and test_description update failed"}, 500
 
 
-    @verifyToken
+    #@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_id', nullable=False, type=non_empty_string,
