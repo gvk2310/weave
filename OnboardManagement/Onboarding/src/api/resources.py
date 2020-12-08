@@ -639,21 +639,31 @@ class Tests(Resource):
               
 
                   
-    #@verifyToken
+    ##@verifyToken
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('test_id', type=str, required=True)
-        parser.add_argument('test_description', type=str, required=True)
-        parser.add_argument('test_category', type=str, required=True)
+        parser.add_argument('test_id', type=non_empty_string, required=True)
+        parser.add_argument('test_description', type=non_empty_string, required=True)
+        parser.add_argument('test_category', type=non_empty_string,choices=['performance','sanity','smoke',
+                                        'unit','regression','functional','integration'], required=True)
         args = parser.parse_args()
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
             return {"msg": "Invalid testcase id"}, 404
+          
         if not args['test_description'] and not args['test_category']:
             return {"msg": "Nothing to modify"}, 400
+          
         if (resp['test_description'] == args['test_description']) and \
                 (resp['test_category'] == args['test_category']):
             return {'msg': "Test description and Test category details are already updated"}, 400
+      
+        if not validStrChecker(args['test_description']):
+            return {'message': 'Test description cannot have special characters'}, 422
+          
+        if not checkStringLength(args['test_description']):
+            return {'message': 'Test description cannot have more than 25 characters'}, 422
+          
         publish_onboard_events(testcaseid=args['test_id'],
                                description=args['test_description'],
                                category=args['test_category'])
@@ -666,6 +676,7 @@ class Tests(Resource):
         if done is False:
             return {"msg": "Test ID does not exist"}, 400
         return {"msg": "test_category and test_description update failed"}, 500
+
 
 
     #@verifyToken
