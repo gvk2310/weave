@@ -679,7 +679,7 @@ class Tests(Resource):
 
 
 
-    #@verifyToken
+    ##@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_id', nullable=False, type=non_empty_string,
@@ -695,8 +695,12 @@ class Tests(Resource):
         if not repo_details:
             return {
                        "msg": "Unable to retrieve repo details"}, 500
-        if resp['test_link']:
+        if args['delete_from_repo'] and repo_details[
+            'repo_vendor'].lower() == 'jfrog':
             resp = deleteFromJfrog(resp['test_link'], repo_details)
+        if args['delete_from_repo'] and repo_details[
+            'repo_vendor'].lower() == 'nexus':
+            resp = deleteFromNexus(resp['test_link'], repo_details)
             if not resp:
                 return {"msg": "Unable to delete test from repository"}, 500
         check = db.deleteTest(testcaseid=args['test_id'])
