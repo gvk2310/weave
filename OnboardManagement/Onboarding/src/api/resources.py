@@ -199,8 +199,8 @@ class Asset(Resource):
         if args['delete_from_repo'] and repo_details[
             'repo_vendor'].lower() == 'nexus':
             resp = deleteFromNexus(resp['asset_link'], repo_details)
-            if not resp:
-                return {"msg": "Unable to delete asset from repository"}, 500
+        if not resp:
+            return {"msg": "Unable to delete asset from repository"}, 500
         check = db.delete(assetid=args['asset_id'])
         if check:
             return {'msg': 'Asset Deleted'}, 200
@@ -701,8 +701,8 @@ class Tests(Resource):
         if args['delete_from_repo'] and repo_details[
             'repo_vendor'].lower() == 'nexus':
             resp = deleteFromNexus(resp['test_link'], repo_details)
-            if not resp:
-                return {"msg": "Unable to delete test from repository"}, 500
+        if not resp:
+            return {"msg": "Unable to delete test from repository"}, 500
         check = db.deleteTest(testcaseid=args['test_id'])
         if check:
             return {'msg': 'Testcase Deleted'}, 200
