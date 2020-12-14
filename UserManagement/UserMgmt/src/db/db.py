@@ -116,12 +116,15 @@ def removeRoleFrmUser(user, roles):
         new_roles = list(set(usr.roles) - set(Role.objects(name__in=roles)))
         if set(usr.roles) == set(new_roles):
             logger.error(f"User '{user}' doesn't have any of these roles")
-            return False
+            return 1
+        if len(usr.roles) == 1:
+            logger.error(f" Removing this role will remove all the roles for the User '{user}'. You can delete the User instead if not being used.")
+            return 2
         usr.update(roles=new_roles)
         logger.info(
             f"Roles - '{','.join(roles)}' has been removed from the user '"
             f"{user}'")
-        return True
+        return 3
     except Exception as e:
         logger.error(f"Unable to remove roles from the user '{user}'")
         logger.debug(traceback.format_exc())
