@@ -111,7 +111,7 @@ class User(Resource):
         resp = db.createUser(args['email'], args['name'], args['password'],
                              roles)
         if resp:
-            return {'message': 'User created'}, 201
+            return {'message': 'User created'}, 200
         elif resp is False:
             return {"message": "Role/Roles does not exist"}, 500
         return {'message': 'Unable to create user '}, 500
@@ -144,10 +144,12 @@ class User(Resource):
             roles = formatList(args['roles'])
             if not isinstance(roles, list):
                 return {'message': {'roles': roles}}, 400
-            if db.removeRoleFrmUser(args['email'], roles):
+            if db.removeRoleFrmUser(args['email'], roles) == 3:
                 return {'message': 'Roles modified'}, 200
-            else:
+            elif db.removeRoleFrmUser(args['email'], roles) == 1:
                 return {'message': 'User doesn\'t have any of thse roles' }, 400
+            elif db.removeRoleFrmUser(args['email'], roles) == 2:
+                return {'message': 'Removing this role will remove all the roles for the User.User can be deleted if not being used'}, 400
         elif args['action'] == 4:
             parser.add_argument('name', type=nonEmptyString, required=True)
             args = parser.parse_args()
@@ -200,7 +202,7 @@ class Role(Resource):
             return {'message': {'services': services}}, 400
         resp = db.createRole(args['role'], services, args['access_type'])
         if resp:
-            return {'message': 'Role Created'}, 201
+            return {'message': 'Role Created'}, 200
         elif resp is False:
             return {'messages': 'All or one of the services not found'}, 412
         return {'message': 'Request not processed'}, 500
