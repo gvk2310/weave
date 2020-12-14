@@ -117,7 +117,7 @@ def removeRoleFrmUser(user, roles):
         if set(usr.roles) == set(new_roles):
             logger.error(f"User '{user}' doesn't have any of these roles")
             return 1
-        if len(usr.roles) == 1:
+        if len(usr.roles) == 1 or len(usr.roles) == len(roles):
             logger.error(f" Removing this role will remove all the roles for the User '{user}'. You can delete the User instead if not being used.")
             return 2
         usr.update(roles=new_roles)
