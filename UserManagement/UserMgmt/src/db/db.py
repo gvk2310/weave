@@ -271,19 +271,26 @@ def addSvcToRole(role, svc):
         logger.error(f"Failed to add services to role '{role}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
-
-
+        
+        
 def remSvcFrmRole(role, svcs):
     try:
+        svc = Services.objects(name__in=svcs)
+        if len(svc) != len(svcs):
+            return 3
         obj = Role.objects(name=role).first()
+        if len(obj.access.on) == 1 or len(obj.access.on) == len(svcs):
+            return 1
         obj.access.on = [item for item in obj.access.on if
                          item.name not in svcs]
         obj.save()
-        return True
+        return 2
     except Exception as e:
-        logger.error(f"Failed to remove services from role '{role}'")
+        logger.error(f"Failed to remove services from role'{role}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
+
+
 
 
 def checkRoleUsage(role):
