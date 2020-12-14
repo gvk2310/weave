@@ -226,8 +226,12 @@ class Role(Resource):
             elif resp is False:
                 return {'message': 'One of the services not found'}, 400
         elif args['action'] == 2:
-            if db.remSvcFrmRole(args['role'], services):
+            if db.remSvcFrmRole(args['role'], services) == 2:
                 return {'message': 'Service is removed from Role'}, 200
+            elif db.remSvcFrmRole(args['role'], services) == 1:
+                return {'message': 'Removing this will remove all the access for the role.Role can be deleted if not being used'}, 400
+            elif db.remSvcFrmRole(args['role'], services) == 3:
+                return {'message': 'One of the services not found'}, 400
         return {'message': 'Unable to process this request'}, 500
 
     # Deleting roles
