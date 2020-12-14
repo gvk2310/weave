@@ -39,7 +39,7 @@ def nonEmptyPasswString(value):
 
 def nonEmptyEmail(value):
     if isinstance(value, str) and value.strip() and re.match(
-            r'^[a-z\d\._-]+[@]\w+[.]\w+$', value):
+            r'^[A-Za-z\d\._-]+[@]\w+[.]\w+$', value):
         return value
     else:
         raise ValueError(
