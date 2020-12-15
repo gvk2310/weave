@@ -12,7 +12,8 @@ redis_port = redis_url.split(':')[1]
 
 
 class SSEGenerator:
-    def __init__(self):
+    def __init__(self, broadcast_type):
+        self.event = broadcast_type
         self.closed = False
         self.expiry = datetime.datetime.now() + datetime.timedelta(minutes=30)
 
@@ -20,15 +21,15 @@ class SSEGenerator:
         self.closed = True
 
     def __iter__(self):
-        event = 'onboard'
+        #event = 'onboard'
         client = redis.Redis(host=redis_host, port=redis_port)
         p = client.pubsub()
-        p.subscribe(event)
+        p.subscribe(self.event)
         while not self.closed and datetime.datetime.now() < self.expiry:
             resp = p.get_message()
             if resp and not resp['data'] == 1:
                 msg = resp['data'].decode('utf-8')
-                payload = self.format_sse(data=msg, event=event)
+                payload = self.format_sse(data=msg, event=self.event)
                 yield payload
             else:
                 time.sleep(1)
@@ -44,7 +45,7 @@ class SSEGenerator:
 def publish_onboard_events(**kwargs):
     try:
         client = redis.Redis(host=redis_host, port=redis_port)
-        client.publish('onboard', json.dumps(kwargs))
+        client.publish(json.dumps(kwargs))
         return True
     except Exception as e:
         logger.error("Unable to publish message in redis")
