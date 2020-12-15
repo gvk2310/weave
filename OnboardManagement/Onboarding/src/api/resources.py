@@ -707,3 +707,12 @@ class Tests(Resource):
         if check:
             return {'msg': 'Testcase Deleted'}, 200
         return {'msg': 'Internal Server Error'}, 500
+   
+  
+  
+class ServerEventMessage(Resource):
+    #@verifyToken
+    def get(self):
+        stream = Response(SSEGenerator(broadcast_type), mimetype="text/event-stream",
+                          headers={'Cache-Control': 'no-cache'})
+        return stream
