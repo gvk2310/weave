@@ -100,7 +100,7 @@ def addRoleToUser(user, roles):
             return False
         usr = User.objects(email=user).first()
         new_roles = usr.roles + list(rols)
-        usr.update(roles=new_roles)
+        usr.update(roles=list(set(new_roles)))
         logger.info(
             f"New roles - {','.join(roles)} added to the user '{user}'")
         return True
