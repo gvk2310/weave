@@ -97,18 +97,18 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                }
 		finally {
             // Success or failure, always send notifications to bitbucket           
-            this.notifyBitbucket(currentBuild.result)
+            this.bitbucketStatusNotify(currentBuild.result)
         }
 
 	}
 }
-def notifyBitbucket(String state) {
+def bitbucketStatusNotify(String state) {
  
     if('SUCCESS' == state || 'FAILED' == state) {
     // Set result of currentBuild !Important!
         currentBuild.result = state
     }
  
-    notifyBitbucket commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: Git_Credential, disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
+    bitbucketStatusNotify commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: Git_Credential, disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
 }
  
