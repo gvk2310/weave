@@ -111,7 +111,7 @@ class User(Resource):
         resp = db.createUser(args['email'], args['name'], args['password'],
                              roles)
         if resp:
-            return {'message': 'User created'}, 200
+            return {'message': 'User created'}, 201
         elif resp is False:
             return {"message": "Role/Roles does not exist"}, 500
         return {'message': 'Unable to create user '}, 500
@@ -202,7 +202,7 @@ class Role(Resource):
             return {'message': {'services': services}}, 400
         resp = db.createRole(args['role'], services, args['access_type'])
         if resp:
-            return {'message': 'Role Created'}, 200
+            return {'message': 'Role Created'}, 201
         elif resp is False:
             return {'messages': 'All or one of the services not found'}, 412
         return {'message': 'Request not processed'}, 500
