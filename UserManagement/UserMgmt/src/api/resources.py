@@ -138,7 +138,7 @@ class User(Resource):
                 return {'message': {'roles': roles}}, 400
             if db.addRoleToUser(args['email'], roles) == 1:
                 return {'message': 'Role(s) has been already added'}, 400            
-            if db.addRoleToUser(args['email'], roles) == 2:
+            elif db.addRoleToUser(args['email'], roles) == 2:
                 return {'message': 'Role(s) added to user'}, 200
         elif args['action'] == 2:
             parser.add_argument('roles', action='append', required=True)
