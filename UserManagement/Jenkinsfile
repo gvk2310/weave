@@ -23,7 +23,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             credentialsId: Git_Credential
          
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
-			this.notifyBitbucket('INPROGRESS')
+			this.bitbucketStatusNotify('INPROGRESS')
         }
           /*
  	    stage('Python3+ and pep-8 coding standards compliance check') {
