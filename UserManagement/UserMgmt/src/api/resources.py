@@ -137,7 +137,7 @@ class User(Resource):
             if not isinstance(roles, list):
                 return {'message': {'roles': roles}}, 400
             if db.addRoleToUser(args['email'], roles):
-                return {'message': 'Roles modified'}, 200
+                return {'message': 'Role(s) added to user'}, 200
         elif args['action'] == 2:
             parser.add_argument('roles', action='append', required=True)
             args = parser.parse_args()
@@ -145,7 +145,7 @@ class User(Resource):
             if not isinstance(roles, list):
                 return {'message': {'roles': roles}}, 400
             if db.removeRoleFrmUser(args['email'], roles) == 3:
-                return {'message': 'Roles modified'}, 200
+                return {'message': 'Role(s) removed from user'}, 200
             elif db.removeRoleFrmUser(args['email'], roles) == 1:
                 return {'message': 'User doesn\'t have any of thse roles' }, 400
             elif db.removeRoleFrmUser(args['email'], roles) == 2:
