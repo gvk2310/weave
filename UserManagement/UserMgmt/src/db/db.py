@@ -99,11 +99,13 @@ def addRoleToUser(user, roles):
         if len(roles) != len(rols):
             return False
         usr = User.objects(email=user).first()
+        if all(x in usr.roles for x in list(rols)):
+            return 1
         new_roles = usr.roles + list(rols)
         usr.update(roles=list(set(new_roles)))
         logger.info(
             f"New roles - {','.join(roles)} added to the user '{user}'")
-        return True
+        return 2
     except Exception as e:
         logger.error(f"Unable to add new roles to the user '{user}'")
         logger.debug(traceback.format_exc())
