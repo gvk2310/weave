@@ -104,7 +104,7 @@ def addRoleToUser(user, roles):
         new_roles = usr.roles + list(rols)
         usr.update(roles=list(set(new_roles)))
         logger.info(f"New roles - {','.join(roles)} added to the user '{user}'")
-        return True
+        return 2
     except Exception as e:
         logger.error(f"Unable to add new roles to the user '{user}'")
         logger.debug(traceback.format_exc())
