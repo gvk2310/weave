@@ -48,23 +48,24 @@ metadata:
 spec:
   selector:
     app: onboard-testversion
+  type: LoadBalancer
   ports:
   - port: 8080
     targetPort: 8080
 ---
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: onboard-testversion
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    nginx.ingress.kubernetes.io/proxy-body-size: 8g
-spec:
-  rules:
-  - host: dno-dev.acndevopsengineering.com
-    http:
-      paths:
-      - path: /onb-testversion(/|$)(.*)
-        backend:
-          serviceName: onboard-testversion
-          servicePort: 8080
+#apiVersion: networking.k8s.io/v1beta1
+#kind: Ingress
+#metadata:
+#  name: onboard-testversion
+#  annotations:
+#    nginx.ingress.kubernetes.io/rewrite-target: /$2
+#    nginx.ingress.kubernetes.io/proxy-body-size: 8g
+#spec:
+#  rules:
+#  - host: dno-dev.acndevopsengineering.com
+#    http:
+#      paths:
+#      - path: /onb-testversion(/|$)(.*)
+#        backend:
+#          serviceName: onboard-testversion
+#          servicePort: 8080
