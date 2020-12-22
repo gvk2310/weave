@@ -269,10 +269,13 @@ def addSvcToRole(role, svc):
         if all(x in obj.access.on for x in list(svcs)):
             logger.info(f"svc already exist '{role}'")
             return 2
-        obj.access.on = list(set(obj.access.on + list(svcs)))
-        obj.save()
-        logger.info(f"svc added to '{role}'")
-        return 3
+        else:
+        
+            obj.access.on = list(set(obj.access.on + list(svcs)))
+            obj.save()
+            logger.info(f"svc added to '{role}'")
+            return 3
+        
     except Exception as e:
         logger.error(f"Failed to add services to role '{role}'")
         logger.debug(traceback.format_exc())
