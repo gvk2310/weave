@@ -266,7 +266,7 @@ def addSvcToRole(role, svc):
     try:
         svcs = Services.objects(name__in=svc)
         if len(svc) != len(svcs):
-            return False
+            return 3
         obj = Role.objects(name=role).first()
         if all(x in obj.access.on for x in list(svcs)):
             return 1
