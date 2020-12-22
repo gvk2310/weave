@@ -97,7 +97,7 @@ def addRoleToUser(user, roles):
     try:
         rols = Role.objects(name__in=roles)
         if len(roles) != len(rols):
-            return False
+            return 3
         usr = User.objects(email=user).first()
         if all(x in usr.roles for x in list(rols)):
             return 1
