@@ -223,11 +223,12 @@ class Role(Resource):
         if not isinstance(services, list):
             return {'message': {'services': services}}, 400
         if args['action'] == 1:
-            resp = db.addSvcToRole(args['role'], services)
-            if resp:
-                return {'message': 'Services has been added to Role'}, 200
-            elif resp is False:
+            if db.addSvcToRole(args['role'], services) == 1:
                 return {'message': 'One of the services not found'}, 400
+            elif db.addSvcToRole(args['role'], services) == 3:
+                return {'message': 'Service is added to the role'}, 200            
+            elif db.addSvcToRole(args['role'], services) == 2:
+                return {'message': 'Service already exist for this role'}, 400
         elif args['action'] == 2:
             if db.remSvcFrmRole(args['role'], services) == 2:
                 return {'message': 'Service is removed from Role'}, 200
