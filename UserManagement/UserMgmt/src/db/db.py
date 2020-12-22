@@ -287,6 +287,10 @@ def remSvcFrmRole(role, svcs):
         if len(svc) != len(svcs):
             return 3
         obj = Role.objects(name=role).first()
+        new_svcs = list(set(obj.access.on) - set(svc))
+        if set(obj.access.on) == set(new_svcs):
+            logger.error(f"User '{role}' doesn't have any of these services")
+            return 4
         if len(obj.access.on) == 1 or len(obj.access.on) == len(svcs):
             return 1
         obj.access.on = [item for item in obj.access.on if
