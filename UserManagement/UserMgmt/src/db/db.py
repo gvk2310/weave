@@ -264,11 +264,13 @@ def addSvcToRole(role, svc):
     try:
         svcs = Services.objects(name__in=svc)
         if len(svc) != len(svcs):
-            return False
+            return 1
         obj = Role.objects(name=role).first()
+        if all(x in obj.access.on for x in list(svcs)):
+            return 2
         obj.access.on = list(set(obj.access.on + list(svcs)))
         obj.save()
-        return True
+        return 3
     except Exception as e:
         logger.error(f"Failed to add services to role '{role}'")
         logger.debug(traceback.format_exc())
