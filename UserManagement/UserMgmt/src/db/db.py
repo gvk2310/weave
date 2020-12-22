@@ -260,26 +260,25 @@ def createRole(role, svc, action):
         logger.error(e)
 
 
+
+        
 def addSvcToRole(role, svc):
     try:
         svcs = Services.objects(name__in=svc)
         if len(svc) != len(svcs):
-            return 1
+            return False
         obj = Role.objects(name=role).first()
         if all(x in obj.access.on for x in list(svcs)):
-            logger.info(f"svc already exist '{role}'")
-            return 2
-        else:
-        
-            obj.access.on = list(set(obj.access.on + list(svcs)))
-            obj.save()
-            logger.info(f"svc added to '{role}'")
-            return 3
+            return 1
+        obj.access.on = list(set(obj.access.on + list(svcs)))
+        obj.save()
+        logger.info(f"svc added to '{role}'")
+        return 2
         
     except Exception as e:
-        logger.error(f"Failed to add services to role '{role}'")
+        logger.error(f"Unable to add new services to the role '{role}'")
         logger.debug(traceback.format_exc())
-        logger.error(e)
+        logger.error(e)        
         
         
 def remSvcFrmRole(role, svcs):
