@@ -23,7 +23,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             credentialsId: Git_Credential
          
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
-			this.notifyBitbucket('INPROGRESS')
+			this.bitbucketStatusNotify('INPROGRESS')
         }
            stage ('Encrypting Source codes'){
             container('python3'){
@@ -103,17 +103,17 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         echo "Finished: ${currentBuild.result}"
                }
 		finally {
-            this.notifyBitbucket(currentBuild.result)
+            this.bitbucketStatusNotify(currentBuild.result)
         }
 
 	}
 }
-def notifyBitbucket(String state) {
+def bitbucketStatusNotify(String state) {
  
     if('SUCCESS' == state || 'FAILED' == state) {
     // Set result of currentBuild !Important!
         currentBuild.result = state
     }
  
-    notifyBitbucket commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: Git_Credential, disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
+   // notifyBitbucket commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: Git_Credential, disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
 }
