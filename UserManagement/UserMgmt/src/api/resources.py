@@ -169,7 +169,7 @@ class User(Resource):
         args = parser.parse_args()
         if db.deleteUser(args['email']):
             return {'message': 'User deleted'}, 200
-        return {'message': 'Unable to delete user'}, 500
+        return {'message': 'User does not exist'}, 400
 
 
 class Role(Resource):
