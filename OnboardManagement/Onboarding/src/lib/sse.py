@@ -36,10 +36,10 @@ class SSEGenerator:
                 time.sleep(1)
 
     @staticmethod
-    def format_sse(data, event):
+    def format_sse(data, type):
         msg = f'data: {data}\n\n'
-        if event:
-            msg = f'event: {event}\n{msg}'
+        if type:
+            msg = f'event: {type}\n{msg}'
         return msg
 
 
