@@ -74,7 +74,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          }
              }
          }
-           /**
+           
 		stage('Deploying to Kubernetes') {
 				container('kubectl') {
 				try{
@@ -92,7 +92,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               }
 			}
 		}
-        **/
+        
 		currentBuild.result = 'SUCCESS'
         echo "RESULT: ${currentBuild.result}"
         echo "Finished: ${currentBuild.result}"
