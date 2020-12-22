@@ -14,8 +14,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		def Commit_Id
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
-        def Docker_Image = 'devnetops-onboardmgmt-test'
+        def Docker_Image = 'devnetops-onboard-test'
         def Image_Tag = 't1'
+        def K8s_Deployment = 'onboard-test'
 		try{
        stage('Git Checkout'){
             git branch: Git_Branch,
