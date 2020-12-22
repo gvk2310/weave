@@ -2,52 +2,46 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: onboard-testversion
+  name: onboard-test
   labels:
-    app: onboard-testversion
+    app: onboard-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: onboard-testversion
+      app: onboard-test
   template:
     metadata:
       labels:
-        app: onboard-testversion
+        app: onboard-test
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: onboard-testversion
-        image: devnetops.azurecr.io/devnetops-onboardmgmt-testversion:s2
+      - name: onboard-test
+        image: devnetops.azurecr.io/devnetops-onboardmgmt-test:t1
         imagePullPolicy: Always
         env:
-        - name: usermgmtUrl
-          value: http://usermgmt.devnetops.svc.cluster.local:8080
         - name: vaultToken
           value: devnetops
         - name: vaultUrl
-          value: http://vault1.devnetops.svc.cluster.local:80
+          value: http://vault1.ethan.svc.cluster.local:80
+        - name: usermgmtUrl
+          value: http://accessmgmt.ethan.svc.cluster.local:80
         - name: mongohost
-          value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops?authSource=admin
-        - name: secretkey
-          value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
-        - name: request_header
-          value: Access-Control-Allow-Origin/*;Access-Control-Expose-Headers/access-control-allow-origin
-        - name: redis_url
-          value: redis-ls.devnetops.svc.cluster.local:6378
+          value: mongodb://devnetops:devnetops123@mongo.ethan.svc.cluster.local/devnetops?authSource=admin
         ports:
         - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: onboard-testversion
+  name: onboard-test
   labels:
-    app: onboard-testversion
+    app: onboard-test
 spec:
   selector:
-    app: onboard-testversion
+    app: onboard-test
   type: LoadBalancer
   ports:
   - port: 8080
