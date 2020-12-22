@@ -256,7 +256,7 @@ class Role(Resource):
             return {'message': 'Role is deleted'}, 200
         elif resp is False:
             return {'message': 'Role in use, cannot delete'}, 412
-        return {'message': 'Unable to process this request'}, 500
+        return {'message': 'Role doesnt exist'}, 400
 
 
 class Service(Resource):
