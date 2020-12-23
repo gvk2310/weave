@@ -712,7 +712,7 @@ class Tests(Resource):
   
 class ServerEventMessage(Resource):
     #@verifyToken
-    def get(self):
-        stream = Response(SSEGenerator(type=type), mimetype="text/event-stream",
+    def get(self,type):
+        stream = Response(SSEGenerator(type), mimetype="text/event-stream",
                           headers={'Cache-Control': 'no-cache'})
         return stream
