@@ -18,13 +18,14 @@ def non_empty_string(string):
     if not string:
         raise ValueError("Must not be empty string")
     return string
-  
-def json_loads(data):
-    val = json.loads(data)
-    for item in val:
-        if not ('name' in item.keys() and 'default' in item.keys()):
-            raise ValueError("Missing required keys in test_parameters")
-    return val
+
+# This is for test_parameters  
+#def json_loads(data):
+#    val = json.loads(data)
+#    for item in val:
+#        if not ('name' in item.keys() and 'default' in item.keys()):
+#            raise ValueError("Missing required keys in test_parameters")
+#    return val
 
 def validStrChecker(string):
     regex = re.match("^[A-Za-z0-9_-]*$", string)
