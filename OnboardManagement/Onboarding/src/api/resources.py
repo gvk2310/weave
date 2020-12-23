@@ -87,8 +87,9 @@ class Asset(Resource):
                 return {
                            "msg": "Remote file is not accessible"}, 500
             size = format_bytes(int(size))
+            args['assetid'] = datetime.datetime.now().strftime("AS%Y%m%d%H%M%S")
             check = db.create(
-                assetid=datetime.datetime.now().strftime("AS%Y%m%d%H%M%S"),
+                assetid=args['assetid'],
                 name=args['asset_name'],
                 vendor=args['asset_vendor'],
                 group=args['asset_group'],
@@ -101,7 +102,7 @@ class Asset(Resource):
                 onboard_status='Done'
             )
             if check:
-                return {'msg': 'Onboarding successfully'}, 201
+                return {'asset_id': args['assetid']}, 200
             else:
                 return {'msg': 'Internal Server Error'}, 500
         elif args['asset_file']:
@@ -140,7 +141,7 @@ class Asset(Resource):
                                      onboard_status='Failed')
                 return {
                            'msg': 'Failed to initiate asset onboarding'}, 500
-            return {'asset_id': args['assetid']}, 201     
+            return {'asset_id': args['assetid']}, 200     
           
     #@verifyToken
     def put(self):
@@ -294,7 +295,7 @@ class Repository(Resource):
             if action == 'modify' and repolist:
                 return {"msg": "Repository data updated successfully"}, 200
             else:
-                return {"msg": "Repository onboarding successful"}, 201
+                return {"msg": "Repository onboarding successful"}, 200
               
               
               
@@ -451,7 +452,7 @@ class Infra(Resource):
                 if action == 'modify':
                     return {"msg": "Infra data updated successfully"}, 200
                 elif action == 'create':
-                    return {"msg": "Infra onboarding successful"}, 201
+                    return {"msg": "Infra onboarding successful"}, 200
         return {
                    "msg": "Cloud validation failed, data could not be added "}, 500
                   
@@ -594,7 +595,7 @@ class Tests(Resource):
                 scan_result='Unknown',
                 onboard_status='Done')
             if check:
-                return {'test_id': args['test_id']}, 201
+                return {'test_id': args['test_id']}, 200
             else:
                 return {'msg': 'Internal Server Error'}, 500
         elif args['test_file']:
@@ -635,7 +636,7 @@ class Tests(Resource):
                                  onboard_status='Failed')
                 return {
                            'msg': 'Failed to initiate test onboarding'}, 500
-            return {'test_id': args['test_id']}, 201
+            return {'test_id': args['test_id']}, 200
               
 
                   
