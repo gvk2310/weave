@@ -679,36 +679,35 @@ class Tests(Resource):
         return {"msg": "test_category and test_description update failed"}, 500
 
 
-
     ##@verifyToken
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_id', nullable=False, type=non_empty_string,
                             required=True)
-        parser.add_argument('delete_from_repo', type=inputs.boolean, default=False)
+        parser.add_argument('delete_from_repo', type=inputs.boolean,
+                            default=False)
         args = parser.parse_args()
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
             return {"msg": "Invalid testcase id"}, 404
-        if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
-            return {"msg": "Test onboard not completed or Successful"}, 400                  
-        repo_details = retrieveUrl(resp["test_repository"].lower())
-        if not repo_details:
-            return {
-                       "msg": "Unable to retrieve repo details"}, 500
-        if args['delete_from_repo'] and repo_details[
-            'repo_vendor'].lower() == 'jfrog':
-            resp = deleteFromJfrog(resp['test_link'], repo_details)
-        if args['delete_from_repo'] and repo_details[
-            'repo_vendor'].lower() == 'nexus':
-            resp = deleteFromNexus(resp['test_link'], repo_details)
-        if not resp:
-            return {"msg": "Unable to delete test from repository"}, 500
+        if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or \
+                resp['onboard_status'] == 'In progress':
+            return {"msg": "Test onboard not completed or Successful"}, 400
+        if (args['delete_from_repo']):
+            repo_details = retrieveUrl(resp["test_repository"].lower())
+            if not repo_details:
+                return {
+                           "msg": "Unable to retrieve repo details"}, 500
+            if args['delete_from_repo'] and repo_details['repo_vendor'] == 'jfrog':
+                resp = deleteFromJfrog(resp['test_link'], repo_details)
+            if args['delete_from_repo'] and repo_details['repo_vendor'] == 'nexus':
+                resp = deleteFromNexus(resp['test_link'], repo_details)
+            if not resp:
+                return {"msg": "Unable to delete test from repository"}, 500
         check = db.deleteTest(testcaseid=args['test_id'])
         if check:
             return {'msg': 'Testcase Deleted'}, 200
         return {'msg': 'Internal Server Error'}, 500
-   
   
   
 class ServerEventMessage(Resource):
