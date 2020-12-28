@@ -190,18 +190,17 @@ class Asset(Resource):
             return {"msg": "Invalid assset id"}, 404
         if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
             return {"msg": "Asset onboard not complete yet"}, 400
-        repo_details = retrieveUrl(resp["asset_repository"].lower())
-        if not repo_details:
-            return {
-                       "msg": "Unable to retrieve repo details"}, 400
-        if args['delete_from_repo'] and repo_details[
-            'repo_vendor'].lower() == 'jfrog':
-            resp = deleteFromJfrog(resp['asset_link'], repo_details)
-        if args['delete_from_repo'] and repo_details[
-            'repo_vendor'].lower() == 'nexus':
-            resp = deleteFromNexus(resp['asset_link'], repo_details)
-        if not resp:
-            return {"msg": "Unable to delete asset from repository"}, 500
+        if (args['delete_from_repo']):
+            repo_details = retrieveUrl(resp["asset_repository"].lower())
+            if not repo_details:
+                return {
+                           "msg": "Unable to retrieve repo details"}, 500
+            if args['delete_from_repo'] and repo_details['repo_vendor'] == 'jfrog':
+                resp = deleteFromJfrog(resp['asset_link'], repo_details)
+            if args['delete_from_repo'] and repo_details['repo_vendor'] == 'nexus':
+                resp = deleteFromNexus(resp['asset_link'], repo_details)
+            if not resp:
+                return {"msg": "Unable to delete test from repository"}, 500
         check = db.delete(assetid=args['asset_id'])
         if check:
             return {'msg': 'Asset Deleted'}, 200
@@ -535,15 +534,15 @@ class Tests(Resource):
         parser.add_argument('test_scripttype', nullable=False,
                             type=non_empty_string, required=True,
                             choices=['python', 'ansible'])
-        parser.add_argument('test_parameters', type=json_loads, action='append',required=True, 
-                            help="Invalid test_parameters input")
+#        parser.add_argument('test_parameters', type=json_loads, action='append',required=True, 
+#                            help="Invalid test_parameters input")
         parser.add_argument('test_path', type=non_empty_string, nullable=False)
         parser.add_argument('test_file', type=FileStorage, location='files', nullable=False)
         args = parser.parse_args()
-        if isinstance(args['test_parameters'],list):
-            args['test_parameters'] = args['test_parameters'][0]
-        else:
-            return {'msg':'Invalid test_parameters input'}, 400
+#        if isinstance(args['test_parameters'],list):
+#            args['test_parameters'] = args['test_parameters'][0]
+#        else:
+#            return {'msg':'Invalid test_parameters input'}, 400
         if args['test_scripttype'] == 'ansible':
             parser.add_argument('test_commands', type=non_empty_string,
                                 required=True)
@@ -589,7 +588,7 @@ class Tests(Resource):
                 scripttype=args['test_scripttype'],
                 commands=args[
                     'test_commands'] if 'test_commands' in args else 'None',
-                parameters=args['test_parameters'],
+#                parameters=args['test_parameters'],
                 repository=args['test_repository'],
                 link=args['test_path'],
                 scan_result='Unknown',
@@ -616,7 +615,7 @@ class Tests(Resource):
                 scripttype=args['test_scripttype'],
                 commands=args[
                     'test_commands'] if 'test_commands' in args else 'None',
-                parameters=args['test_parameters'],
+#                parameters=args['test_parameters'],
                 repository=args['test_repository'],
                 link=None,
                 scan_result='Scanning',
