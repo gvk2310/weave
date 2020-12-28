@@ -28,7 +28,7 @@ class Tests(db.Document):
     category = db.StringField(required=True)
     scripttype = db.StringField(required=True)
     commands = db.StringField(required=True)
-#    parameters = db.ListField(required=True)
+    parameters = db.ListField(required=True)
     repository = db.StringField(required=True)
     link = db.StringField(default='')
     scan_result = db.StringField()
@@ -136,7 +136,7 @@ def getTest(**kwargs):
                     "test_category": test.category,
                     "test_scripttype": test.scripttype,
                     "test_commands": test.commands,
-#                    "test_parameters": test.parameters,
+                    "test_parameters": test.parameters,
                     "test_link": test.link,
                     "test_repository": test.repository,
                     "scan_result": test.scan_result,
@@ -147,7 +147,7 @@ def getTest(**kwargs):
                     "test_category": test.category,
                     "test_scripttype": test.scripttype,
                     "test_commands": test.commands,
-#                    "test_parameters": test.parameters,
+                    "test_parameters": test.parameters,
                     "test_link": test.link,
                     "test_repository": test.repository,
                     "scan_result": test.scan_result,
@@ -167,7 +167,7 @@ def createTest(**kwargs):
                      category=kwargs['category'],
                      scripttype=kwargs['scripttype'],
                      commands=kwargs['commands'],
-#                     parameters=kwargs['parameters'],
+                     parameters=kwargs['parameters'],
                      repository=kwargs['repository'],
                      link=kwargs['link'],
                      scan_result=kwargs['scan_result'],
