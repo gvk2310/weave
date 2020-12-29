@@ -29,7 +29,7 @@ spec:
         - name: usermgmtUrl
           value: http://accessmgmt.ethan.svc.cluster.local:80
         - name: mongohost
-          value: mongodb://devnetops:devnetops123@mongo.ethan.svc.cluster.local/devnetops?authSource=admin
+          value: mongodb://admin:password@mongo.ethan.svc.cluster.local/devnetops?authSource=admin
         - name: redis_url
           value: redis-ls.ethan.svc.cluster.local:6378
         ports:
