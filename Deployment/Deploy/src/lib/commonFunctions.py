@@ -87,9 +87,10 @@ def verifyToken(fn):
 
 def assetDownloadDetails(assets):
     try:
-        token = request.headers['Authorization'].split()[-1]
-        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}",
-                            headers={f'Authorization': f'Bearer {token}'})
+#        token = request.headers['Authorization'].split()[-1]
+#        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}",
+#                            headers={f'Authorization': f'Bearer {token}'})
+        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}")
         logger.debug(data.json())
         if data.status_code == 200:
             return data.json()
