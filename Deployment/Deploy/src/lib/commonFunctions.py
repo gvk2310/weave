@@ -90,7 +90,7 @@ def assetDownloadDetails(assets):
         token = request.headers['Authorization'].split()[-1]
         data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}",
                             headers={f'Authorization': f'Bearer {token}'})
-        logger.debug(data)
+        logger.debug(data.json())
         if data.status_code == 200:
             return data.json()
         logger.error("Failed to retrieve asset download detail")
