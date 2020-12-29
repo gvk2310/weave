@@ -74,6 +74,7 @@ class Deploy(Resource):
                            "msg": "Template not provided in assets or "
                                   "multiple Template id provided"}, 400
             data = assetDownloadDetails(assets['template'])
+            print(data)
             if not data:
                 return {"msg": "Unable to get template download details"}, 400
             template = data[0]
