@@ -12,9 +12,9 @@ redis_port = redis_url.split(':')[1]
 
 
 class SSEGenerator:
-    def __init__(self, type):
+    def __init__(self, event):
         #self.event = broadcast_type
-        self.event = type
+        self.event = event
         self.closed = False
         self.expiry = datetime.datetime.now() + datetime.timedelta(minutes=30)
 
