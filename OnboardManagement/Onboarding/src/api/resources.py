@@ -666,7 +666,8 @@ class Tests(Resource):
           
         publish_onboard_events(testcaseid=args['test_id'],
                                description=args['test_description'],
-                               category=args['test_category'])
+                               category=args['test_category'],
+                               type='tests')
         done = db.updateTest(testcaseid=args['test_id'],
                              description=args['test_description'],
                              category=args['test_category'])
