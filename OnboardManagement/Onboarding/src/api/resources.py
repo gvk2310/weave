@@ -632,7 +632,7 @@ class Tests(Resource):
                                  onboard_status='Failed')
                 publish_onboard_events(testcaseid=args['test_id'],
                                         scan_result='Unknown',
-                                        onboard_status='Failed',type='tests')
+                                        onboard_status='Failed')
                 return {
                            'msg': 'Failed to initiate test onboarding'}, 500
             return {'test_id': args['test_id']}, 200
@@ -670,8 +670,7 @@ class Tests(Resource):
             return {"msg": "test_category and test_description got updated"}, 200
         publish_onboard_events(testcaseid=args['test_id'],
                                description=args['test_description'],
-                               category=args['test_category'],
-                               type='tests')
+                               category=args['test_category'])                               
         if done is False:
             return {"msg": "Test ID does not exist"}, 400
         return {"msg": "test_category and test_description update failed"}, 500
