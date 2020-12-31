@@ -43,10 +43,10 @@ class SSEGenerator:
         return msg
 
 
-def publish_onboard_events(type,args):
+def publish_onboard_events(**kwargs):
     try:
         client = redis.Redis(host=redis_host, port=redis_port)
-        client.publish(type, json.dumps(args))
+        client.publish(json.dumps(kwargs))
         return True
     except Exception as e:
         logger.error("Unable to publish message in redis")
