@@ -117,16 +117,16 @@ def localAssetOnboarding(args, repo_details):
                   scan_result='Vulnerable',
                   onboard_status='Aborted')
         publish_onboard_events(event='asset',
-                               data = {'assetid'=args['assetid'],
-                              		   'scan_result'='Vulnerable',
-                              		   'onboard_status'='Aborted'})
+                               data = {'assetid':args['assetid'],
+                              		   'scan_result':'Vulnerable',
+                              		   'onboard_status':'Aborted'})
         os.remove(args['asset_file_loc'])
         return False   
     db.update(assetid=args['assetid'],
               scan_result='Safe')
     publish_onboard_events(event='asset',
-      					   data={'assetid'=args['assetid'],
-                          	  	 'scan_result'='Safe'})
+      					   data={'assetid':args['assetid'],
+                          	  	 'scan_result':'Safe'})
     if repo_details['repo_vendor'] == 'jfrog':
         relTargetPath = f"{args['asset_vendor']}/{args['asset_group']}/" \
                          f"{args['asset_file_name']}-V{args['asset_version']}"
@@ -139,8 +139,8 @@ def localAssetOnboarding(args, repo_details):
             db.update(assetid=args['assetid'],
                       onboard_status='Repo upload Failed')
             publish_onboard_events(event='asset',
-                                   data={'assetid'=args['assetid'],
-                                  		 'onboard_status'='Repo upload Failed'})
+                                   data={'assetid':args['assetid'],
+                                  		 'onboard_status':'Repo upload Failed'})
             os.remove(args['asset_file_loc'])
             return False
         (link, size) = resp
@@ -150,10 +150,10 @@ def localAssetOnboarding(args, repo_details):
                   size=size,
                   onboard_status='Done')
         publish_onboard_events(event = 'asset',
-          					   data = {'assetid'=args['assetid'],
-                                       'link'=link,
-                                       'size'=size,
-                                       'onboard_status'='Done'})
+          					   data = {'assetid':args['assetid'],
+                                       'link':link,
+                                       'size':size,
+                                       'onboard_status':'Done'})
         os.remove(args['asset_file_loc'])
                         
 def scanTestFile(args):
@@ -177,16 +177,16 @@ def localTestOnboarding(args, repo_details):
                   scan_result='Vulnerable',
                   onboard_status='Aborted')
         publish_onboard_events(event='tests',
-                               data = {'testcaseid'=args['test_id'],
-                                       'scan_result'='Vulnerable',
-                                       'onboard_status'='Aborted'})
+                               data = {'testcaseid':args['test_id'],
+                                       'scan_result':'Vulnerable',
+                                       'onboard_status':'Aborted'})
         os.remove(args['test_file_loc'])
         return False    
     db.updateTest(testcaseid=args['test_id'],
               scan_result='Safe')
     publish_onboard_events(event = 'tests',
-                           data={'testcaseid'=args['test_id'],
-                                 'scan_result'='Safe'})
+                           data={'testcaseid':args['test_id'],
+                                 'scan_result':'Safe'})
     relTargetPath = f"{args['test_repository']}/{args['test_name']}/{args['test_category']}/" \
                     f"{args['test_file_name']}"
     resp = uploadToJfrog(relTargetPath=relTargetPath,
@@ -197,8 +197,8 @@ def localTestOnboarding(args, repo_details):
         logger.error('Failed to push to repository')        
         db.updateTest(testcaseid=args['test_id'], onboard_status='Repo upload Failed')
         publish_onboard_events(event='tests',
-                               data={'testcaseid'=args['test_id'],
-                                     'onboard_status'='Repo upload Failed'})
+                               data={'testcaseid':args['test_id'],
+                                     'onboard_status':'Repo upload Failed'})
         os.remove(args['test_file_loc'])
         return False
     link, _ = resp    
@@ -206,9 +206,9 @@ def localTestOnboarding(args, repo_details):
                     link=link,
                     onboard_status='Done')
     publish_onboard_events(event='test',
-                           data={'testcaseid'=args['test_id'],
-                                 'link'=link,
-                                 'onboard_status'='Done'})
+                           data={'testcaseid':args['test_id'],
+                                 'link':link,
+                                 'onboard_status':'Done'})
     os.remove(args['test_file_loc'])
 
 
