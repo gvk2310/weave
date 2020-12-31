@@ -138,7 +138,7 @@ class Asset(Resource):
                           onboard_status='Failed')
                 publish_onboard_events(assetid=args['assetid'],
                                      scan_result='Unknown',
-                                     onboard_status='Failed')
+                                     onboard_status='Failed',type='assets')
                 return {
                            'msg': 'Failed to initiate asset onboarding'}, 500
             return {'asset_id': args['assetid']}, 200     
@@ -626,13 +626,13 @@ class Tests(Resource):
                 Thread(target=localTestOnboarding,
                        args=(args, repo_details)).start()
             except ThreadError as e:
-                logger.error(e)
-                publish_onboard_events(testcaseid=args['test_id'],
-                                        scan_result='Unknown',
-                                        onboard_status='Failed')
+                logger.error(e)                
                 db.updateTest(testcaseid=args['test_id'],
                                  scan_result='Unknown',
                                  onboard_status='Failed')
+                publish_onboard_events(testcaseid=args['test_id'],
+                                        scan_result='Unknown',
+                                        onboard_status='Failed',type='tests')
                 return {
                            'msg': 'Failed to initiate test onboarding'}, 500
             return {'test_id': args['test_id']}, 200
