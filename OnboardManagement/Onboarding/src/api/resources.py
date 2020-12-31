@@ -164,16 +164,16 @@ class Asset(Resource):
                                   'characters'}, 422
         if not checkStringLength(args['asset_group']):
             return {
-                       'message': 'Asset group cannot have more than 25 characters'}, 422
-        publish_onboard_events(assetid=args['asset_id'],
-                             version=args['asset_version'],
-                             group=args['asset_group'])
+                       'message': 'Asset group cannot have more than 25 characters'}, 422        
         done = db.update(assetid=args['asset_id'],
                          version=args['asset_version'],
                          group=args['asset_group'])
         if done:
-            return {"msg": "asset_version and asset_group got updated"}, 200
-
+            return {"msg": "asset_version and asset_group got updated"}, 200          
+        publish_onboard_events(assetid=args['asset_id'],
+                             version=args['asset_version'],
+                             group=args['asset_group'],
+                             type='asset')
         if done is False:
             return {"msg": "Asset ID does not exist"}, 400
         return {"msg": "asset_version and asset_group update failed"}, 500
@@ -662,18 +662,16 @@ class Tests(Resource):
             return {'message': 'Test description cannot have special characters'}, 422
           
         if not checkStringLength(args['test_description']):
-            return {'message': 'Test description cannot have more than 25 characters'}, 422
-          
-        publish_onboard_events(testcaseid=args['test_id'],
-                               description=args['test_description'],
-                               category=args['test_category'],
-                               type='tests')
+            return {'message': 'Test description cannot have more than 25 characters'}, 422       
         done = db.updateTest(testcaseid=args['test_id'],
                              description=args['test_description'],
                              category=args['test_category'])
         if done:
             return {"msg": "test_category and test_description got updated"}, 200
-
+        publish_onboard_events(testcaseid=args['test_id'],
+                               description=args['test_description'],
+                               category=args['test_category'],
+                               type='tests')
         if done is False:
             return {"msg": "Test ID does not exist"}, 400
         return {"msg": "test_category and test_description update failed"}, 500
