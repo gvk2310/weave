@@ -136,9 +136,9 @@ class Asset(Resource):
                 db.update(assetid=args['assetid'],
                           scan_result='Unknown',
                           onboard_status='Failed')
-                publish_onboard_events(assetid=args['assetid'],
+                publish_onboard_events(type='assets',assetid=args['assetid'],
                                      scan_result='Unknown',
-                                     onboard_status='Failed',type='assets')
+                                     onboard_status='Failed')
                 return {
                            'msg': 'Failed to initiate asset onboarding'}, 500
             return {'asset_id': args['assetid']}, 200     
@@ -170,10 +170,9 @@ class Asset(Resource):
                          group=args['asset_group'])
         if done:
             return {"msg": "asset_version and asset_group got updated"}, 200          
-        publish_onboard_events(assetid=args['asset_id'],
+        publish_onboard_events(type='asset',assetid=args['asset_id'],
                              version=args['asset_version'],
-                             group=args['asset_group'],
-                             type='asset')
+                             group=args['asset_group'])
         if done is False:
             return {"msg": "Asset ID does not exist"}, 400
         return {"msg": "asset_version and asset_group update failed"}, 500
@@ -630,7 +629,7 @@ class Tests(Resource):
                 db.updateTest(testcaseid=args['test_id'],
                                  scan_result='Unknown',
                                  onboard_status='Failed')
-                publish_onboard_events(testcaseid=args['test_id'],
+                publish_onboard_events(type='tests',testcaseid=args['test_id'],
                                         scan_result='Unknown',
                                         onboard_status='Failed')
                 return {
@@ -668,7 +667,7 @@ class Tests(Resource):
                              category=args['test_category'])
         if done:
             return {"msg": "test_category and test_description got updated"}, 200
-        publish_onboard_events(testcaseid=args['test_id'],
+        publish_onboard_events(type='tests',testcaseid=args['test_id'],
                                description=args['test_description'],
                                category=args['test_category'])                               
         if done is False:
