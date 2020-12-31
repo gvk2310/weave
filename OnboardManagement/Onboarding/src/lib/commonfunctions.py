@@ -126,8 +126,7 @@ def localAssetOnboarding(args, repo_details):
               scan_result='Safe')
     publish_onboard_events(event='asset',
       					   data={'assetid'=args['assetid'],
-                          	  	 'scan_result'='Safe',
-                          		 'type'='asset'})
+                          	  	 'scan_result'='Safe'})
     if repo_details['repo_vendor'] == 'jfrog':
         relTargetPath = f"{args['asset_vendor']}/{args['asset_group']}/" \
                          f"{args['asset_file_name']}-V{args['asset_version']}"
@@ -154,8 +153,7 @@ def localAssetOnboarding(args, repo_details):
           					   data = {'assetid'=args['assetid'],
                                        'link'=link,
                                        'size'=size,
-                                       'onboard_status'='Done',
-                                       'type'='asset'})
+                                       'onboard_status'='Done'})
         os.remove(args['asset_file_loc'])
                         
 def scanTestFile(args):
@@ -188,8 +186,7 @@ def localTestOnboarding(args, repo_details):
               scan_result='Safe')
     publish_onboard_events(event = 'tests',
                            data={'testcaseid'=args['test_id'],
-                                 'scan_result'='Safe',
-                                 'type'='tests'})
+                                 'scan_result'='Safe'})
     relTargetPath = f"{args['test_repository']}/{args['test_name']}/{args['test_category']}/" \
                     f"{args['test_file_name']}"
     resp = uploadToJfrog(relTargetPath=relTargetPath,
@@ -211,8 +208,7 @@ def localTestOnboarding(args, repo_details):
     publish_onboard_events(event='test',
                            data={'testcaseid'=args['test_id'],
                                  'link'=link,
-                                 'onboard_status'='Done',
-                                 'type'='tests')
+                                 'onboard_status'='Done'})
     os.remove(args['test_file_loc'])
 
 
