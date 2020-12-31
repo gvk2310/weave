@@ -116,16 +116,18 @@ def localAssetOnboarding(args, repo_details):
         db.update(assetid=args['assetid'],
                   scan_result='Vulnerable',
                   onboard_status='Aborted')
-        publish_onboard_events(type='asset',assetid=args['assetid'],
-                              scan_result='Vulnerable',
-                              onboard_status='Aborted')
+        publish_onboard_events(event='asset',
+                               data = {assetid=args['assetid'],
+                              		   scan_result='Vulnerable',
+                              		    onboard_status='Aborted'})
         os.remove(args['asset_file_loc'])
         return False   
     db.update(assetid=args['assetid'],
               scan_result='Safe')
-    publish_onboard_events(assetid=args['assetid'],
-                          scan_result='Safe',
-                          type='asset')
+    publish_onboard_events(event='asset',
+      					   data={assetid=args['assetid'],
+                          	  	 scan_result='Safe',
+                          		 type='asset'})
     if repo_details['repo_vendor'] == 'jfrog':
         relTargetPath = f"{args['asset_vendor']}/{args['asset_group']}/" \
                          f"{args['asset_file_name']}-V{args['asset_version']}"
@@ -137,8 +139,9 @@ def localAssetOnboarding(args, repo_details):
             logger.error('Failed to push to repository')            
             db.update(assetid=args['assetid'],
                       onboard_status='Repo upload Failed')
-            publish_onboard_events(type='asset',assetid=args['assetid'],
-                                  onboard_status='Repo upload Failed')
+            publish_onboard_events(event='asset',
+                                   data={assetid=args['assetid'],
+                                  onboard_status='Repo upload Failed'})
             os.remove(args['asset_file_loc'])
             return False
         (link, size) = resp
