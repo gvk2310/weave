@@ -116,10 +116,9 @@ def localAssetOnboarding(args, repo_details):
         db.update(assetid=args['assetid'],
                   scan_result='Vulnerable',
                   onboard_status='Aborted')
-        publish_onboard_events(assetid=args['assetid'],
+        publish_onboard_events(type='asset',assetid=args['assetid'],
                               scan_result='Vulnerable',
-                              onboard_status='Aborted',
-                              type='asset')
+                              onboard_status='Aborted')
         os.remove(args['asset_file_loc'])
         return False   
     db.update(assetid=args['assetid'],
@@ -138,9 +137,8 @@ def localAssetOnboarding(args, repo_details):
             logger.error('Failed to push to repository')            
             db.update(assetid=args['assetid'],
                       onboard_status='Repo upload Failed')
-            publish_onboard_events(assetid=args['assetid'],
-                                  onboard_status='Repo upload Failed',
-                                  type='asset')
+            publish_onboard_events(type='asset',assetid=args['assetid'],
+                                  onboard_status='Repo upload Failed')
             os.remove(args['asset_file_loc'])
             return False
         (link, size) = resp
@@ -176,10 +174,9 @@ def localTestOnboarding(args, repo_details):
         db.updateTest(testcaseid=args['test_id'],
                   scan_result='Vulnerable',
                   onboard_status='Aborted')
-        publish_onboard_events(testcaseid=args['test_id'],
+        publish_onboard_events(type='tests',testcaseid=args['test_id'],
                                scan_result='Vulnerable',
-                               onboard_status='Aborted',
-                               type='tests')
+                               onboard_status='Aborted')
         os.remove(args['test_file_loc'])
         return False    
     db.updateTest(testcaseid=args['test_id'],
@@ -195,8 +192,8 @@ def localTestOnboarding(args, repo_details):
     if not resp:
         logger.error('Failed to push to repository')        
         db.updateTest(testcaseid=args['test_id'], onboard_status='Repo upload Failed')
-        publish_onboard_events(testcaseid=args['test_id'],
-                               onboard_status='Repo upload Failed',type='tests')
+        publish_onboard_events(type='tests',testcaseid=args['test_id'],
+                               onboard_status='Repo upload Failed')
         os.remove(args['test_file_loc'])
         return False
     link, _ = resp    
