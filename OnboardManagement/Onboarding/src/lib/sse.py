@@ -43,7 +43,7 @@ class SSEGenerator:
         return msg
 
 
-def publish_onboard_events(**kwargs,type='tests'):
+def publish_onboard_events(type='tests',**kwargs):
     try:
         client = redis.Redis(host=redis_host, port=redis_port)
         client.publish(type,json.dumps(kwargs))
