@@ -137,9 +137,9 @@ class Asset(Resource):
                           scan_result='Unknown',
                           onboard_status='Failed')
                 publish_onboard_events(event='assets',
-                                       data={'assetid'=args['assetid'],
-                                             'scan_result'='Unknown',
-                                             'onboard_status'='Failed'})
+                                       data={'assetid':args['assetid'],
+                                             'scan_result':'Unknown',
+                                             'onboard_status':'Failed'})
                 return {
                            'msg': 'Failed to initiate asset onboarding'}, 500
             return {'asset_id': args['assetid']}, 200     
@@ -172,9 +172,9 @@ class Asset(Resource):
         if done:
             return {"msg": "asset_version and asset_group got updated"}, 200          
         publish_onboard_events(event='asset',
-                               data={'assetid'=args['asset_id'],
-                                     'version'=args['asset_version'],
-                                     'group'=args['asset_group']})
+                               data={'assetid':args['asset_id'],
+                                     'version':args['asset_version'],
+                                     'group':args['asset_group']})
         if done is False:
             return {"msg": "Asset ID does not exist"}, 400
         return {"msg": "asset_version and asset_group update failed"}, 500
@@ -632,9 +632,9 @@ class Tests(Resource):
                                  scan_result='Unknown',
                                  onboard_status='Failed')
                 publish_onboard_events(event='tests',
-                                       data={'testcaseid'=args['test_id'],
-                                             'scan_result'='Unknown',
-                                             'onboard_status'='Failed'})
+                                       data={'testcaseid':args['test_id'],
+                                             'scan_result':'Unknown',
+                                             'onboard_status':'Failed'})
                 return {
                            'msg': 'Failed to initiate test onboarding'}, 500
             return {'test_id': args['test_id']}, 200
@@ -671,9 +671,9 @@ class Tests(Resource):
         if done:
             return {"msg": "test_category and test_description got updated"}, 200
         publish_onboard_events(event='tests',
-                               data={'testcaseid'=args['test_id'],
-                                     'description'=args['test_description'],
-                                     'category'=args['test_category']})                               
+                               data={'testcaseid':args['test_id'],
+                                     'description':args['test_description'],
+                                     'category':args['test_category']})                               
         if done is False:
             return {"msg": "Test ID does not exist"}, 400
         return {"msg": "test_category and test_description update failed"}, 500
