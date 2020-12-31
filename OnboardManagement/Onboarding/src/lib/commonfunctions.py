@@ -205,7 +205,7 @@ def localTestOnboarding(args, repo_details):
                     onboard_status='Done')
     publish_onboard_events(testcaseid=args['test_id'],
                               link=link,
-                              onboard_status='Done',type='tests)
+                              onboard_status='Done',type='tests')
     os.remove(args['test_file_loc'])
 
 
