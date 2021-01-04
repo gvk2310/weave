@@ -32,6 +32,6 @@ app_api.add_resource(resources.Authenticate, '/auth')
 app_api.add_resource(resources.User, '/users')
 app_api.add_resource(resources.SelfChanges, '/users/self')
 app_api.add_resource(resources.Role, '/roles')
-app_api.add_resource(resources.Service, '/service')
+app_api.add_resource(resources.Service, '/services')
 app_api.add_resource(resources.IsAuthorized,
                      '/isauthorized/<string:svc>/<string:perm>')
