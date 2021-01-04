@@ -1,4 +1,5 @@
 import datetime
+import os
 from ..db import db
 from ..lib.commonFunctions import *
 from flask_restful import Resource, reqparse, inputs
@@ -323,3 +324,26 @@ class Service(Resource):
                        'message': 'Service in use or does not exists, cannot '
                                   'delete'}, 412
         return {'message': 'Unable to process this request'}, 500
+      
+      
+      
+class Service(Resource):
+
+    def get(self):
+      config.load_incluster_config()
+      v1 = client.CoreV1Api()
+      ret = v1.list_namespaced_pod('ethan', watch=False)
+      service_list = os.environ.get('service_list').split(',')
+      for i in ret.items:
+          check = (i.metadata.name.split('-',1)[0], i.status.phase)
+          if check[0] in service_list:
+              resp= db.changeServiceStatus(name=check[0], status=check[1])
+              if not resp:
+                return{"message": "Failed to update status"}, 500
+      svcs = db.getServices()
+      if svcs:
+          return svcs, 200
+      if svcs is False:
+          return {'msg': 'No services record found'}, 404
+      return {'message': 'Unable to fetch services'}, 500
+
