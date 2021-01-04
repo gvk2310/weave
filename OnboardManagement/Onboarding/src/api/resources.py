@@ -169,12 +169,12 @@ class Asset(Resource):
         done = db.update(assetid=args['asset_id'],
                          version=args['asset_version'],
                          group=args['asset_group'])
-        if done:
-            return {"msg": "asset_version and asset_group got updated"}, 200          
         publish_onboard_events(event='asset',
                                data={'assetid':args['asset_id'],
                                      'version':args['asset_version'],
                                      'group':args['asset_group']})
+        if done:
+            return {"msg": "asset_version and asset_group got updated"}, 200          
         if done is False:
             return {"msg": "Asset ID does not exist"}, 400
         return {"msg": "asset_version and asset_group update failed"}, 500
@@ -668,12 +668,12 @@ class Tests(Resource):
         done = db.updateTest(testcaseid=args['test_id'],
                              description=args['test_description'],
                              category=args['test_category'])
-        if done:
-            return {"msg": "test_category and test_description got updated"}, 200
         publish_onboard_events(event='tests',
                                data={'testcaseid':args['test_id'],
                                      'description':args['test_description'],
-                                     'category':args['test_category']})                               
+                                     'category':args['test_category']}) 
+        if done:
+            return {"msg": "test_category and test_description got updated"}, 200                              
         if done is False:
             return {"msg": "Test ID does not exist"}, 400
         return {"msg": "test_category and test_description update failed"}, 500
