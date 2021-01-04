@@ -11,7 +11,7 @@ db = MongoEngine(app)
 
 class Services(db.Document):
     name = db.StringField(required=True, unique=True)
-    state = db.StringField(choices=()
+    state = db.StringField()
     endpoint = db.StringField()
 
 
