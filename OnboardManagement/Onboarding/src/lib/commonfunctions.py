@@ -205,7 +205,7 @@ def localTestOnboarding(args, repo_details):
     db.updateTest(testcaseid=args['test_id'],
                     link=link,
                     onboard_status='Done')
-    publish_onboard_events(event='test',
+    publish_onboard_events(event='tests',
                            data={'testcaseid':args['test_id'],
                                  'link':link,
                                  'onboard_status':'Done'})
