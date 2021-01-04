@@ -16,7 +16,7 @@ class SSEGenerator:
         #self.event = broadcast_type
         self.event = event
         self.closed = False
-        self.expiry = datetime.datetime.now() + datetime.timedelta(minutes=30)
+        self.expiry = datetime.datetime.now() + datetime.timedelta(minutes=5)
 
     def close(self):
         self.closed = True
