@@ -212,9 +212,9 @@ def deleteSvcs(svc):
         logger.error(e)
 
 
-def changeServiceStatus(svc, status):
+def changeServiceStatus(name, status):
     try:
-        svc = Services.objects(name=svc).first()
+        svc = Services.objects(name=name).first()
         if not svc:
             return False
         svc.update(state=status)
