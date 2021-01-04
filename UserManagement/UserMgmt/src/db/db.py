@@ -377,12 +377,22 @@ def verifyPermissions(user, svc, perm):
 def initial_data_setup():
     users = getUsers()
     if not users:
-        svcs = {'onboard':'http://onboardmgmt.devnetops.svc.cluster.local:8080',
-                'deploy':'http://deployment.devnetops.svc.cluster.local:8080',
-                'security':'http://security.devnetops.svc.cluster.local:8080',
-                'monitor':'http://monitor.devnetops.svc.cluster.local:8080'}
+        service_list = os.environ.get('service_list').split(',')
+        href="http://"
+        link=".ethan.svc.cluster.local:8080"
+        svcs={}
+        for i in service_list:
+          value=href+i+link
+          svcs.update({i:value})
+        object = json.dumps(svcs, indent = 4)
+        print(svcs)
+#        svcs = {'onboard':'http://onboard.ethan.svc.cluster.local:8080',
+#                'deployment':'http://deployment.ethan.svc.cluster.local:8080',
+#                'security':'http://security.ethan.svc.cluster.local:8080',
+#                'test':'http://test.ethan.svc.cluster.local:8080',
+#                'monitor':'http://monitor.ethan.svc.cluster.local:8080'}
         for k,v in svcs.items():
-            createSvc(k,'disabled',v)
+            createSvc(k,'Disabled',v)
         createRole('admin', svcs.keys(), 'write')
         createUser('admin@dnops.com', 'Admin', 'Admin@123',
                    ['admin'])
