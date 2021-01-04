@@ -387,12 +387,6 @@ def initial_data_setup():
           value=href+i+link
           svcs.update({i:value})
         object = json.dumps(svcs, indent = 4)
-        print(svcs)
-#        svcs = {'onboard':'http://onboard.ethan.svc.cluster.local:8080',
-#                'deployment':'http://deployment.ethan.svc.cluster.local:8080',
-#                'security':'http://security.ethan.svc.cluster.local:8080',
-#                'test':'http://test.ethan.svc.cluster.local:8080',
-#                'monitor':'http://monitor.ethan.svc.cluster.local:8080'}
         for k,v in svcs.items():
             createSvc(k,'Disabled',v)
         createRole('admin', svcs.keys(), 'write')
