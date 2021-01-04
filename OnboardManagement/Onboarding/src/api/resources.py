@@ -136,7 +136,7 @@ class Asset(Resource):
                 db.update(assetid=args['assetid'],
                           scan_result='Unknown',
                           onboard_status='Failed')
-                publish_onboard_events(event='assets',
+                publish_onboard_events(event='asset',
                                        data={'assetid':args['assetid'],
                                              'scan_result':'Unknown',
                                              'onboard_status':'Failed'})
