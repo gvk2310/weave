@@ -23,11 +23,13 @@ spec:
         imagePullPolicy: Always
         env:
         - name: mongohost
-          value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops?authSource=admin
+          value: mongodb://admin:password@mongo-devnetops.svc.cluster.local/devnetops?authSource=admin
         - name: secretkey
           value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
         - name: jwtsecretkey
           value: eKHjwE761qUucC7FXtHKkeFI5O7c8GJ41PVcfLrMFA7oE-tINxTCB78SwyoNPhN7iHE
+        - name: service_list
+          value: onboard,deployment,test,monitor,security
         ports:
         - containerPort: 8080
 ---
