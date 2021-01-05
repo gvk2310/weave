@@ -1,104 +1,66 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-testversion
+  name: deployment
   labels:
-    app: deployment-testversion
+    app: deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deployment-testversion
+      app: deployment
   template:
     metadata:
       labels:
-        app: deployment-testversion
+        app: deployment
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: deployment-testversion
-        image: devnetops.azurecr.io/devnetops-deployment-testversion:S1
+      - name: deployment
+        image: devnetops.azurecr.io/devnetops-deployment:S1
         imagePullPolicy: Always
         env:
         - name: jenkins_url
-          value: http://jenkins-master.devnetops.svc.cluster.local:8080/jenkins
+          value: http://jenkins-blueocean.ethan.svc.cluster.local:8081/jenkinscore
         - name: jenkins_username
-          value: admin
+          value: ethanadmin
         - name: jenkins_password
-          value: 11bc91ecc7bc9d99bff458b908861586f5
+          value: sUh7s0wJk2XMLV2D91
         - name: jenkins_token
           value: 11d2cc12486764cb4e2862d2388b70a826
         - name: jenkins_cft_deploy_job
-          value: Deployment/pipelines/cft_deploy
+          value: Dev_Workspace/devnetops/cft_deploy
         - name: jenkins_cft_delete_job
-          value: Deployment/pipelines/cft_delete
+          value: Dev_Workspace/devnetops/cft_delete
         - name: onboarding_url
-          value: http://onboard-testversion.devnetops.svc.cluster.local:8080
+          value: http://onboard-test.ethan.svc.cluster.local:80
         - name: usermgmtUrl
-          value: http://usermgmt.devnetops.svc.cluster.local:8080
+          value: http://accessmgmt.ethan.svc.cluster.local:80
         - name: mongohost
-          value: mongodb://admin:password@mongo.devnetops.svc.cluster.local/devnetops37?authSource=admin
+          value:  mongodb://admin:password@mongo-devnetops.ethan.svc.cluster.local/devnetops?authSource=admin
         - name: status_url
-          value: http://deployment-testversion.devnetops.svc.cluster.local:8080
-        - name: secretkey
-          value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
+          value: http://deployment.ethan.svc.cluster.local:80
         - name: vault_url
-          value: http://vault1.devnetops.svc.cluster.local:80
+          value: http://vault1.ethan.svc.cluster.local:80
         - name: vault_token
           value: devnetops
         - name: redis_url
-          value: redis-ls.devnetops.svc.cluster.local:6378
+          value: redis-ls.ethan.svc.cluster.local:6378
         ports:
         - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployment-testversion
+  name: deployment
   labels:
-    app: deployment-testversion
+    app: deployment
 spec:
   selector:
-    app: deployment-testversion
+    app: deployment
+  type: LoadBalancer
   ports:
-  - port: 8080
+  - port: 80
     targetPort: 8080
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: deployment-testversion
-  annotations:
-    ingress.kubernetes.io/configuration-snippet: |
-      if ($http_origin ~* (^https?://([^/]+\.)*(localhost|dno.acndevopsengineering.com))) {
-        set $allow_origin $http_origin;
-      }
-      if ($request_method = 'OPTIONS') {
-        more_set_headers 'Access-Control-Allow-Origin: $allow_origin';
-        more_set_headers 'Access-Control-Allow-Credentials: true';
-        more_set_headers 'Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS';
-        more_set_headers 'Access-Control-Allow-Headers: DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,X-Client-Identifier';
-        more_set_headers 'Access-Control-Max-Age: 1728000';
-        more_set_headers 'Content-Type: text/plain charset=UTF-8';
-        more_set_headers 'Content-Length: 0';
-        return 204;
-      }
-      more_set_headers 'Access-Control-Allow-Origin: $allow_origin';
-      more_set_headers 'Access-Control-Allow-Credentials: true';
-      more_set_headers 'Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS';
-      more_set_headers 'Access-Control-Allow-Headers: DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization,X-Client-Identifier';
-    nginx.ingress.kubernetes.io/proxy-connect-timeout: "1800"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-spec:
-  rules:
-  - host: dno-dev.acndevopsengineering.com
-    http:
-      paths:
-      - path: /deploy-testversion(/|$)(.*)
-        backend:
-          serviceName: deployment-testversion
-          servicePort: 8080
+
