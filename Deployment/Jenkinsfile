@@ -16,6 +16,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-deployment'
         def Image_Tag = 'S1'
+        def K8s_Deployment = 'deployment'
 		try{
        stage('Git Checkout'){
             git branch: Git_Branch,
@@ -58,6 +59,24 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          }
              }
          }
+          
+        stage('Deploying to Kubernetes') {
+				container('kubectl') {
+				try{
+					sh("kubectl get deployment ${K8s_Deployment}")
+					if(true){
+						//sh ("kubectl set image deployment/${K8s_Deployment} ${K8s_Deployment}=${DockerReg_Url}/${Docker_Image}:${Image_Tag}")
+                      	//sh ("kubectl get pods | grep 'onboardmgmt-' | grep -v grep | awk '{print $1}' | xargs kubectl delete po")
+                      	sh("kubectl delete deployment ${K8s_Deployment}")
+                      	sh("kubectl apply -f  Deployment/deployment.yml")
+					}
+				} 
+				catch(e){
+                  	sh("kubectl apply -f Deployment/deployment.yml")
+					echo "deploying"
+              }
+			}
+		}
 		
 
 		currentBuild.result = 'SUCCESS'
@@ -82,5 +101,5 @@ def bitbucketStatusNotify(String state) {
         currentBuild.result = state
     }
  
-   // notifyBitbucket commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: Git_Credential, disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
+    //notifyBitbucket commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: Git_Credential, disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
 }
