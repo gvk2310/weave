@@ -143,7 +143,7 @@ def generateSpreadsheet(type, asset_id):
             else '' for item in template['Parameters']}
             conf_params = {**{"Name": "", "Region": ""}, **conf_params}
         if type == 'versa':
-            headers = ['Name', 'Ami', 'WsAmi', 'Region', 'KeyPairName',
+            headers = ['Name', 'Ami', 'WsAmi', 'Region', 'KeyPairPath', 'KeyPairName',
                        'GatewayIp', 'VPCCIDR', 'DirectorManagementIP',
                        'DirectorSouthboundIP', 'ManagementIP', 'InternetIP',
                        'LanIP', 'WSLanIp', 'WSMgmtIp', 'ConToWS', 'SerialNum',
