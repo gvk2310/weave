@@ -210,11 +210,11 @@ class ConfigSpreadsheetGenerator(Resource):
         return {"msg": "Spreadsheet generation failed"}, 500
 
 
-class ServerEventMessage(Resource):
+#class ServerEventMessage(Resource):
 
 
     #@verifyToken
-    def get(self):
-        stream = Response(SSEGenerator(), mimetype="text/event-stream",
-                          headers={'Cache-Control': 'no-cache'})
-        return stream
+#    def get(self):
+#        stream = Response(SSEGenerator(), mimetype="text/event-stream",
+#                          headers={'Cache-Control': 'no-cache'})
+#        return stream
