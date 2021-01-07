@@ -36,12 +36,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: onboard-test
+  name: sse-test
   labels:
-    app: onboard-test
+    app: sse-test
 spec:
   selector:
-    app: onboard-test
+    app: sse-test
   type: LoadBalancer
   ports:
   - port: 80
