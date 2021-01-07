@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mcp-app
+  labels:
+    app: mcp-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: mcp-app
+  template:
+    metadata:
+      labels:
+        app: mcp-app
+    spec:
+      imagePullSecrets:
+       - name: {{ .Values.imagePullSecrets }}
+      containers:
+        - name: mcp-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - containerPort: 8082
+            protocol: TCP
