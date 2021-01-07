@@ -710,9 +710,9 @@ class Tests(Resource):
         return {'msg': 'Internal Server Error'}, 500
   
   
-class ServerEventMessage(Resource):
-    #@verifyToken
-    def get(self,type):
-        stream = Response(SSEGenerator(event=type), mimetype="text/event-stream",
-                          headers={'Cache-Control': 'no-cache'})
-        return stream
+#class ServerEventMessage(Resource):
+#    #@verifyToken
+#    def get(self,type):
+#        stream = Response(SSEGenerator(event=type), mimetype="text/event-stream",
+#                          headers={'Cache-Control': 'no-cache'})
+#        return stream
