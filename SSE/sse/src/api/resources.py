@@ -12,14 +12,12 @@ redis_port = redis_url.split(':')[1]
 
 class SSEGenerator:
     def __init__(self, event):
-        #self.event = broadcast_type
         self.event = event
         self.closed = False
         self.expiry = datetime.datetime.now() + datetime.timedelta(minutes=5)
     def close(self):
         self.closed = True
     def __iter__(self):
-        #event = 'onboard'
         client = redis.Redis(host=redis_host, port=redis_port)
         p = client.pubsub()
         p.subscribe(self.event)
