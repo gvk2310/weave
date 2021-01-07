@@ -1,0 +1,120 @@
+def label = "Devnetops-${UUID.randomUUID().toString()}"
+def serviceaccount = "jenkins-admin"
+podTemplate(label: label, serviceAccount: serviceaccount,
+           containers: [containerTemplate(name: 'python3', image: 'python:3.8-alpine', ttyEnabled: true, command: 'cat'),
+             containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
+                        containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
+               containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
+				volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')],
+           		imagePullSecrets: ['devnetops'])
+
+{
+    node(label)
+    {
+		def Commit_Id
+        def DockerReg_Url='devnetops.azurecr.io'
+		def DockerReg_Credentials='ACR'
+        def Docker_Image = 'devnetops-sse-test'
+        def Image_Tag = 't1'
+        def K8s_Deployment = 'sse-test'
+		try{
+       stage('Git Checkout'){
+            git branch: Git_Branch,
+            url: Git_Url,
+            credentialsId: Git_Credential
+
+			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
+			this.bitbucketStatusNotify('INPROGRESS')
+        }
+           stage ('Encrypting Source codes'){
+            container('python3'){
+              sh '''#!/bin/sh
+              		apk add --no-cache --virtual .build-deps openssl-dev libffi-dev gcc musl-dev
+                    pip3 install cython
+                    pip3 install -r OnboardManagement/Onboarding/requirements.txt
+                    cd OnboardManagement && python3 setup.py build_ext --inplace
+                    mkdir tmp
+                    find . -name '*.so' -exec cp --parents \\{\\} tmp \\;
+                    find . -name "requirements.txt" -exec cp --parents \\{\\} tmp \\;
+                    find . -name "uwsgi.ini" -exec cp --parents \\{\\} tmp \\;
+                    mkdir tmp/Onboarding/logs
+              '''}
+         }
+
+          /**
+       stage('Sonar Analysis'){
+            withSonarQubeEnv('SonarQube') {
+            withCredentials([usernamePassword(credentialsId: 'sonar', passwordVariable: 'password', usernameVariable: 'username')])
+            {   def scannerHome = tool 'Sonar Scanner';
+                sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$username -Dsonar.password=$password -Dproject.settings=OnboardManagement/sonar-project.properties";
+            }
+        }
+        }
+		stage ('Quality Gate Check')
+         {
+            timeout(time: 5, unit: 'MINUTES') {
+                waitForQualityGate abortPipeline: true
+                }
+         }
+
+    **/
+	 stage (' Create Docker image'){
+			container('docker'){
+              sh 'pwd'
+              sh 'ls'
+              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f OnboardManagement/Dockerfile_Dev .")
+			}
+
+		}
+		stage('Pushing the Docker image to Container Registry') {
+              container('docker') {
+	             withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
+				 {
+			     sh ("docker login -u ${USERNAME} -p ${PASSWORD} "+DockerReg_Url)
+				 sh ("docker push ${DockerReg_Url}/${Docker_Image}:${Image_Tag}")
+         }
+             }
+         }
+
+		stage('Deploying to Kubernetes') {
+				container('kubectl') {
+				try{
+					sh("kubectl get deployment ${K8s_Deployment}")
+					if(true){
+						//sh ("kubectl set image deployment/${K8s_Deployment} ${K8s_Deployment}=${DockerReg_Url}/${Docker_Image}:${Image_Tag}")
+                      	//sh ("kubectl get pods | grep 'onboardmgmt-' | grep -v grep | awk '{print $1}' | xargs kubectl delete po")
+                      	sh("kubectl delete deployment ${K8s_Deployment}")
+                      	sh("kubectl apply -f SSE/sse.yml")
+					}
+				}
+				catch(e){
+                  	sh("kubectl apply -f SSE/sse.yml")
+					echo "deploying"
+              }
+			}
+		}
+
+		currentBuild.result = 'SUCCESS'
+        echo "RESULT: ${currentBuild.result}"
+        echo "Finished: ${currentBuild.result}"
+		}
+		 catch (Exception err) {
+        currentBuild.result = 'FAILURE'
+        echo "RESULT: ${currentBuild.result}"
+        echo "Finished: ${currentBuild.result}"
+               }
+		finally {
+            this.bitbucketStatusNotify(currentBuild.result)
+        }
+
+	}
+}
+def bitbucketStatusNotify(String state) {
+
+    if('SUCCESS' == state || 'FAILED' == state) {
+    // Set result of currentBuild !Important!
+        currentBuild.result = state
+    }
+
+   // notifyBitbucket commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: Git_Credential, disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
+}
