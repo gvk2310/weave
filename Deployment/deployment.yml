@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment
+  name: deployment-sse
   labels:
-    app: deployment
+    app: deployment-sse
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deployment
+      app: deployment-see
   template:
     metadata:
       labels:
-        app: deployment
+        app: deployment-sse
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: deployment
-        image: devnetops.azurecr.io/devnetops-deployment:S1
+      - name: deployment-sse
+        image: devnetops.azurecr.io/devnetops-deployment-sse:S1
         imagePullPolicy: Always
         env:
         - name: jenkins_url
@@ -53,12 +53,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployment
+  name: deployment-sse
   labels:
-    app: deployment
+    app: deployment-sse
 spec:
   selector:
-    app: deployment
+    app: deployment-sse
   type: LoadBalancer
   ports:
   - port: 80
