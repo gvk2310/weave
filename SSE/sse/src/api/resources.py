@@ -14,7 +14,7 @@ class SSEGenerator:
     def __init__(self, event):
         self.event = event
         self.closed = False
-        self.expiry = datetime.datetime.now() + datetime.timedelta(minutes=5)
+        self.expiry = datetime.datetime.now() + datetime.timedelta(minutes=30)
     def close(self):
         self.closed = True
     def __iter__(self):
