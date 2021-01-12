@@ -10,6 +10,14 @@ redis_url = os.environ['redis_url']
 redis_host = redis_url.split(':')[0]
 redis_port = redis_url.split(':')[1]
 
+
+class ServerEventMessage(Resource):
+    #@verifyToken
+    def get(self,event):
+        stream = Response(SSEGenerator(event=type), mimetype="text/event-stream",
+                          headers={'Cache-Control': 'no-cache'})
+        return stream
+
 class SSEGenerator:
     def __init__(self, event):
         self.event = event
@@ -36,9 +44,4 @@ class SSEGenerator:
             msg = f'event: {event}\n{msg}'
         return msg
 
-class ServerEventMessage(Resource):
-    #@verifyToken
-    def get(self,event):
-        stream = Response(SSEGenerator(event=type), mimetype="text/event-stream",
-                          headers={'Cache-Control': 'no-cache'})
-        return stream
+
