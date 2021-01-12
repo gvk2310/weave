@@ -13,7 +13,6 @@ from .api import resources
 
 app_api.add_resource(resources.Deploy, '/')
 app_api.add_resource(resources.SingleDeployInfo, '/<string:id>/details')
-#app_api.add_resource(resources.ServerEventMessage, '/events/deploy')
 app_api.add_resource(resources.ConfigSpreadsheetGenerator,
                      '/config/<string:orchestrator>/<string:type>/<string'
                      ':asset_id>')
