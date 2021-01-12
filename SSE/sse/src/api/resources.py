@@ -39,6 +39,6 @@ class SSEGenerator:
 class ServerEventMessage(Resource):
     #@verifyToken
     def get(self,event):
-        stream = Response(SSEGenerator(event=event), mimetype="text/event-stream",
+        stream = Response(SSEGenerator(event=type), mimetype="text/event-stream",
                           headers={'Cache-Control': 'no-cache'})
         return stream
