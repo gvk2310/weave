@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: onboard-test
+  name: onboard-sse
   labels:
-    app: onboard-test
+    app: onboard-sse
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: onboard-test
+      app: onboard-sse
   template:
     metadata:
       labels:
-        app: onboard-test
+        app: onboard-sse
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: onboard-test
-        image: devnetops.azurecr.io/devnetops-onboard-test:t1
+      - name: onboard-sse
+        image: devnetops.azurecr.io/devnetops-onboard-sse:t1
         imagePullPolicy: Always
         env:
         - name: vaultToken
@@ -38,30 +38,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: onboard-test
+  name: onboard-sse
   labels:
-    app: onboard-test
+    app: onboard-sse
 spec:
   selector:
-    app: onboard-test
+    app: onboard-sse
   type: LoadBalancer
   ports:
   - port: 80
     targetPort: 8080
 ---
-#apiVersion: networking.k8s.io/v1beta1
-#kind: Ingress
-#metadata:
-#  name: onboard-testversion
-#  annotations:
-#    nginx.ingress.kubernetes.io/rewrite-target: /$2
-#    nginx.ingress.kubernetes.io/proxy-body-size: 8g
-#spec:
-#  rules:
-#  - host: dno-dev.acndevopsengineering.com
-#    http:
-#      paths:
-#      - path: /onb-testversion(/|$)(.*)
-#        backend:
-#          serviceName: onboard-testversion
-#          servicePort: 8080
+
