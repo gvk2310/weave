@@ -498,17 +498,6 @@ class AssetDownloadDetails(Resource):
         return output
 
 
-class ServerEventMessage(Resource):
-
-
-    #@verifyToken
-    def get(self):
-        stream = Response(SSEGenerator(), mimetype="text/event-stream",
-                          headers={'Cache-Control': 'no-cache'})
-        return stream
-                  
-                  
-                  
 
 class Tests(Resource):
               
