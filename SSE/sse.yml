@@ -30,9 +30,9 @@ spec:
           value: http://onboard-test.ethan.svc.cluster.local:80
         - name: redis_url
           value: redis-ls.ethan.svc.cluster.local:6378
-        resources:
-          request:
-            memory: "2Gi"
+#        resources:
+#          request:
+#            memory: "2Gi"
         ports:
         - containerPort: 8080
 ---
