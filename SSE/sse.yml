@@ -28,8 +28,6 @@ spec:
           value: http://onboard-sse.ethan.svc.cluster.local:80
         - name: redis_url
           value: redis-ls.ethan.svc.cluster.local:6378
-        - name: end_points
-          value: tests,asset.deploy
 #        resources:
 #          request:
 #            memory: "2Gi"
