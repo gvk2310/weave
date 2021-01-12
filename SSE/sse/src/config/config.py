@@ -6,4 +6,5 @@ from .. import app
 #    'connect': False
 #}
 app.config['upload_folder'] = 'tmp'
-# os.environ['usermgmtUrl'] = 'http://dno-dev.acndevopsengineering.com/umg'
+os.environ['onboardUrl'] = 'http://onboard-test.ethan.svc.cluster.local:80'
+os.environ['deploymentUrl'] = 'http://deployment.ethan.svc.cluster.local:80'
