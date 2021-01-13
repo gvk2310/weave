@@ -34,7 +34,7 @@ spec:
         - name: jenkins_cft_delete_job
           value: Dev_Workspace/devnetops/cft_delete
         - name: onboarding_url
-          value: http://onboard-test.ethan.svc.cluster.local:80
+          value: http://onboard-sse.ethan.svc.cluster.local:80
         - name: usermgmtUrl
           value: http://accessmgmt.ethan.svc.cluster.local:80
         - name: mongohost
