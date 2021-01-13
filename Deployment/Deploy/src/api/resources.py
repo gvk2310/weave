@@ -3,7 +3,7 @@ from flask import Response
 from ..lib.awsFunctions import *
 from ..lib.commonFunctions import *
 from flask_restful import Resource, reqparse, inputs
-from ..lib.sse import publish_event_message, SSEGenerator
+from ..lib.sse import publish_event_message
 
 
 class SingleDeployInfo(Resource):
