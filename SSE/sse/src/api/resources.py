@@ -13,7 +13,7 @@ redis_port = redis_url.split(':')[1]
 
 class ServerEventMessage(Resource):
     #@verifyToken
-    def get(self,event):
+    def get(self,type):
         stream = Response(SSEGenerator(event=type), mimetype="text/event-stream",
                           headers={'Cache-Control': 'no-cache'})
         return stream
