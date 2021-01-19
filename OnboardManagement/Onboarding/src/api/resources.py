@@ -6,12 +6,13 @@ from ..db import db
 from ..log import logger
 from flask import Response
 from ..config.config import app
-from ..lib.nexus import deleteFromNexus
 from threading import Thread, ThreadError
 from werkzeug.datastructures import FileStorage
 from flask_restful import Resource, reqparse, inputs
-from ..lib.sse import publish_onboard_events
+from ..lib.sse import SSEGenerator, publish_onboard_events
 from ..lib.jfrog import checkJfrogRemote, deleteFromJfrog, validateJfrog, checkJfrogUrl
+from ..lib.nexus import (validateNexus, checkNexusRemote,deleteFromNexus, \
+                         checkNexusUrl)
 from ..lib.cloud_validate import aws_validate, openstack_validate, osm_validate
 from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
                          addDataToVault)
@@ -67,9 +68,9 @@ class Asset(Resource):
         if not repo_details:
             return {"msg": "Unable to retrieve repo details"}, 400
         # Currently only supporting Jfrog repo
-        if repo_details['repo_vendor'].lower() != 'jfrog':
-            return {
-                       "msg": "Only jfrog supported currently"}, 500
+#        if repo_details['repo_vendor'].lower() != 'jfrog':
+#            return {
+#                       "msg": "Only jfrog supported currently"}, 500
         check = db.get(name=args['asset_name'],
                     vendor=args['asset_vendor'],
                     group=args['asset_group'],
@@ -83,6 +84,8 @@ class Asset(Resource):
         if args['asset_path']:
             if repo_details['repo_vendor'] == 'jfrog':
                 size = checkJfrogRemote(args, repo_details)
+            if repo_details['repo_vendor'] == 'nexus':
+                size = checkNexusRemote(args, repo_details)
             if not size:
                 return {
                            "msg": "Remote file is not accessible"}, 500
@@ -234,12 +237,15 @@ class Repository(Resource):
         parser.add_argument('repo_password', nullable=False,
                             type=non_empty_string, required=True)
         parser.add_argument('action', nullable=False,
-                            type=non_empty_string, required=True)                   
+                            type=non_empty_string, required=True,
+                            choices=['create', 'modify'])                   
         args = parser.parse_args()
         action = args['action']
         parser.remove_argument('action')
         args = parser.parse_args()
-        repolist = getRepoList()
+        repolist = getRepoList()  
+        if action.lower() not in ['create', 'modify']:
+                return {'msg': f"'{action}' is not supported"}, 400
         if action == 'create':
             if not validStrChecker(args['repo_name']):
                 return {'message': 'Repo name cannot have special characters'}, 422
@@ -248,7 +254,7 @@ class Repository(Resource):
             if repolist and (args['repo_name'] in [item['repo_name'] for item in repolist]):
                 return {
                        "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400 
-            if args['repo_vendor'].lower() not in ['jfrog']:
+            if args['repo_vendor'].lower() not in ['jfrog', 'nexus']:
                 return {'msg': f"'{args['repo_vendor']}' as repo vendor is not supported"}, 400
             if repolist and (args['repo_url'] in [item['repo_url'] for item in
                                               repolist]) and (args['repo_name'] not in [item['repo_name'] for item in
@@ -263,18 +269,23 @@ class Repository(Resource):
             for item in repolist:
                 if (item['repo_url'] == args['repo_url']) and (item['repo_name'] != args['repo_name']):
                     return {
-                            "msg": "Repository already exists, please create an another one"}, 400
+                            "msg": "Repository already exists, please create an another one"}, 400        
         if args['repo_vendor'].lower() == 'jfrog':
             resp = validateJfrog(args)
-        # elif args['repo_vendor'].lower() == 'nexus':
-        #     resp = validateNexus(args)      
-        if not resp:
-            return {"msg": "Repository validation failed"}, 500
-        if args['repo_url'] not in [item['url'] for item in resp.json()]:
-            return {
+            if not resp:
+                return {"msg": "Repository validation failed"}, 500
+            if args['repo_url'] not in [item['url'] for item in resp.json()]:
+                return {
                        "msg": "Either the repository does not exist or the "
                               "user doesnt have enough previliges to access "
                               "the repository"}, 400
+        if args['repo_vendor'].lower() == 'nexus':
+            resp = validateNexus(args)
+            if not resp:
+                return {
+                    "msg": "Either the repository does not exist or "
+                                 "invalid credential to access "
+                                 "the repository"}, 400
         check = []
         if (repolist):
             for item in repolist:
@@ -497,7 +508,7 @@ class AssetDownloadDetails(Resource):
                            "repo_password": repo_details['repo_password']})
         return output
 
-
+      
 
 class Tests(Resource):
               
@@ -566,10 +577,14 @@ class Tests(Resource):
             return {"msg": "Unable to retrieve repo details"}, 404
         if args['test_path']:
             if args['test_path'].split('.')[-1] not in ['zip', 'gz']:
-                return {"msg": "Provided path is not a  zip or gz"},400
-            if checkJfrogUrl(args, repo_details) != True:
-                return {"msg": "Invalid test path details"}, 500
-            args['test_id'] = datetime.datetime.now().strftime("TC%Y%m%d%H%M%S")
+                return {"msg": "Provided path is not a  zip or gz"}, 400
+            if repo_details['repo_vendor'] == 'jfrog':
+                if checkJfrogUrl(args, repo_details) != True:
+                    return {"msg": "Invalid test path details"}, 500
+            if repo_details['repo_vendor'] == 'nexus':
+                if checkNexusUrl(args, repo_details) != True:
+                    return {"msg": "Invalid test path details"}, 500
+            args['test_id'] = datetime.datetime.now().strftime("TC%Y%m%d%H%M%S") 
             check = db.createTest(
                 testcaseid=args['test_id'],
                 name=args['test_name'],
@@ -698,10 +713,3 @@ class Tests(Resource):
             return {'msg': 'Testcase Deleted'}, 200
         return {'msg': 'Internal Server Error'}, 500
   
-  
-#class ServerEventMessage(Resource):
-#    #@verifyToken
-#    def get(self,type):
-#        stream = Response(SSEGenerator(event=type), mimetype="text/event-stream",
-#                          headers={'Cache-Control': 'no-cache'})
-#        return stream
