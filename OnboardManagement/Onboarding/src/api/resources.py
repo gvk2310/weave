@@ -171,8 +171,8 @@ class Asset(Resource):
                          group=args['asset_group'])
         publish_onboard_events(event='asset',
                                data={'asset_id':args['asset_id'],
-                                     'version':args['asset_version'],
-                                     'group':args['asset_group']})
+                                     'asset_version':args['asset_version'],
+                                     'asset_group':args['asset_group']})
         if done:
             return {"msg": "asset_version and asset_group got updated"}, 200          
         if done is False:
@@ -659,8 +659,8 @@ class Tests(Resource):
                              category=args['test_category'])
         publish_onboard_events(event='tests',
                                data={'test_id':args['test_id'],
-                                     'description':args['test_description'],
-                                     'category':args['test_category']}) 
+                                     'test_description':args['test_description'],
+                                     'test_category':args['test_category']}) 
         if done:
             return {"msg": "test_category and test_description got updated"}, 200                              
         if done is False:
