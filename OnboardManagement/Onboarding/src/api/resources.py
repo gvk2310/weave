@@ -137,7 +137,7 @@ class Asset(Resource):
                           scan_result='Unknown',
                           onboard_status='Failed')
                 publish_onboard_events(event='asset',
-                                       data={'assetid':args['assetid'],
+                                       data={'asset_id':args['assetid'],
                                              'scan_result':'Unknown',
                                              'onboard_status':'Failed'})
                 return {
@@ -170,7 +170,7 @@ class Asset(Resource):
                          version=args['asset_version'],
                          group=args['asset_group'])
         publish_onboard_events(event='asset',
-                               data={'assetid':args['asset_id'],
+                               data={'asset_id':args['asset_id'],
                                      'version':args['asset_version'],
                                      'group':args['asset_group']})
         if done:
@@ -621,7 +621,7 @@ class Tests(Resource):
                                  scan_result='Unknown',
                                  onboard_status='Failed')
                 publish_onboard_events(event='tests',
-                                       data={'testcaseid':args['test_id'],
+                                       data={'test_id':args['test_id'],
                                              'scan_result':'Unknown',
                                              'onboard_status':'Failed'})
                 return {
@@ -658,7 +658,7 @@ class Tests(Resource):
                              description=args['test_description'],
                              category=args['test_category'])
         publish_onboard_events(event='tests',
-                               data={'testcaseid':args['test_id'],
+                               data={'test_id':args['test_id'],
                                      'description':args['test_description'],
                                      'category':args['test_category']}) 
         if done:
