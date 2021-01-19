@@ -9,7 +9,7 @@ from ..config.config import app
 from threading import Thread, ThreadError
 from werkzeug.datastructures import FileStorage
 from flask_restful import Resource, reqparse, inputs
-from ..lib.sse import SSEGenerator, publish_onboard_events
+from ..lib.sse import publish_onboard_events
 from ..lib.jfrog import checkJfrogRemote, deleteFromJfrog, validateJfrog, checkJfrogUrl
 from ..lib.nexus import (validateNexus, checkNexusRemote,deleteFromNexus, \
                          checkNexusUrl)
