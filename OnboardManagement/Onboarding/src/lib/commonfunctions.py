@@ -5,7 +5,7 @@ import requests
 from ..log import logger
 from .jfrog import uploadToJfrog, deleteFromJfrog
 from .vault import retrieveUrl
-from .nexus import deleteFromNexus
+from .nexus import uploadToNexus, deleteFromNexus
 from ..db import db
 from flask_restful import request
 from ..lib.sse import publish_onboard_events
@@ -112,6 +112,7 @@ def scanFile(args):
 def localAssetOnboarding(args, repo_details):
     secured = scanFile(args)
     if not secured:
+        logger.error('Insecured File. Aborting Asset Onboarding.')
         logger.error('Insecured File. Aborting Asset Onboarding.')        
         db.update(assetid=args['assetid'],
                   scan_result='Vulnerable',
@@ -121,40 +122,46 @@ def localAssetOnboarding(args, repo_details):
                               		   'scan_result':'Vulnerable',
                               		   'onboard_status':'Aborted'})
         os.remove(args['asset_file_loc'])
-        return False   
+        return False
     db.update(assetid=args['assetid'],
               scan_result='Safe')
     publish_onboard_events(event='asset',
       					   data={'asset_id':args['assetid'],
                           	  	 'scan_result':'Safe'})
+    relTargetPath = f"{args['asset_vendor']}/{args['asset_group']}/" \
+                        f"{args['asset_file_name']}-V{args['asset_version']}"
     if repo_details['repo_vendor'] == 'jfrog':
-        relTargetPath = f"{args['asset_vendor']}/{args['asset_group']}/" \
-                         f"{args['asset_file_name']}-V{args['asset_version']}"
         resp = uploadToJfrog(relTargetPath=relTargetPath,
                              fileLoc=args['asset_file_loc'],
                              filename=args['asset_file'].filename,
                              repo=repo_details)
-        if not resp:
-            logger.error('Failed to push to repository')            
-            db.update(assetid=args['assetid'],
-                      onboard_status='Repo upload Failed')
-            publish_onboard_events(event='asset',
-                                   data={'asset_id':args['assetid'],
-                                  		 'onboard_status':'Repo upload Failed'})
-            os.remove(args['asset_file_loc'])
-            return False
-        (link, size) = resp
-        size = format_bytes(int(size))        
+    if repo_details['repo_vendor'] == 'nexus':
+        resp = uploadToNexus(relTargetPath=relTargetPath,
+                             fileLoc=args['asset_file_loc'],
+                             filename=args['asset_file'].filename,
+                             repo=repo_details)    
+    if not resp:
+        logger.error('Failed to push to repository')
         db.update(assetid=args['assetid'],
-                  link=link,
-                  size=size,
-                  onboard_status='Done')
-        publish_onboard_events(event = 'asset',
-          					   data = {'asset_id':args['assetid'],
-                                       'asset_link':link,
-                                       'asset_size':size,
-                                       'onboard_status':'Done'})
+                  onboard_status='Repo upload Failed')
+        publish_onboard_events(event='asset',
+                               data={'asset_id':args['assetid'],
+                                  	 'onboard_status':'Repo upload Failed'})
         os.remove(args['asset_file_loc'])
+        return False
+    (link, size) = resp
+    size = format_bytes(int(size))
+    db.update(assetid=args['assetid'],
+              link=link,
+              size=size,
+              onboard_status='Done')
+    publish_onboard_events(event = 'asset',
+          				   data = {'asset_id':args['assetid'],
+                                   'asset_link':link,
+                                   'asset_size':size,
+                                   'onboard_status':'Done'})
+    os.remove(args['asset_file_loc'])
+
                         
 def scanTestFile(args):
     try:
@@ -172,7 +179,7 @@ def scanTestFile(args):
 def localTestOnboarding(args, repo_details):
     secured = scanTestFile(args)
     if not secured:
-        logger.error('Insecured File. Aborting Test Onboarding.')        
+        logger.error('Insecured File. Aborting Test Onboarding.')
         db.updateTest(testcaseid=args['test_id'],
                   scan_result='Vulnerable',
                   onboard_status='Aborted')
@@ -181,20 +188,26 @@ def localTestOnboarding(args, repo_details):
                                        'scan_result':'Vulnerable',
                                        'onboard_status':'Aborted'})
         os.remove(args['test_file_loc'])
-        return False    
+        return False
     db.updateTest(testcaseid=args['test_id'],
               scan_result='Safe')
     publish_onboard_events(event = 'tests',
                            data={'test_id':args['test_id'],
                                  'scan_result':'Safe'})
-    relTargetPath = f"{args['test_repository']}/{args['test_name']}/{args['test_category']}/" \
-                    f"{args['test_file_name']}"
-    resp = uploadToJfrog(relTargetPath=relTargetPath,
+    relTargetPath = f"{args['test_repository']}/{args['test_name']}/" \
+                    f"{args['test_category']}/{args['test_file_name']}"
+    if repo_details['repo_vendor'] == 'jfrog':
+        resp = uploadToJfrog(relTargetPath=relTargetPath,
+                         fileLoc=args['test_file_loc'],
+                         filename=args['test_file'].filename,
+                         repo=repo_details)
+    if repo_details['repo_vendor'] == 'nexus':
+        resp = uploadToNexus(relTargetPath=relTargetPath,
                              fileLoc=args['test_file_loc'],
                              filename=args['test_file'].filename,
                              repo=repo_details)
     if not resp:
-        logger.error('Failed to push to repository')        
+        logger.error('Failed to push to repository')
         db.updateTest(testcaseid=args['test_id'], onboard_status='Repo upload Failed')
         publish_onboard_events(event='tests',
                                data={'test_id':args['test_id'],
@@ -210,6 +223,3 @@ def localTestOnboarding(args, repo_details):
                                  'test_link':link,
                                  'onboard_status':'Done'})
     os.remove(args['test_file_loc'])
-
-
-
