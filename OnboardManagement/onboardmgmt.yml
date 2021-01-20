@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: onboard-sse
+  name: onboard
   labels:
-    app: onboard-sse
+    app: onboard
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: onboard-sse
+      app: onboard
   template:
     metadata:
       labels:
-        app: onboard-sse
+        app: onboard
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: onboard-sse
-        image: devnetops.azurecr.io/devnetops-onboard-sse:t1
+      - name: onboard
+        image: devnetops.azurecr.io/devnetops-onboard:t1
         imagePullPolicy: Always
         env:
         - name: vaultToken
@@ -38,12 +38,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: onboard-sse
+  name: onboard
   labels:
-    app: onboard-sse
+    app: onboard
 spec:
   selector:
-    app: onboard-sse
+    app: onboard
   type: LoadBalancer
   ports:
   - port: 80
