@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sse-test
+  name: sse
   labels:
-    app: sse-test
+    app: sse
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sse-test
+      app: sse
   template:
     metadata:
       labels:
-        app: sse-test
+        app: sse
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: sse-test
-        image: devnetops.azurecr.io/devnetops-sse-test:t1
+      - name: sse
+        image: devnetops.azurecr.io/devnetops-sse:t1
         imagePullPolicy: Always
         env:
         - name: redis_url
@@ -33,12 +33,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sse-test
+  name: sse
   labels:
-    app: sse-test
+    app: sse
 spec:
   selector:
-    app: sse-test
+    app: sse
   type: LoadBalancer
   ports:
   - port: 80
