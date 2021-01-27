@@ -712,4 +712,24 @@ class Tests(Resource):
         if check:
             return {'msg': 'Testcase Deleted'}, 200
         return {'msg': 'Internal Server Error'}, 500
+      
+      
+class TestDownloadDetails(Resource):
+
+
+    #@verifyToken
+    def get(self):
+        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+        parser.add_argument('tests', type=str, required=True, location='args')
+        args = parser.parse_args()
+        tests = args['tests'].split(',')
+        output = []
+        for test in tests:
+            test_det = db.get(testcaseid=test)
+            repo_details = retrieveUrl(test_det['test_repository'].lower())
+            output.append({"test_link": test_det['test_link'],
+                           "test_scripttype": test_det['test_scripttype'],
+                           "repo_username": repo_details['repo_username'],
+                           "repo_password": repo_details['repo_password']})
+        return output
   
