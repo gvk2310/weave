@@ -729,6 +729,7 @@ class TestDownloadDetails(Resource):
             repo_details = retrieveUrl(test_det['test_repository'].lower())
             output.append({"test_link": test_det['test_link'],
                            "test_scripttype": test_det['test_scripttype'],
+                           "test_commands": test_det['test_commands'],
                            "repo_username": repo_details['repo_username'],
                            "repo_password": repo_details['repo_password']})
         return output
