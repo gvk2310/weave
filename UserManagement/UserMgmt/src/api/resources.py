@@ -336,7 +336,7 @@ class Service(Resource):
       ret = v1.list_namespaced_pod('ethan', watch=False)
       service_list = os.environ.get('service_list').split(',')
       for i in ret.items:
-          check = (i.metadata.name.split('-',1)[0], i.status.phase)
+          check = (i.metadata.name.split('-',2)[1], i.status.phase)
           if check[0] in service_list:
               resp= db.changeServiceStatus(name=check[0], status=check[1])
               if not resp:
