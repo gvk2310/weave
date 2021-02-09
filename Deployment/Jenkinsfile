@@ -46,7 +46,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			container('docker'){
               sh 'pwd'
               sh 'ls'
-              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f Deployment/Dockerfile_Dev .")
+              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag}_$BUILD_NUMBER --network=host -f Deployment/Dockerfile_Dev .")
 			}
 	
 		}  
