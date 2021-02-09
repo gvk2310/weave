@@ -2,24 +2,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sse
+  name: devnetops-events
   labels:
-    app: sse
+    app: devnetops-events
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sse
+      app: devnetops-events
   template:
     metadata:
       labels:
-        app: sse
+        app: devnetops-events
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: sse
-        image: devnetops.azurecr.io/devnetops-sse:t1
+      - name: devnetops-events
+        image: devnetops.azurecr.io/devnetops-events:t1
         imagePullPolicy: Always
         env:
         - name: redis_url
@@ -33,12 +33,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: sse
+  name: devnetops-events
   labels:
-    app: sse
+    app: devnetops-events
 spec:
   selector:
-    app: sse
+    app: devnetops-events
   type: LoadBalancer
   ports:
   - port: 80
