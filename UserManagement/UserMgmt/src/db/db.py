@@ -381,7 +381,7 @@ def initial_data_setup():
     if not users:
         service_list = os.environ.get('service_list').split(',')
         href="http://"
-        link=".ethan.svc.cluster.local:8080"
+        link=".ethan.svc.cluster.local:80"
         svcs={}
         for i in service_list:
           value=href+i+link
