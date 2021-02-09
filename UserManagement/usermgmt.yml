@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: accessmgmt
+  name: devnetops-access
   labels:
-    app: accessmgmt
+    app: devnetops-access
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: accessmgmt
+      app: devnetops-access
   template:
     metadata:
       labels:
-        app: accessmgmt
+        app: devnetops-access
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: accessmgmt
+      - name: devnetops-access
         image: devnetops.azurecr.io/devnetops-accessmgmt:S1
         imagePullPolicy: Always
         env:
@@ -29,19 +29,19 @@ spec:
         - name: jwtsecretkey
           value: eKHjwE761qUucC7FXtHKkeFI5O7c8GJ41PVcfLrMFA7oE-tINxTCB78SwyoNPhN7iHE
         - name: service_list
-          value: onboard,deployment,test,monitor,security
+          value: devnetops-onboard,devnetops-deployment,devnetops-testing,devnetops-monitor,devnetops-security
         ports:
         - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: accessmgmt
+  name: devnetops-access
   labels:
-    app: accessmgmt
+    app: devnetops-access
 spec:
   selector:
-    app: accessmgmt
+    app: devnetops-access
   type: LoadBalancer
   ports:
   - port: 80
