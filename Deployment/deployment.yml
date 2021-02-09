@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment
+  name: devnetops-deployment
   labels:
-    app: deployment
+    app: devnetops-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: deployment
+      app: devnetops-deployment
   template:
     metadata:
       labels:
-        app: deployment
+        app: devnetops-deployment
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: deployment
+      - name: devnetops-deployment
         image: devnetops.azurecr.io/devnetops-deployment:S1
         imagePullPolicy: Always
         env:
@@ -34,13 +34,13 @@ spec:
         - name: jenkins_cft_delete_job
           value: Dev_Workspace/devnetops/cft_delete
         - name: onboarding_url
-          value: http://onboard.ethan.svc.cluster.local:80
+          value: http://devnetops-onboard.ethan.svc.cluster.local:80
         - name: usermgmtUrl
-          value: http://accessmgmt.ethan.svc.cluster.local:80
+          value: http://devnetops-access.ethan.svc.cluster.local:80
         - name: mongohost
           value:  mongodb://admin:password@mongo-devnetops.ethan.svc.cluster.local/devnetops?authSource=admin
         - name: status_url
-          value: http://deployment.ethan.svc.cluster.local:80
+          value: http://devnetops-deployment.ethan.svc.cluster.local:80
         - name: vault_url
           value: http://vault1.ethan.svc.cluster.local:80
         - name: vault_token
@@ -53,12 +53,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: deployment
+  name: devnetops-deployment
   labels:
-    app: deployment
+    app: devnetops-deployment
 spec:
   selector:
-    app: deployment
+    app: devnetops-deployment
   type: LoadBalancer
   ports:
   - port: 80
