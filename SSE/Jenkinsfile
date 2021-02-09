@@ -14,7 +14,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		def Commit_Id
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
-        def Docker_Image = 'devnetops-sse'
+        def Docker_Image = 'devnetops-events'
         def Image_Tag = 't1'
         def K8s_Deployment = 'sse'
 		try{
