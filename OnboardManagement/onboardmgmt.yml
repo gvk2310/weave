@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: onboard
+  name: devnetops-onboard
   labels:
-    app: onboard
+    app: devnetops-onboard
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: onboard
+      app: devnetops-onboard
   template:
     metadata:
       labels:
-        app: onboard
+        app: devnetops-onboard
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: onboard
+      - name: devnetops-onboard
         image: devnetops.azurecr.io/devnetops-onboard:t1
         imagePullPolicy: Always
         env:
@@ -27,7 +27,7 @@ spec:
         - name: vaultUrl
           value: http://vault1.ethan.svc.cluster.local:80
         - name: usermgmtUrl
-          value: http://accessmgmt.ethan.svc.cluster.local:80
+          value: http://devnetops-access.ethan.svc.cluster.local:80
         - name: mongohost
           value: mongodb://admin:password@mongo-devnetops.ethan.svc.cluster.local/devnetops?authSource=admin
         - name: redis_url
@@ -38,12 +38,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: onboard
+  name: devnetops-onboard
   labels:
-    app: onboard
+    app: devnetops-onboard
 spec:
   selector:
-    app: onboard
+    app: devnetops-onboard
   type: LoadBalancer
   ports:
   - port: 80
