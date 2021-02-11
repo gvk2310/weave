@@ -353,11 +353,8 @@ class Service(Resource):
               resp= db.changeServiceStatus(name=(check[0][0]+ "-" + check[0][1]), status=check[1])
               if not resp:
                 return{"message": "Failed to update actual list status "}, 500
-      print('actual_list:',actual_list)
-      print('service_list:',service_list)
       if (actual_list != service_list):
         check= returnNotMatches(service_list,actual_list)
-        print('check:',check)
         for items in check:
           resp = db.changeServiceStatus(name=items, status='Disabled')
           if not resp:
