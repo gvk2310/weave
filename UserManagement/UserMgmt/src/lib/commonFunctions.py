@@ -55,3 +55,6 @@ def formatList(val):
                 r'^[\w\d\-_|]+$', item):
             return 'One of the item in the list is an invalid string'
     return val
+  
+def returnNotMatches(a, b):
+    return [x for x in b if x not in a]
