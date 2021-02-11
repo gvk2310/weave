@@ -345,16 +345,16 @@ def checkAdminPrivilege(user):
         logger.error(e)
 
 
-def authenticateUser(email, passw):
-    try:
-        usr = User.objects(email=email).first()
-        if not usr:
-            return False
-        return checkpw(passw.encode('utf8'), usr.password.encode('utf-8'))
-    except Exception as e:
-        logger.error(f"Failed to verify user '{email}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+#def authenticateUser(email, passw):
+#    try:
+#        usr = User.objects(email=email).first()
+#        if not usr:
+#            return False
+#        return checkpw(passw.encode('utf8'), usr.password.encode('utf-8'))
+#    except Exception as e:
+#        logger.error(f"Failed to verify user '{email}'")
+#       logger.debug(traceback.format_exc())
+#        logger.error(e)
 
 
 def verifyPermissions(user, svc, perm):
