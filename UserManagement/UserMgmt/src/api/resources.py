@@ -349,7 +349,7 @@ class Service(Resource):
       for i in ret.items:
           check = (i.metadata.name.split('-'), i.status.phase)
           if (check[0][0]+ "-" + check[0][1]) in service_list:
-              actual_list.append(check[0])
+              actual_list.append(check[0][0]+ "-" + check[0][1])
               resp= db.changeServiceStatus(name=(check[0][0]+ "-" + check[0][1]), status=check[1])
               if not resp:
                 return{"message": "Failed to update actual list status "}, 500
@@ -357,6 +357,7 @@ class Service(Resource):
       print('service_list:',service_list)
       if (actual_list != service_list):
         check= returnNotMatches(service_list,actual_list)
+        print('check:',check)
         for items in check:
           resp = db.changeServiceStatus(name=items, status='Disabled')
           if not resp:
