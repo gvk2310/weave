@@ -28,7 +28,7 @@ class Role(db.Document):
 class User(db.Document):
     email = db.EmailField(required=True, unique=True)
     name = db.StringField(required=True)
-    password = db.StringField(required=True)
+#    password = db.StringField(required=True)
     roles = db.ListField(db.ReferenceField(Role), default=[])
 
 
@@ -60,8 +60,9 @@ def createUser(email, name, passw, roles):
         rols = Role.objects(name__in=roles)
         if len(roles) != len(rols):
             return False
-        usr = User(email=email, password=hashpw(
-            passw.encode('utf-8'), gensalt()), roles=rols, name=name)
+#        usr = User(email=email, password=hashpw(
+#            passw.encode('utf-8'), gensalt()), roles=rols, name=name)
+        usr = User(email=email, roles=rols, name=name)
         usr.save()
         return True
     except Exception as e:
@@ -70,17 +71,17 @@ def createUser(email, name, passw, roles):
         logger.error(e)
 
 
-def changePass(user, passw):
-    try:
-        usr = User.objects(email=user).first()
-        usr.update(
-            password=hashpw(passw.encode('utf-8'), gensalt()).decode('utf-8'))
-        logger.info(f"Password successfully changed for user '{user}'")
-        return True
-    except Exception as e:
-        logger.error(f"Failed to change password for user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
+#def changePass(user, passw):
+#    try:
+#        usr = User.objects(email=user).first()
+#        usr.update(
+#            password=hashpw(passw.encode('utf-8'), gensalt()).decode('utf-8'))
+#        logger.info(f"Password successfully changed for user '{user}'")
+#        return True
+#    except Exception as e:
+#        logger.error(f"Failed to change password for user '{user}'")
+#        logger.debug(traceback.format_exc())
+#        logger.error(e)
 
 
 def changeuserName(user, name):
@@ -375,20 +376,29 @@ def verifyPermissions(user, svc, perm):
 
 # its like a root user, once logged, it is suggested that the admin changes
 # password
+#@app.before_first_request
+#def initial_data_setup():
+#    users = getUsers()
+#    if not users:
+#        service_list = os.environ.get('service_list').split(',')
+#        href="http://"
+#        link=".ethan.svc.cluster.local:80"
+#        svcs={}
+#        for i in service_list:
+#          value=href+i+link
+#          svcs.update({i:value})
+#        object = json.dumps(svcs, indent = 4)
+#        for k,v in svcs.items():
+#            createSvc(k,'Disabled',v)
+#        createRole('admin', svcs.keys(), 'write')
+#        createUser('admin@dnops.com', 'Admin', 'Admin@123',
+#                   ['admin'])
+
+
 @app.before_first_request
 def initial_data_setup():
-    users = getUsers()
-    if not users:
         service_list = os.environ.get('service_list').split(',')
-        href="http://"
-        link=".ethan.svc.cluster.local:80"
-        svcs={}
-        for i in service_list:
-          value=href+i+link
-          svcs.update({i:value})
-        object = json.dumps(svcs, indent = 4)
-        for k,v in svcs.items():
-            createSvc(k,'Disabled',v)
-        createRole('admin', svcs.keys(), 'write')
-        createUser('admin@dnops.com', 'Admin', 'Admin@123',
-                   ['admin'])
+        for k in service_list:
+            createSvc(k,'Disabled','None')
+        createRole('admin',service_list, 'write')
+
