@@ -28,50 +28,59 @@ class IsAuthorized(Resource):
         return {'message': 'Unable to verify permissions'}, 500
 
 
-class Authenticate(Resource):
+#class Authenticate(Resource):
 
 
-    def get(self):
-        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('username', type=nonEmptyEmail, location='authorization', required=True)
-        parser.add_argument('password', type=nonEmptyPasswString, location='authorization', required=True)
-        args = parser.parse_args()
-        if db.authenticateUser(args['username'], args['password']):
-            access_token = create_access_token(
-                identity=args['username'],
-                expires_delta=datetime.timedelta(minutes=120))
-            return {'admin_access': db.checkAdminPrivilege(args['username']),
-                    'token': access_token,
-                    'token expiry(UTC time)':
-                        (datetime.datetime.utcnow() + datetime.timedelta(
-                            minutes=120)).strftime('%m-%d-%Y %H:%M:%S')}, \
-                   200
-        return {'message': 'Invalid credentials'}, 500
-
-
-class SelfChanges(Resource):
+#    def get(self):
+#        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+#        parser.add_argument('username', type=nonEmptyEmail, location='authorization', required=True)
+#        parser.add_argument('password', type=nonEmptyPasswString, location='authorization', required=True)
+#        args = parser.parse_args()
+#        if db.authenticateUser(args['username'], args['password']):
+#            access_token = create_access_token(
+#                identity=args['username'],
+#                expires_delta=datetime.timedelta(minutes=120))
+#            return {'admin_access': db.checkAdminPrivilege(args['username']),
+#                    'token': access_token,
+#                    'token expiry(UTC time)':
+#                        (datetime.datetime.utcnow() + datetime.timedelta(
+#                            minutes=120)).strftime('%m-%d-%Y %H:%M:%S')}, \
+#                   200
+#        return {'message': 'Invalid credentials'}, 500
+#
+#
+#class SelfChanges(Resource):
     #@jwt_required
-    def put(self):
-        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('action', type=int, required=True, location='args')
-        args = parser.parse_args()
+#    def put(self):
+#        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+#        parser.add_argument('action', type=int, required=True, location='args')
+#        args = parser.parse_args()
         # if args['email'] != get_jwt_identity():
         #     return {
         #                'message': 'The token provided is not for the user in '
         #                           'change request'}, 400
-        if args['action'] == 3:
-            parser.add_argument('new_password', type=nonEmptyPasswString,
-                                required=True)
-            args = parser.parse_args()
-            if db.changePass(get_jwt_identity(), args['password']):
-                return {'message': 'Password changed'}, 200
-        elif args['action'] == 4:
-            parser.add_argument('new_name', type=nonEmptyString, required=True)
-            args = parser.parse_args()
-            if db.changeuserName(get_jwt_identity(), args['name']):
-                return {'message': 'username modified'}, 200
-        return {'message': 'Unable to process the request'}, 500
+#        if args['action'] == 3:
+#            parser.add_argument('new_password', type=nonEmptyPasswString,
+#                                required=True)
+#            args = parser.parse_args()
+#            if db.changePass(get_jwt_identity(), args['password']):
+#                return {'message': 'Password changed'}, 200
+#        elif args['action'] == 4:
+#            parser.add_argument('new_name', type=nonEmptyString, required=True)
+#            args = parser.parse_args()
+#            if db.changeuserName(get_jwt_identity(), args['name']):
+#                return {'message': 'username modified'}, 200
+#        return {'message': 'Unable to process the request'}, 500
 
+
+#class SelfChanges(Resource):
+#      def put(self):
+#            parser.add_argument('new_name', type=nonEmptyString, required=True)
+#            args = parser.parse_args()
+#            if db.changeuserName(get_jwt_identity(), args['name']):
+#                return {'message': 'username modified'}, 200
+#            return {'message': 'Unable to process the request'}, 500
+          
 
 
 class User(Resource):
@@ -102,7 +111,7 @@ class User(Resource):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=nonEmptyEmail, required=True)
         parser.add_argument('name', type=nonEmptyString, required=True)
-        parser.add_argument('password', type=nonEmptyPasswString, required=True)
+#        parser.add_argument('password', type=nonEmptyPasswString, required=True)
         parser.add_argument('roles', action='append', required=True)
         args = parser.parse_args()
         if db.getUsers(args['email']):
@@ -110,8 +119,9 @@ class User(Resource):
         roles = formatList(args['roles'])
         if not isinstance(roles, list):
             return {'message': {'roles': roles}}, 400
-        resp = db.createUser(args['email'], args['name'], args['password'],
-                             roles)
+#        resp = db.createUser(args['email'], args['name'], args['password'],
+#                             roles)
+        resp = db.createUser(args['email'], args['name'], roles)
         if resp:
             return {'message': 'User created'}, 200
         elif resp is False:
@@ -126,13 +136,13 @@ class User(Resource):
         parser.add_argument('email', type=nonEmptyEmail, required=True)
         parser.add_argument('action', type=int, required=True, location='args')
         args = parser.parse_args()
-        if args['action'] == 3:
-            parser.add_argument('password', type=nonEmptyPasswString,
-                                required=True)
-            args = parser.parse_args()
-            if db.changePass(args['email'], args['password']):
-                return {'message': 'Password changed'}, 200
-        elif args['action'] == 1:
+#        if args['action'] == 3:
+#            parser.add_argument('password', type=nonEmptyPasswString,
+#                                required=True)
+#            args = parser.parse_args()
+#            if db.changePass(args['email'], args['password']):
+#                return {'message': 'Password changed'}, 200
+        if args['action'] == 1:
             parser.add_argument('roles', action='append', required=True)
             args = parser.parse_args()
             roles = formatList(args['roles'])
