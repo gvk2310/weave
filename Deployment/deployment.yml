@@ -27,6 +27,8 @@ spec:
           value: ethanadmin
         - name: jenkins_password
           value: sUh7s0wJk2XMLV2D91
+        - name: jenkins_token
+          value: 1674HSGYGYEBMNKS6738583879565
         - name: jenkins_cft_deploy_job
           value: Dev_Workspace/devnetops/cft_deploy
         - name: jenkins_cft_delete_job
