@@ -8,7 +8,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, \
     jwt_required
 
 
-class IsAuthorized(Resource):
+#class IsAuthorized(Resource):
 
 
     # This endpoint is to verify whether the token user is authorised for the
@@ -17,15 +17,15 @@ class IsAuthorized(Resource):
     # as Bearer token along with service,
     # and permission type.
     #@jwt_required
-    def get(self, svc, perm):
-        if perm not in ['read', 'write']:
-            return {'message': 'Invalid permission type requested for'}, 400
-        resp = db.verifyPermissions(get_jwt_identity(), svc, perm)
-        if resp:
-            return {'permission': 'granted'}, 200
-        elif resp is False:
-            return {'permission': 'denied'}, 401
-        return {'message': 'Unable to verify permissions'}, 500
+#    def get(self, svc, perm):
+#        if perm not in ['read', 'write']:
+#            return {'message': 'Invalid permission type requested for'}, 400
+#        resp = db.verifyPermissions(get_jwt_identity(), svc, perm)
+#        if resp:
+#            return {'permission': 'granted'}, 200
+#        elif resp is False:
+#            return {'permission': 'denied'}, 401
+#        return {'message': 'Unable to verify permissions'}, 500
 
 
 #class Authenticate(Resource):
