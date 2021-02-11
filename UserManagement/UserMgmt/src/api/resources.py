@@ -343,14 +343,22 @@ class Service(Resource):
     def get(self):
       config.load_incluster_config()
       v1 = client.CoreV1Api()
-      ret = v1.list_namespaced_pod('ethan', watch=False)
+      ret = v1.list_pod_for_all_namespaces(watch=False)
       service_list = os.environ.get('service_list').split(',')
+      actual_list= []
       for i in ret.items:
           check = (i.metadata.name.split('-'), i.status.phase)
           if (check[0][0]+ "-" + check[0][1]) in service_list:
+              actual_list.append(check[0])
               resp= db.changeServiceStatus(name=(check[0][0]+ "-" + check[0][1]), status=check[1])
               if not resp:
                 return{"message": "Failed to update status"}, 500
+      if (actual_list != service_list):
+        check= returnNotMatches(service_list,actual_list)
+        for items in check:
+          resp = db.changeServiceStatus(name=items, status='Disabled')
+          if not resp:
+            return {"message": "Failed to update status"}, 500
       svcs = db.getServices()
       if svcs:
           return svcs, 200
