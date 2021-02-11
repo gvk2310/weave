@@ -128,7 +128,7 @@ def localAssetOnboarding(args, repo_details):
     publish_onboard_events(event='asset',
       					   data={'asset_id':args['assetid'],
                           	  	 'scan_result':'Safe'})
-    relTargetPath = f"{args['asset_vendor']}/{args['asset_group']}/" \
+    relTargetPath = f"{args['asset_name']}/{args['asset_vendor']}/{args['asset_group']}/" \
                         f"{args['asset_file_name']}-V{args['asset_version']}"
     if repo_details['repo_vendor'] == 'jfrog':
         resp = uploadToJfrog(relTargetPath=relTargetPath,
@@ -194,8 +194,8 @@ def localTestOnboarding(args, repo_details):
     publish_onboard_events(event = 'tests',
                            data={'test_id':args['test_id'],
                                  'scan_result':'Safe'})
-    relTargetPath = f"{args['test_repository']}/{args['test_name']}/" \
-                    f"{args['test_category']}/{args['test_file_name']}"
+    relTargetPath = f"{args['test_name']}/{args['test_category']}/" \
+                    f"{args['test_file_name']}"
     if repo_details['repo_vendor'] == 'jfrog':
         resp = uploadToJfrog(relTargetPath=relTargetPath,
                          fileLoc=args['test_file_loc'],
