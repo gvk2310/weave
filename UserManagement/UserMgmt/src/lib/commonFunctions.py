@@ -56,5 +56,5 @@ def formatList(val):
             return 'One of the item in the list is an invalid string'
     return val
   
-def returnNotMatches(a, b):
-    return [x for x in b if x not in a]
+def returnNotMatches(service_list, actual_list):
+    return [x for x in service_list if x not in actual_list]
