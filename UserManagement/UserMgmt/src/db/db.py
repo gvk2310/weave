@@ -53,7 +53,7 @@ def getUsers(email=''):
         logger.error(e)
 
 
-def createUser(email, name, passw, roles):
+def createUser(email, name, roles):
     try:
         #global read permission for all users
         # roles.append('GlobalReader')
