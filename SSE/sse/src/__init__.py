@@ -9,4 +9,4 @@ from .config import config
 from .api import resources
 
 
-app_api.add_resource(resources.ServerEventMessage, '/events/<string:type>')
+app_api.add_resource(resources.ServerEventMessage, '/<string:type>')
