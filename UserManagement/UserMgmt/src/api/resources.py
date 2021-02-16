@@ -271,7 +271,7 @@ class Role(Resource):
         return {'message': 'Role doesnt exist'}, 400
 
 
-class Service(Resource):
+#class Service(Resource):
 
 
     # For all admin task requests, token generated while admin authentication
@@ -280,61 +280,61 @@ class Service(Resource):
     # Getting list of Services
     #@jwt_required
     #@admin_required
-    def get(self):
-        svcs = db.getServices()
-        if svcs:
-            return svcs, 200
-        if svcs is False:
-            return {'msg': 'No services record found'}, 404
-        return {'message': 'Unable to fetch services'}, 500
+#    def get(self):
+#        svcs = db.getServices()
+#        if svcs:
+#            return svcs, 200
+#        if svcs is False:
+#            return {'msg': 'No services record found'}, 404
+#        return {'message': 'Unable to fetch services'}, 500
 
     # Creating Service
     #@jwt_required
     #@admin_required
-    def post(self):
-        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('service', type=nonEmptyString, required=True)
-        parser.add_argument('status', choices=('enabled', 'disabled'),
-                            default='disabled')
-        parser.add_argument('endpoint', type=inputs.url, default='')
-        args = parser.parse_args()
-        if db.getServices(args['service']):
-            return {'message': 'Service already exists'}, 400
-        if db.createSvc(args['service'], args['status'], args['endpoint']):
-            return {'message': 'Service is created'}, 200
-        return {'message': 'Unable to process this request'}, 500
-
+#    def post(self):
+#        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+#        parser.add_argument('service', type=nonEmptyString, required=True)
+#        parser.add_argument('status', choices=('enabled', 'disabled'),
+#                            default='disabled')
+#        parser.add_argument('endpoint', type=inputs.url, default='')
+#        args = parser.parse_args()
+#        if db.getServices(args['service']):
+#            return {'message': 'Service already exists'}, 400
+#        if db.createSvc(args['service'], args['status'], args['endpoint']):
+#            return {'message': 'Service is created'}, 200
+#        return {'message': 'Unable to process this request'}, 500
+#
     # status change
     #@jwt_required
     #@admin_required
-    def put(self):
-        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('service', type=nonEmptyString, required=True)
-        parser.add_argument('status', choices=('enabled', 'disabled'),
-                            required=True)
-        args = parser.parse_args()
-        done = db.changeServiceStatus(args['service'], args['status'])
-        if done:
-            return {'message': 'Service state is updated'}, 200
-        if done is False:
-            return {'message': 'Service not found'}, 400
-        return {'message': 'Unable to process this request'}, 500
+#    def put(self):
+#        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+#        parser.add_argument('service', type=nonEmptyString, required=True)
+#        parser.add_argument('status', choices=('enabled', 'disabled'),
+#                            required=True)
+#        args = parser.parse_args()
+#        done = db.changeServiceStatus(args['service'], args['status'])
+#        if done:
+#            return {'message': 'Service state is updated'}, 200
+#        if done is False:
+#            return {'message': 'Service not found'}, 400
+#        return {'message': 'Unable to process this request'}, 500
 
     # Deleting Service
     #@jwt_required
     #@admin_required
-    def delete(self):
-        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('service', type=nonEmptyString, required=True)
-        args = parser.parse_args()
-        done = db.deleteSvcs(args['service'])
-        if done:
-            return {'message': 'Service is deleted'}, 200
-        elif done is False:
-            return {
-                       'message': 'Service in use or does not exists, cannot '
-                                  'delete'}, 412
-        return {'message': 'Unable to process this request'}, 500
+#    def delete(self):
+#        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+#        parser.add_argument('service', type=nonEmptyString, required=True)
+#        args = parser.parse_args()
+#        done = db.deleteSvcs(args['service'])
+#        if done:
+#            return {'message': 'Service is deleted'}, 200
+#        elif done is False:
+#            return {
+#                       'message': 'Service in use or does not exists, cannot '
+#                                  'delete'}, 412
+#        return {'message': 'Unable to process this request'}, 500
       
       
       
