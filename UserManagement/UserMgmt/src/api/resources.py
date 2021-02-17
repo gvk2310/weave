@@ -360,6 +360,7 @@ class Service(Resource):
           if not resp:
             return {"message": "Failed to update status"}, 500
       end_points = endpoints()
+      print(end_points)
       for i in service_list:
           for j in end_points:
             if i in j:
