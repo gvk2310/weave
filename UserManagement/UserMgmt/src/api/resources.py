@@ -362,7 +362,6 @@ class Service(Resource):
       end_points = endpoints()
       for i in service_list:
           for j in end_points:
-            split_list=re.findall(i,j)
             if i in j:
               final_endpoint=j
               resp = db.changeServiceEndpoints(i,final_endpoint[:-3])
