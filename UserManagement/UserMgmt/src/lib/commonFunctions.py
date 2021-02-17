@@ -2,7 +2,6 @@ import re
 from ..db import db
 from flask_jwt_extended import get_jwt_identity
 from functools import wraps
-from kubernetes import client, config
 from ..log import logger
 
 
