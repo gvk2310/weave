@@ -5,6 +5,8 @@ from ..log import logger
 from ..config.config import app
 from flask_mongoengine import MongoEngine
 from bcrypt import hashpw, checkpw, gensalt
+from kubernetes import config, client
+import re
 
 db = MongoEngine(app)
 
@@ -225,6 +227,19 @@ def changeServiceStatus(name, status):
         logger.error(f"Unable to change service state '{svc}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
+      
+def changeServiceEndpoints(name, endpoints):
+    try:
+        end = Services.objects(name=name).first()
+        if not end:
+            return False
+        end.update(endpoint=endpoints)
+        logger.info(f"service endpoint successfully changed for service '{end}'")
+        return True
+    except Exception as e:
+        logger.error(f"Unable to change service endpoint '{end}'")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
 
 
 def getRoles(role=''):
@@ -401,4 +416,23 @@ def initial_data_setup():
         for k in service_list:
             createSvc(k,'Disabled','None')
         createRole('admin',service_list, 'write')
-
+        end_points = []
+        config.load_incluster_config()
+        v1= client.CoreV1Api()
+        ret = v1.list_config_map_for_all_namespaces(watch=False)
+        for i in ret.items:
+          if(i.metadata.name=="nginx-conf"):
+          lines=i.data
+          str_lines = str(lines)
+        lines=str_lines.split()
+        for line in lines:
+          split_devnetops=re.findall("devnetops",line)
+          if split_devnetops == ['devnetops']:
+            end_point=line
+            end_points.append(end_point)
+        for i in service_list:
+          for j in end_points:
+            split_list=re.findall(i,j)
+            if i in j:
+              final_endpoint=j
+              changeServiceEndpoints(i,final_endpoint[:-3])
