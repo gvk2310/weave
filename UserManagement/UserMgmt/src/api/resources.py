@@ -359,18 +359,7 @@ class Service(Resource):
           resp = db.changeServiceStatus(name=items, status='Disabled')
           if not resp:
             return {"message": "Failed to update status"}, 500
-      end_points = []
-      ret1 = v1.list_config_map_for_all_namespaces(watch=False)
-      for i in ret1.items:
-          if (i.metadata.name == "nginx-conf"):
-              lines = i.data
-      str_lines = str(lines)
-      lines = str_lines.split()
-      for line in lines:
-          split_devnetops = re.findall("devnetops", line)
-          if split_devnetops == ['devnetops']:
-            end_point = line
-            end_points.append(end_point)
+      end_points = endpoints()
       for i in service_list:
           for j in end_points:
             if i in j:
