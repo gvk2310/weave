@@ -2,6 +2,7 @@ import re
 from ..db import db
 from flask_jwt_extended import get_jwt_identity
 from functools import wraps
+from kubernetes import config, client
 from ..log import logger
 
 
@@ -60,4 +61,25 @@ def formatList(val):
 def returnNotMatches(service_list, actual_list):
     return [x for x in service_list if x not in actual_list]
   
+
+def endpoints():
+    try:
+        end_points = []
+        config.load_incluster_config()
+        v1 = client.CoreV1Api()
+        ret = v1.list_config_map_for_all_namespaces(watch=False)
+        for i in ret.items:
+            if (i.metadata.name == "nginx-conf"):
+                lines = i.data
+        str_lines = str(lines)
+        lines = str_lines.split()
+        for line in lines:
+            split_devnetops = re.findall("devnetops", line)
+            if split_devnetops == ['devnetops']:
+                end_point = line
+                end_points.append(end_point)
+        return end_points
+    except Exception as e:
+        logger.error('Unable to get endpoints from kubernetes')
+        logger.error(e)
 
