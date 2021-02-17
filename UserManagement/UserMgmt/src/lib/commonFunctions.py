@@ -78,6 +78,7 @@ def endpoints():
                 end_point = line
                 end_points.append(end_point)
         return end_points
+        print(end_points)
     except Exception as e:
         logger.error('Unable to get endpoints from kubernetes')
         logger.error(e)
