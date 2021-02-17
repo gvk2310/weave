@@ -366,6 +366,7 @@ class Service(Resource):
             if i in j:
               final_endpoint=j
               resp = db.changeServiceEndpoints(i,final_endpoint[:-3])
+              print(resp)
               if not resp:
                 return {"message": "Failed to update endpoints"}, 500
       svcs = db.getServices()
