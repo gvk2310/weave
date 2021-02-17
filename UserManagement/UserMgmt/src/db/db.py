@@ -416,23 +416,4 @@ def initial_data_setup():
         for k in service_list:
             createSvc(k,'Disabled','None')
         createRole('admin',service_list, 'write')
-        end_points = []
-        config.load_incluster_config()
-        v1= client.CoreV1Api()
-        ret = v1.list_config_map_for_all_namespaces(watch=False)
-        for i in ret.items:
-          if(i.metadata.name=="nginx-conf"):
-          lines=i.data
-          str_lines = str(lines)
-        lines=str_lines.split()
-        for line in lines:
-          split_devnetops=re.findall("devnetops",line)
-          if split_devnetops == ['devnetops']:
-            end_point=line
-            end_points.append(end_point)
-        for i in service_list:
-          for j in end_points:
-            split_list=re.findall(i,j)
-            if i in j:
-              final_endpoint=j
-              changeServiceEndpoints(i,final_endpoint[:-3])
+        
