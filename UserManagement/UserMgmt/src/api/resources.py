@@ -353,12 +353,6 @@ class Service(Resource):
               resp= db.changeServiceStatus(name=(check[0][0]+ "-" + check[0][1]), status=check[1])
               if not resp:
                 return{"message": "Failed to update the status "}, 500
-      if (actual_list != service_list):
-        check= returnNotMatches(service_list,actual_list)
-        for items in check:
-          resp = db.changeServiceStatus(name=items, status='Disabled')
-          if not resp:
-            return {"message": "Failed to update status"}, 500
       end_points = endpoints()
       for i in service_list:
           for j in end_points:
@@ -366,10 +360,18 @@ class Service(Resource):
               resp = db.changeServiceEndpoints(i,j[:-3])
               if not resp:
                 return {"message": "Failed to update endpoints"}, 500
+      if (actual_list != service_list):
+        check= returnNotMatches(service_list,actual_list)
+        for items in check:
+          resp = db.changeServiceStatus(name=items, status='Disabled')
+          if not resp:
+            return {"message": "Failed to update status"}, 500
+          resp = db.changeServiceEndpoints(name=items, endpoints='None')
+          if not resp:
+            return {"message": "Failed to update endpoints"}, 500
       svcs = db.getServices()
       if svcs:
           return svcs, 200
       if svcs is False:
           return {'msg': 'No services record found'}, 404
       return {'message': 'Unable to fetch services'}, 500
-
