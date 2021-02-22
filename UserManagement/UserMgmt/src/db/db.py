@@ -74,19 +74,6 @@ def createUser(email, name, roles):
         logger.error(e)
 
 
-#def changePass(user, passw):
-#    try:
-#        usr = User.objects(email=user).first()
-#        usr.update(
-#            password=hashpw(passw.encode('utf-8'), gensalt()).decode('utf-8'))
-#        logger.info(f"Password successfully changed for user '{user}'")
-#        return True
-#    except Exception as e:
-#        logger.error(f"Failed to change password for user '{user}'")
-#        logger.debug(traceback.format_exc())
-#        logger.error(e)
-
-
 def changeuserName(user, name):
     try:
         uname = User.objects(email=user).first()
@@ -198,24 +185,6 @@ def checkSvcUsage(svc):
         logger.debug(traceback.format_exc())
         logger.error(e)
 
-
-def deleteSvcs(svc):
-    check = checkSvcUsage(svc)
-    if check is None:
-        return None
-    elif check:
-        return False
-    try:
-        if not Services.objects(name=svc).first():
-            return False
-        # remSvcFrmRole('Global Reader', svc)
-        remSvcFrmRole('admin', svc)
-        Services.objects(name=svc).delete()
-        return True
-    except Exception as e:
-        logger.error(f"Unable to delete service '{svc}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
         
 def changePodStatus(name, status):
     try:
@@ -376,17 +345,6 @@ def checkAdminPrivilege(user):
         logger.error(e)
 
 
-#def authenticateUser(email, passw):
-#    try:
-#        usr = User.objects(email=email).first()
-#        if not usr:
-#            return False
-#        return checkpw(passw.encode('utf8'), usr.password.encode('utf-8'))
-#    except Exception as e:
-#        logger.error(f"Failed to verify user '{email}'")
-#       logger.debug(traceback.format_exc())
-#        logger.error(e)
-
 
 def verifyPermissions(user, svc, perm):
     try:
@@ -403,27 +361,6 @@ def verifyPermissions(user, svc, perm):
         logger.error("Failed to verify permissions")
         logger.debug(traceback.format_exc())
         logger.error(e)
-
-
-# its like a root user, once logged, it is suggested that the admin changes
-# password
-#@app.before_first_request
-#def initial_data_setup():
-#    users = getUsers()
-#    if not users:
-#        service_list = os.environ.get('service_list').split(',')
-#        href="http://"
-#        link=".ethan.svc.cluster.local:80"
-#        svcs={}
-#        for i in service_list:
-#          value=href+i+link
-#          svcs.update({i:value})
-#        object = json.dumps(svcs, indent = 4)
-#        for k,v in svcs.items():
-#            createSvc(k,'Disabled',v)
-#        createRole('admin', svcs.keys(), 'write')
-#        createUser('admin@dnops.com', 'Admin', 'Admin@123',
-#                   ['admin'])
 
 
 @app.before_first_request
