@@ -13,8 +13,9 @@ db = MongoEngine(app)
 
 class Services(db.Document):
     name = db.StringField(required=True, unique=True)
-    state = db.StringField()
-    endpoint = db.StringField()
+    pod_state = db.StringField()
+    service_state = db.StringField()
+    endpoint_URL = db.StringField()
 
 
 class serviceMap(db.EmbeddedDocument):
@@ -155,12 +156,14 @@ def getServices(svc=''):
         if svc:
             obj = Services.objects(name=svc).first()
             return {"name": obj.name,
-                    "state": obj.state,
-                    "endpoint": obj.endpoint
+                    "pod_state": obj.pod_state,
+                    "service_state": obj.service_state,
+                    "endpoint_URL": obj.endpoint_URL
                     } if obj else False
         data = [{"name": svc.name,
-                 "state": svc.state,
-                 "endpoint": svc.endpoint
+                 "pod_state": obj.pod_state,
+                 "service_state": obj.service_state,
+                 "endpoint_URL": svc.endpoint_URL
                  }
                 for svc in Services.objects()]
         return data if data else False
@@ -170,9 +173,9 @@ def getServices(svc=''):
         logger.error(e)
 
 
-def createSvc(name, status, endpoint):
+def createSvc(name, pstatus, sstatus, endpoint):
     try:
-        svc = Services(name=name, state=status, endpoint=endpoint)
+        svc = Services(name=name, pod_state=pstatus, service_state=sstatus, endpoint_URL=endpoint)
         svc.save()
         # addSvcToRole('GlobalReader', name)
         addSvcToRole('admin', name)
@@ -213,6 +216,19 @@ def deleteSvcs(svc):
         logger.error(f"Unable to delete service '{svc}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
+        
+def changePodStatus(name, status):
+    try:
+        svc = Services.objects(name=name).first()
+        if not svc:
+            return False
+        svc.update(pod_state=status)
+        logger.info(f"service state successfully changed for service '{svc}'")
+        return True
+    except Exception as e:
+        logger.error(f"Unable to change service state '{svc}'")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
 
 
 def changeServiceStatus(name, status):
@@ -220,7 +236,7 @@ def changeServiceStatus(name, status):
         svc = Services.objects(name=name).first()
         if not svc:
             return False
-        svc.update(state=status)
+        svc.update(service_state=status)
         logger.info(f"service state successfully changed for service '{svc}'")
         return True
     except Exception as e:
@@ -233,7 +249,7 @@ def changeServiceEndpoints(name, endpoints):
         end = Services.objects(name=name).first()
         if not end:
             return False
-        end.update(endpoint=endpoints)
+        end.update(endpoint_URL=endpoints)
         logger.info(f"service endpoint successfully changed for service '{end}'")
         return True
     except Exception as e:
@@ -414,6 +430,6 @@ def verifyPermissions(user, svc, perm):
 def initial_data_setup():
         service_list = os.environ.get('service_list').split(',')
         for k in service_list:
-            createSvc(k,'Disabled','None')
+            createSvc(k,'Disabled','Disabled','None')
         createRole('admin',service_list, 'write')
         
