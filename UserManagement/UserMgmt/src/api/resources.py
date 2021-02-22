@@ -244,10 +244,13 @@ class Service(Resource):
       return {'message': 'Unable to fetch services'}, 500
     
 class SingleUserInfo(Resource):
-  def get(self, name):
-  data = db.get(name=name)
-  if data:
-    return data, 200
-  if data is False:
-    return {'msg': 'No user record found'}, 404
-  return {'msg': 'Internal Server Error'}, 500
+
+
+    #@verifyToken
+    def get(self, name):
+        data = db.get(name=name)
+        if data:
+            return data, 200
+        if data is False:
+            return {'msg': 'No user record found'}, 404
+        return {'msg': 'Internal Server Error'}, 500
