@@ -380,9 +380,12 @@ class Service(Resource):
       if (actual_slist != service_list):
         check= returnNotMatches(service_list,actual_slist)
         for items in check:
-          resp = db.changeServiceEndpoints(name=items, endpoints='Disabled')
+          resp = db.changeServiceStatus(name=items, endpoints='Disabled')
           if not resp:
             return {"message": "Failed to update service_status"}, 500
+          resp = db.changeServiceEndpoints(name=items, endpoints='None')
+          if not resp:
+            return {"message": "Failed to update endpoint_URL"}, 500
       svcs = db.getServices()
       if svcs:
           return svcs, 200
