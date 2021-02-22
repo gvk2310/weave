@@ -365,7 +365,7 @@ class Service(Resource):
       for i in service_list:
           for j in end_points:
             if i in j:
-              resp = db.changeServiceEndpoints(i,j[:-3])
+              resp = db.changeServiceEndpoints(name=i, endpoints=j[:-3])
               if not resp:
                 return {"message": "Failed to update endpoint URL"}, 500
       if (actual_plist != service_list):
