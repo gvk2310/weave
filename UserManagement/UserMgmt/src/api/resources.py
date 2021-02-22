@@ -353,7 +353,7 @@ class Service(Resource):
               resp= db.changePodStatus(name=(check[0][0]+ "-" + check[0][1]), status=check[1])
               if not resp:
                 return{"message": "Failed to update the pod status "}, 500
-      rets = v1.list_endpoints_for_all_namespaces(watch=False)
+      rets = v1.list_service_for_all_namespaces(watch=False)
       actual_slist= []
       for i in rets.items:
           if i.metadata.name in service_list:
