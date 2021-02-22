@@ -350,35 +350,39 @@ class Service(Resource):
           check = (i.metadata.name.split('-'), i.status.phase)
           if (check[0][0]+ "-" + check[0][1]) in service_list:
               actual_plist.append(check[0][0]+ "-" + check[0][1])
-              resp= db.changeServiceStatus(name=(check[0][0]+ "-" + check[0][1]), status=check[1])
+              resp= db.changePodStatus(name=(check[0][0]+ "-" + check[0][1]), status=check[1])
               if not resp:
-                return{"message": "Failed to update the status "}, 500
+                return{"message": "Failed to update the pod status "}, 500
       rets = v1.list_endpoints_for_all_namespaces(watch=False)
       actual_slist= []
       for i in rets.items:
-          actual_slist.append(i.metadata.name)
+          if i.metadata.name in service_list:
+              actual_slist.append(i.metadata.name)
+              resp= db.changeServiceStatus(name=i.metadata.name, status='Running')
+              if not resp:
+                return{"message": "Failed to update the service status "}, 500          
       end_points = endpoints()
       for i in service_list:
           for j in end_points:
             if i in j:
               resp = db.changeServiceEndpoints(i,j[:-3])
               if not resp:
-                return {"message": "Failed to update endpoints"}, 500
+                return {"message": "Failed to update endpoint URL"}, 500
       if (actual_plist != service_list):
         check= returnNotMatches(service_list,actual_plist)
         for items in check:
-          resp = db.changeServiceStatus(name=items, status='Disabled')
+          resp = db.changePodStatus(name=items, status='Disabled')
           if not resp:
-            return {"message": "Failed to update status"}, 500
+            return {"message": "Failed to update pod_status"}, 500
           resp = db.changeServiceEndpoints(name=items, endpoints='None')
           if not resp:
-            return {"message": "Failed to update endpoints"}, 500
+            return {"message": "Failed to update endpoint_URL"}, 500
       if (actual_slist != service_list):
         check= returnNotMatches(service_list,actual_slist)
         for items in check:
-          resp = db.changeServiceEndpoints(name=items, endpoints='Failed')
+          resp = db.changeServiceEndpoints(name=items, endpoints='Disabled')
           if not resp:
-            return {"message": "Failed to update service endpoints"}, 500
+            return {"message": "Failed to update service_status"}, 500
       svcs = db.getServices()
       if svcs:
           return svcs, 200
