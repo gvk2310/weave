@@ -161,8 +161,8 @@ def getServices(svc=''):
                     "endpoint_URL": obj.endpoint_URL
                     } if obj else False
         data = [{"name": svc.name,
-                 "pod_state": obj.pod_state,
-                 "service_state": obj.service_state,
+                 "pod_state": svc.pod_state,
+                 "service_state": svc.service_state,
                  "endpoint_URL": svc.endpoint_URL
                  }
                 for svc in Services.objects()]
