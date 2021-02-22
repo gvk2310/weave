@@ -242,3 +242,12 @@ class Service(Resource):
       if svcs is False:
           return {'msg': 'No services record found'}, 404
       return {'message': 'Unable to fetch services'}, 500
+    
+class SingleUserInfo(Resource):
+  def get(self, name):
+  data = db.get(name=name)
+  if data:
+    return data, 200
+  if data is False:
+    return {'msg': 'No user record found'}, 404
+  return {'msg': 'Internal Server Error'}, 500
