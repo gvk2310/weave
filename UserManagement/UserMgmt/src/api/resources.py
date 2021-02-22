@@ -248,7 +248,7 @@ class SingleUserInfo(Resource):
 
     #@verifyToken
     def get(self, name):
-        data = db.get(name=name)
+        data = db.getUsers(name=name)
         if data:
             return data, 200
         if data is False:
