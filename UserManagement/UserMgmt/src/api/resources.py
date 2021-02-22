@@ -356,7 +356,7 @@ class Service(Resource):
       rets = v1.list_endpoints_for_all_namespaces(watch=False)
       actual_slist= []
       for i in rets.items:
-          check = (i.metadata.name, i.endpoints)
+          actual_slist.append(i.metadata.name)
       end_points = endpoints()
       for i in service_list:
           for j in end_points:
@@ -364,8 +364,8 @@ class Service(Resource):
               resp = db.changeServiceEndpoints(i,j[:-3])
               if not resp:
                 return {"message": "Failed to update endpoints"}, 500
-      if (actual_list != service_list):
-        check= returnNotMatches(service_list,actual_list)
+      if (actual_plist != service_list):
+        check= returnNotMatches(service_list,actual_plist)
         for items in check:
           resp = db.changeServiceStatus(name=items, status='Disabled')
           if not resp:
@@ -373,6 +373,12 @@ class Service(Resource):
           resp = db.changeServiceEndpoints(name=items, endpoints='None')
           if not resp:
             return {"message": "Failed to update endpoints"}, 500
+      if (actual_slist != service_list):
+        check= returnNotMatches(service_list,actual_slist)
+        for items in check:
+          resp = db.changeServiceEndpoints(name=items, endpoints='None')
+          if not resp:
+            return {"message": "Failed to update service endpoints"}, 500
       svcs = db.getServices()
       if svcs:
           return svcs, 200
