@@ -112,8 +112,7 @@ def scanFile(args):
 def localAssetOnboarding(args, repo_details):
     secured = scanFile(args)
     if not secured:
-        logger.error('Insecured File. Aborting Asset Onboarding.')
-        logger.error('Insecured File. Aborting Asset Onboarding.')        
+        logger.error('Insecured File. Aborting Asset Onboarding.')      
         db.update(assetid=args['assetid'],
                   scan_result='Vulnerable',
                   onboard_status='Aborted')
