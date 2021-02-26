@@ -187,9 +187,9 @@ class Service(Resource):
 class SingleUserInfo(Resource):
 
     def get(self, name):
-        data = db.getUsers(name=name)
+        data = db.getUserSvcs(name=name)
         if data:
             return data, 200
-        if data is False:
+        if data is None:
             return {'msg': 'No user record found'}, 404
         return {'msg': 'Internal Server Error'}, 500
