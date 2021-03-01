@@ -91,12 +91,12 @@ def deleteUser(user):
 def getServices(svc=''):
     try:
         if svc:
-            obj = Services.objects(name=svc).first()
-            return {"name": obj.name,
-                    "pod_state": obj.pod_state,
-                    "service_state": obj.service_state,
-                    "endpoint_URL": obj.endpoint_URL
-                    } if obj else False
+            svcs = Services.objects(name=svc).first()
+            return {"name": svcs.name,
+                    "pod_state": svcs.pod_state,
+                    "service_state": svcs.service_state,
+                    "endpoint_URL": svcs.endpoint_URL
+                    } if svcs else False
         data = [{"name": svc.name,
                  "pod_state": svc.pod_state,
                  "service_state": svc.service_state,
