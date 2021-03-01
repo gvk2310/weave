@@ -286,7 +286,7 @@ def deleteRole(role):
     else:
         return False
 
-def getUserSvcs(name):
+def getUserSvcs(name=''):
     try:
         data = getUsers(name=name)
         resp = getRoles(role=data['roles'])
