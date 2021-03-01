@@ -137,8 +137,10 @@ class Service(Resource):
       service_list = os.environ.get('service_list').split(',')
       actual_plist= []
       for i in retp.items:
-          check = (i.metadata.name.split('-'), i.status.phase)
-          if (check[0][0]+ "-" + check[0][1]) in service_list:
+          result = re.findall("devnetops", i.metadata.name)
+          if result == ['devnetops']:
+            check = (i.metadata.name.split('-'), i.status.phase)
+            if (check[0][0]+ "-" + check[0][1]) in service_list:
               actual_plist.append(check[0][0]+ "-" + check[0][1])
               resp= db.changePodStatus(name=(check[0][0]+ "-" + check[0][1]), status=check[1])
               if not resp:
@@ -182,6 +184,7 @@ class Service(Resource):
       if svcs is False:
           return {'msg': 'No services record found'}, 404
       return {'message': 'Unable to fetch services'}, 500
+    
     
 class SingleUserInfo(Resource):
 
