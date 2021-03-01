@@ -286,17 +286,17 @@ def deleteRole(role):
     else:
         return False
 
-#def getUserSvcs(name=''):
-#    try:
-#        data = getUsers(name=name)
-#        resp = getRoles(role=data['roles'])
-#        return {'name': name,
-#                'role': data['roles'],
-#                'services': resp['access']['access_on']}
-#    except Exception as e:
-#        logger.error("unable to fetch user")
-#        logger.debug(traceback.format_exc())
-#        logger.error(e)
+def getUserSvcs(name=''):
+    try:
+        data = getUsers(name=name)
+        resp = getRoles(role=data['roles'])
+        return {'name': name,
+                'role': data['roles'],
+                'services': resp['access']['access_on']}
+    except Exception as e:
+        logger.error("unable to fetch user")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
 
 
 @app.before_first_request
