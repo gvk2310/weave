@@ -23,7 +23,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: mongohost
-          value: mongodb://admin:password@mongo-devnetops.ethan.svc.cluster.local/devnetops?authSource=admin
+          value: mongodb://admin:password@mongo-devnetops.ethan.svc.cluster.local:80/devnetops?authSource=admin
         - name: secretkey
           value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
         - name: jwtsecretkey
