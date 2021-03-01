@@ -186,7 +186,7 @@ class Service(Resource):
 class SingleUserInfo(Resource):
 
     def get(self, name):
-        data = db.getUserSvcs(name)
+        data = db.getUserSvcs(name=name)
         if data:
             return data, 200
         if data is None:
