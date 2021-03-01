@@ -104,7 +104,6 @@ class Role(Resource):
         if srvc['access']['access_on'] == args['services']:
             return {'message': 'Service(s) already associated with the role'}, 400
         svcs = [sub['name'] for sub in db.getServices()]
-        print(svcs)
         svc_list = [svc for svc in args['services'] if svc not in svcs]
         if svc_list:
             return {f"Service(s) {svc_list} doesnt exist"}, 400
