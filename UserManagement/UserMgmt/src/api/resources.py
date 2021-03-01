@@ -183,26 +183,14 @@ class Service(Resource):
           return {'msg': 'No services record found'}, 404
       return {'message': 'Unable to fetch services'}, 500
     
-#class SingleUserInfo(Resource):
-#
-#    def get(self, name):
-#        data = db.getUserSvcs(name=name)
-#        if data:
-#            return data, 200
-#        if data is None:
-#            return {'msg': 'No user record found'}, 404
-#        return {'msg': 'Internal Server Error'}, 500
-
 class SingleUserInfo(Resource):
 
     def get(self, name):
-        data = db.getUsers(name=name)
-        if not data:
-            return {'msg': 'No user record found'}, 400
-        resp = db.getRoles(role=data['roles'])
-        if not resp:
-            return {'msg': 'Unable to fetch user role'}, 400
-        return {'name': name,
-                'role': data['roles'],
-                'services': resp['access']['access_on']}, 200
+        data = db.getUserSvcs(name=name)
+        if data:
+            return data, 200
+        if data is None:
+            return {'msg': 'No user record found'}, 404
         return {'msg': 'Internal Server Error'}, 500
+
+
