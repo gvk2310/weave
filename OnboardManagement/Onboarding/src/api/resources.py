@@ -187,24 +187,27 @@ class Asset(Resource):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_id', nullable=False, type=non_empty_string,
                             required=True)
-        parser.add_argument('delete_from_repo', type=inputs.boolean, default=False)
+        #parser.add_argument('delete_from_repo', type=inputs.boolean,
+        #                    default=False)
         args = parser.parse_args()
         resp = db.get(assetid=args['asset_id'])
         if not resp:
             return {"msg": "Invalid assset id"}, 404
-        if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or resp['onboard_status'] == 'In progress':
+        #if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or \
+        #        resp['onboard_status'] == 'In progress':
+        if (resp['onboard_status'] != 'Done') or \
+                resp['onboard_status'] == 'In progress':
             return {"msg": "Asset onboard not complete yet"}, 400
-        if (args['delete_from_repo']):
-            repo_details = retrieveUrl(resp["asset_repository"].lower())
-            if not repo_details:
-                return {
-                           "msg": "Unable to retrieve repo details"}, 500
-            if args['delete_from_repo'] and repo_details['repo_vendor'] == 'jfrog':
-                resp = deleteFromJfrog(resp['asset_link'], repo_details)
-            if args['delete_from_repo'] and repo_details['repo_vendor'] == 'nexus':
-                resp = deleteFromNexus(resp['asset_link'], repo_details)
-            if not resp:
-                return {"msg": "Unable to delete asset from repository"}, 500
+        #if (args['delete_from_repo']):
+        repo_details = retrieveUrl(resp["asset_repository"].lower())
+        if not repo_details:
+            return {"msg": "Unable to retrieve repo details"}, 500
+        if repo_details['repo_vendor'] == 'jfrog':
+            resp = deleteFromJfrog(resp['asset_link'], repo_details)
+        if repo_details['repo_vendor'] == 'nexus':
+            resp = deleteFromNexus(resp['asset_link'], repo_details)
+        if not resp:
+            return {"msg": "Unable to delete asset from repository"}, 500
         check = db.delete(assetid=args['asset_id'])
         if check:
             return {'msg': 'Asset Deleted'}, 200
@@ -688,26 +691,28 @@ class Tests(Resource):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_id', nullable=False, type=non_empty_string,
                             required=True)
-        parser.add_argument('delete_from_repo', type=inputs.boolean,
-                            default=False)
+        #parser.add_argument('delete_from_repo', type=inputs.boolean,
+        #                    default=False)
         args = parser.parse_args()
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
             return {"msg": "Invalid testcase id"}, 404
-        if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or \
-                resp['onboard_status'] == 'In progress':
+        #if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or \
+        #        resp['onboard_status'] == 'In progress':
+        if (resp['onboard_status'] != 'Done') or (resp['onboard_status'] == 'In progress'):
             return {"msg": "Test onboard not completed or Successful"}, 400
-        if (args['delete_from_repo']):
-            repo_details = retrieveUrl(resp["test_repository"].lower())
-            if not repo_details:
-                return {
-                           "msg": "Unable to retrieve repo details"}, 500
-            if args['delete_from_repo'] and repo_details['repo_vendor'] == 'jfrog':
-                resp = deleteFromJfrog(resp['test_link'], repo_details)
-            if args['delete_from_repo'] and repo_details['repo_vendor'] == 'nexus':
-                resp = deleteFromNexus(resp['test_link'], repo_details)
-            if not resp:
-                return {"msg": "Unable to delete test from repository"}, 500
+        #if (args['delete_from_repo']):
+        repo_details = retrieveUrl(resp["test_repository"].lower())
+        if not repo_details:
+          return {"msg": "Unable to retrieve repo details"}, 500
+        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'jfrog':
+        if repo_details['repo_vendor'] == 'jfrog':
+          resp = deleteFromJfrog(resp['test_link'], repo_details)
+        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'nexus':
+        if repo_details['repo_vendor'] == 'nexus':
+          resp = deleteFromNexus(resp['test_link'], repo_details)
+        if not resp:
+          return {"msg": "Unable to delete test from repository"}, 500
         check = db.deleteTest(testcaseid=args['test_id'])
         if check:
             return {'msg': 'Testcase Deleted'}, 200
