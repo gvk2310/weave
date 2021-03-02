@@ -11,17 +11,6 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, \
 
 class User(Resource):
 
-
-    # For all admin task requests, token generated while admin authentication
-    # will only be accepted and must be
-    # passed as bearer token .
-    # passFormatMsg = "Password must be minimum 8 characters long and must \
-    #     contain at least 1 uppercase, 1 lowercase character, 1 number \
-    #         and 1 of the special characters <_@$>"
-
-    # Getting List of user Available
-    #@jwt_required
-    #@admin_required
     def get(self):
         users = db.getUsers()
         if users:
@@ -30,71 +19,41 @@ class User(Resource):
             return {'msg': 'No users record found'}, 404
         return {'message': 'Unable to fetch users'}, 500
 
-    # Creating user
-    #@jwt_required
-    #@admin_required
+
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=nonEmptyEmail, required=True)
         parser.add_argument('name', type=nonEmptyString, required=True)
-        parser.add_argument('roles', action='append', required=True)
+        parser.add_argument('roles', type=nonEmptyString, required=True)
         args = parser.parse_args()
-        if db.getUsers(args['email']):
+        if db.getUsers(email=args['email']):
             return {'message': 'User already exists'}, 400
-        roles = formatList(args['roles'])
-        if not isinstance(roles, list):
-            return {'message': {'roles': roles}}, 400
-        resp = db.createUser(args['email'], args['name'], roles)
+        role = db.getRoles(args['roles'])
+        if role is False:
+            return {'message': "Given role doesn't exist"}, 400
+        resp = db.createUser(args['email'], args['name'], args['roles'])
         if resp:
             return {'message': 'User created'}, 200
-        elif resp is False:
-            return {"message": "Role/Roles does not exist"}, 500
         return {'message': 'Unable to create user '}, 500
 
-    # Updating User details
-    #@jwt_required
-    #@admin_required
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=nonEmptyEmail, required=True)
-        parser.add_argument('action', type=int, required=True, location='args')
+        parser.add_argument('roles',type=nonEmptyString , required=True)
         args = parser.parse_args()
-        if args['action'] == 1:
-            parser.add_argument('roles', action='append', required=True)
-            args = parser.parse_args()
-            roles = formatList(args['roles'])
-            if not isinstance(roles, list):
-                return {'message': {'roles': roles}}, 400
-            if db.addRoleToUser(args['email'], roles) == 2:
-                return {'message': 'Role(s) added to user'}, 200
-            elif db.addRoleToUser(args['email'], roles) == 3:
-                return {'message': 'Role(s) doesnt exist'}, 400            
-            elif db.addRoleToUser(args['email'], roles) == 1:
-                return {'message': 'Role(s) already associated with the user'}, 400
-        
- 	       
-        elif args['action'] == 2:
-            parser.add_argument('roles', action='append', required=True)
-            args = parser.parse_args()
-            roles = formatList(args['roles'])
-            if not isinstance(roles, list):
-                return {'message': {'roles': roles}}, 400
-            if db.removeRoleFrmUser(args['email'], roles) == 3:
-                return {'message': 'Role(s) removed from user'}, 200
-            elif db.removeRoleFrmUser(args['email'], roles) == 1:
-                return {'message': 'User doesn\'t have any of thse roles' }, 400
-            elif db.removeRoleFrmUser(args['email'], roles) == 2:
-                return {'message': 'Removing this role will remove all the roles for the User.User can be deleted if not being used'}, 400
-        elif args['action'] == 4:
-            parser.add_argument('name', type=nonEmptyString, required=True)
-            args = parser.parse_args()
-            if db.changeuserName(args['email'], args['name']):
-                return {'message': 'username modified'}, 200
-        return {'message': 'Unable to process the request'}, 500
+        role = db.getUsers(email= args['email'])
+        if role['roles'] == args['roles']:
+            return {'message': 'Role already associated with the user'}, 400
+        else:
+            data = db.getRoles(role=args['roles'])
+            if data is False:
+                return {'message': 'Role doesnt exist'}, 400
+            resp = db.updateUserRole(args['email'], args['roles'])
+            if resp:
+                return {'message': 'Role updated to user'}, 200
+            else:
+                return {'message': 'Unable to add role(s) from user'}, 400
 
-    # Deleting user
-    #@jwt_required
-    #@admin_required
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=nonEmptyEmail, required=True)
@@ -106,13 +65,6 @@ class User(Resource):
 
 class Role(Resource):
 
-
-    # For all admin task requests, token generated while admin authentication
-    # will only be accepted and must be
-    # passed as bearer token.
-    # Getting List of role Available
-    # @jwt_required
-    # @admin_required
     def get(self):
         roles = db.getRoles()
         if roles:
@@ -121,14 +73,12 @@ class Role(Resource):
             return {'msg': 'No roles record found'}, 404
         return {'message': 'Unable to fetch roles'}, 500
 
-    # Creating Role
-    #@jwt_required
-    #@admin_required
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=nonEmptyString, required=True)
         parser.add_argument('services', action='append', required=True)
-        parser.add_argument('access_type', choices=('read', 'write'),default='write')
+        parser.add_argument('access_type', choices=('read', 'write'),
+                            default='write')
         args = parser.parse_args()
         if db.getRoles(args['role']):
             return {'message': 'Role already exists'}, 400
@@ -139,53 +89,43 @@ class Role(Resource):
         if resp:
             return {'message': 'Role Created'}, 200
         elif resp is False:
-            return {'messages': 'All or one of the services not found'}, 412
+            return {'messages': 'Unable to create role'}, 412
         return {'message': 'Request not processed'}, 500
 
-    # Adding Service to role
-    #@jwt_required
-    #@admin_required
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=nonEmptyString, required=True)
-        parser.add_argument('action', type=int, required=True, location='args')
         parser.add_argument('services', action='append', required=True)
         args = parser.parse_args()
         services = formatList(args['services'])
         if not isinstance(services, list):
             return {'message': {'services': services}}, 400
-        if args['action'] == 1:
-            if db.addSvcToRole(args['role'], services) == 2:
-                return {'message': 'Service(s) added to role'}, 200
-            elif db.addSvcToRole(args['role'], services) == 3:
-                return {'message': 'Service(s) doesnt exist'}, 400            
-            elif db.addSvcToRole(args['role'], services) == 1:
-                return {'message': 'Service(s) already associated with the role'}, 400                 
-            
-        elif args['action'] == 2:
-            if db.remSvcFrmRole(args['role'], services) == 2:
-                return {'message': 'Service is removed from Role'}, 200
-            elif db.remSvcFrmRole(args['role'], services) == 1:
-                return {'message': 'Removing this will remove all the access for the role.Role can be deleted if not being used'}, 400
-            elif db.remSvcFrmRole(args['role'], services) == 4:
-                return {'message': 'Role doesnt have any of these services'}, 400
-            elif db.remSvcFrmRole(args['role'], services) == 3:
-                return {'message': 'One of the services not found'}, 400
-        return {'message': 'Unable to process this request'}, 500
+        srvc = db.getRoles(args['role'])
+        if srvc['access']['access_on'] == args['services']:
+            return {'message': 'Service(s) already associated with the role'}, 400
+        svcs = [sub['name'] for sub in db.getServices()]
+        svc_list = [svc for svc in args['services'] if svc not in svcs]
+        if svc_list:
+            return {f"Service(s) {svc_list} doesnt exist"}, 400
+        resp = db.updateRoleSvcs(args['role'], args['services'])
+        if resp:
+            return {'message': 'Service(s) has been updated to the role'}, 200
+        else:
+            return {'message': 'Unable to update Service(s) to the role'}, 400
 
-    # Deleting roles
-    #@jwt_required
-    #@admin_required
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=nonEmptyString, required=True)
         args = parser.parse_args()
+        data= db.getRoles(role= args['role'])
+        if data is False:
+            return {'message': 'Role doesnt exist'}, 400
         resp = db.deleteRole(args['role'])
         if resp:
             return {'message': 'Role is deleted'}, 200
         elif resp is False:
             return {'message': 'Role in use, cannot delete'}, 412
-        return {'message': 'Role doesnt exist'}, 400
+        return {'message': 'Request cant be processed'}, 500
 
 
 class Service(Resource):
@@ -245,14 +185,15 @@ class Service(Resource):
           return {'msg': 'No services record found'}, 404
       return {'message': 'Unable to fetch services'}, 500
     
+    
 class SingleUserInfo(Resource):
 
-
-    #@verifyToken
     def get(self, name):
-        data = db.getUsers(name=name)
+        data = db.getUserSvcs(name=name)
         if data:
             return data, 200
-        if data is False:
+        if data is None:
             return {'msg': 'No user record found'}, 404
         return {'msg': 'Internal Server Error'}, 500
+
+

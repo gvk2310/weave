@@ -31,22 +31,20 @@ class Role(db.Document):
 class User(db.Document):
     email = db.EmailField(required=True, unique=True)
     name = db.StringField(required=True)
-#    password = db.StringField(required=True)
-    roles = db.ListField(db.ReferenceField(Role), default=[])
+    roles = db.StringField(required=True)
 
 
-def getUsers(email=''):
+def getUsers(**kwargs):
     try:
-        if email:
-            usr = User.objects(email=email).first()
+        if len(kwargs) > 0:
+            usr = User.objects(__raw__=kwargs).first()
             return {"email": usr.email,
                     "name": usr.name,
-                    "roles": [role.name for role in
-                              usr.roles]} if usr else False
+                    "roles": usr.roles} if usr else False
         data = [{
             "email": usr.email,
             "name": usr.name,
-            "roles": [role.name for role in usr.roles]}
+            "roles": usr.roles}
             for usr in User.objects()
         ]
         return data if data else False
@@ -58,14 +56,7 @@ def getUsers(email=''):
 
 def createUser(email, name, roles):
     try:
-        #global read permission for all users
-        # roles.append('GlobalReader')
-        rols = Role.objects(name__in=roles)
-        if len(roles) != len(rols):
-            return False
-#        usr = User(email=email, password=hashpw(
-#            passw.encode('utf-8'), gensalt()), roles=rols, name=name)
-        usr = User(email=email, roles=rols, name=name)
+        usr = User(email=email, roles=roles, name=name)
         usr.save()
         return True
     except Exception as e:
@@ -73,55 +64,14 @@ def createUser(email, name, roles):
         logger.debug(traceback.format_exc())
         logger.error(e)
 
-
-def changeuserName(user, name):
+def updateUserRole(user, role):
     try:
-        uname = User.objects(email=user).first()
-        uname.update(name=name)
-        logger.info(f"username successfully changed for user '{user}'")
+        usr = User.objects(email=user).first()
+        usr.update(roles=role)
+        logger.info(f"User '{role}' has been updated")
         return True
     except Exception as e:
-        logger.error(f"Failed to change username for user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
-
-
-def addRoleToUser(user, roles):
-    try:
-        rols = Role.objects(name__in=roles)
-        if len(roles) != len(rols):
-            return 3
-        usr = User.objects(email=user).first()
-        if all(x in usr.roles for x in list(rols)):
-            return 1
-        new_roles = usr.roles + list(rols)
-        usr.update(roles=list(set(new_roles)))
-        return 2
-        logger.info(f"New roles - {','.join(roles)} added to the user '{user}'")
-        
-    except Exception as e:
-        logger.error(f"Unable to add new roles to the user '{user}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
-
-
-def removeRoleFrmUser(user, roles):
-    try:
-        usr = User.objects(email=user).first()
-        new_roles = list(set(usr.roles) - set(Role.objects(name__in=roles)))
-        if set(usr.roles) == set(new_roles):
-            logger.error(f"User '{user}' doesn't have any of these roles")
-            return 1
-        if len(usr.roles) == 1 or len(usr.roles) == len(roles):
-            logger.error(f" Removing this role will remove all the roles for the User '{user}'. You can delete the User instead if not being used.")
-            return 2
-        usr.update(roles=new_roles)
-        logger.info(
-            f"Roles - '{','.join(roles)}' has been removed from the user '"
-            f"{user}'")
-        return 3
-    except Exception as e:
-        logger.error(f"Unable to remove roles from the user '{user}'")
+        logger.error(f"Unable to update role to the user '{user}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
 
@@ -141,12 +91,12 @@ def deleteUser(user):
 def getServices(svc=''):
     try:
         if svc:
-            obj = Services.objects(name=svc).first()
-            return {"name": obj.name,
-                    "pod_state": obj.pod_state,
-                    "service_state": obj.service_state,
-                    "endpoint_URL": obj.endpoint_URL
-                    } if obj else False
+            svcs = Services.objects(name=svc).first()
+            return {"name": svcs.name,
+                    "pod_state": svcs.pod_state,
+                    "service_state": svcs.service_state,
+                    "endpoint_URL": svcs.endpoint_URL
+                    } if svcs else False
         data = [{"name": svc.name,
                  "pod_state": svc.pod_state,
                  "service_state": svc.service_state,
@@ -164,7 +114,6 @@ def createSvc(name, pstatus, sstatus, endpoint):
     try:
         svc = Services(name=name, pod_state=pstatus, service_state=sstatus, endpoint_URL=endpoint)
         svc.save()
-        # addSvcToRole('GlobalReader', name)
         addSvcToRole('admin', name)
         logger.info(f"Service '{name}' has been created")
         return True
@@ -263,8 +212,6 @@ def createRole(role, svc, action):
         logger.error(e)
 
 
-
-        
 def addSvcToRole(role, svc):
     try:
         svcs = Services.objects(name__in=svc)
@@ -277,60 +224,22 @@ def addSvcToRole(role, svc):
         obj.save()
         logger.info(f"svc added to '{role}'")
         return 2
-        
+
     except Exception as e:
         logger.error(f"Unable to add new services to the role '{role}'")
         logger.debug(traceback.format_exc())
-        logger.error(e)        
-        
-        
-def remSvcFrmRole(role, svcs):
-    try:
-        svc = Services.objects(name__in=svcs)
-        if len(svc) != len(svcs):
-            return 3
-        obj = Role.objects(name=role).first()
-        new_svcs = list(set(obj.access.on) - set(svc))
-        if set(obj.access.on) == set(new_svcs):
-            logger.error(f"User '{role}' doesn't have any of these services")
-            return 4
-        if len(obj.access.on) == 1 or len(obj.access.on) == len(svcs):
-            return 1
-        obj.access.on = [item for item in obj.access.on if
-                         item.name not in svcs]
-        obj.save()
-        return 2
-    except Exception as e:
-        logger.error(f"Failed to remove services from role'{role}'")
-        logger.debug(traceback.format_exc())
         logger.error(e)
 
-
-
-
-def checkRoleUsage(role):
+def updateRoleSvcs(role, svc):
     try:
-        usr = User.objects()
-        return role in [r.name for u in usr for r in u.roles]
-    except Exception as e:
-        logger.error(f"Failed to check role usage for '{role}'")
-        logger.debug(traceback.format_exc())
-        logger.error(e)
-
-
-def deleteRole(role):
-    check = checkRoleUsage(role)
-    if check is None:
-        return None
-    elif check:
-        return False
-    try:
-        rol = Role.objects(name=role).first()
-        rol.delete()
-        logger.info(f"Role '{role}' deleted successfully")
+        role = Role.objects(name=role).first()
+        svcs = Services.objects(name__in=svc)
+        new_access= role.access
+        new_access.on= svcs
+        role.update(access=new_access)
         return True
     except Exception as e:
-        logger.error(f"Failed to delete role '{role}'")
+        logger.error(f"Unable to update services to the role '{role}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
 
@@ -343,7 +252,6 @@ def checkAdminPrivilege(user):
         logger.error(f"Failed to check admin privilege for user '{user}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
-
 
 
 def verifyPermissions(user, svc, perm):
@@ -361,6 +269,34 @@ def verifyPermissions(user, svc, perm):
         logger.error("Failed to verify permissions")
         logger.debug(traceback.format_exc())
         logger.error(e)
+        
+
+def deleteRole(role):
+    roles = User.objects(roles=role).first()
+    if roles is None:
+        try:
+            rol = Role.objects(name=role).first()
+            rol.delete()
+            logger.info(f"Role '{role}' deleted successfully")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to delete role '{role}'")
+            logger.debug(traceback.format_exc())
+            logger.error(e)
+    else:
+        return False
+
+def getUserSvcs(name=''):
+    try:
+        data = getUsers(name=name)
+        resp = getRoles(role=data['roles'])
+        return {'name': name,
+                'role': data['roles'],
+                'services': resp['access']['access_on']}
+    except Exception as e:
+        logger.error("unable to fetch user")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
 
 
 @app.before_first_request
@@ -369,4 +305,3 @@ def initial_data_setup():
         for k in service_list:
             createSvc(k,'Disabled','Disabled','None')
         createRole('admin',service_list, 'write')
-        
