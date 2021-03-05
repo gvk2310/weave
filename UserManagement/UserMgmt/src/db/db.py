@@ -290,7 +290,7 @@ def getUserSvcs(name=''):
     try:
         data = getUsers(name=name)
         resp = getRoles(role=data['roles'])
-        return {'name': name,
+        return {'name': name.lower(),
                 'role': data['roles'],
                 'services': resp['access']['access_on']}
     except Exception as e:
