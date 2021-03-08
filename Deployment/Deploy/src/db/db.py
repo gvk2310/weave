@@ -19,11 +19,20 @@ class deployments(db.Document):
     status = db.StringField(required=True)
     logs = db.StringField(required=True)
     created = db.DateTimeField(required=True)
-    stage_info = db.DictField(default={})
+    stage_info = db.DictField(required=True)
     instances = db.ListField(db.DictField(required=True), default=[])
 
 
-
+stages = {"versa": ['Deploy',
+                    'Security Check',
+                    'Device creation',
+                    'Stage Branches',
+                    'Test',
+                    'Certify'],
+          "generic": ['Deploy',
+                      'Security Check',
+                      'Test',
+                      'Certify']}
 
 
 def get(**kwargs):
@@ -94,7 +103,9 @@ def create(**kwargs):
                            assets=kwargs['assets'],
                            status='DEPLOY_IN_PROGRESS',
                            logs=f"{timestamp} | Deployment initiated",
-                           created=kwargs['timestamp'])
+                           created=kwargs['timestamp'],
+                           stage_info={i: {'status': ''} for i in
+                                       stages[kwargs['type']]})
         depl.save()
         return True
     except Exception as e:
@@ -114,24 +125,18 @@ def update(**kwargs):
         obj.update(status=kwargs['status'],
                    logs=logs)
         if kwargs['stage_info']:
-            for stage_name, stage_status in kwargs['stage_info'].items():
-                if stage_name not in obj.stage_info:
-                    obj.stage_info[stage_name]={}
-                obj.stage_info[stage_name]['status'] = stage_status
-            obj.save()
-        #if kwargs['stage_info']:
-        #    stage_name = kwargs['stage_info'].split('-')[0]
-        #   stage_status = kwargs['stage_info'].split('-')[1]
+            stage_name = kwargs['stage_info'].split('-')[0]
+            stage_status = kwargs['stage_info'].split('-')[1]
             # stage_msg = kwargs['stage_info'].split['-'][2] \
             #     if kwargs['stage_info'].count('-') > 1 else ''
-        #    obj.stage_info[stage_name]['status'] = stage_status
+            obj.stage_info[stage_name]['status'] = stage_status
             # obj.stage_info[stage_name]['info'] = stage_msg
-        #    for stg_name in stages[obj.type][
-        #                    :stages[obj.type].index(stage_name)]:
-        #        if not obj.stage_info[stg_name]['status']:
-        #            obj.stage_info[stg_name]['status'] = 'skipped'
+            for stg_name in stages[obj.type][
+                            :stages[obj.type].index(stage_name)]:
+                if not obj.stage_info[stg_name]['status']:
+                    obj.stage_info[stg_name]['status'] = 'skipped'
                     # obj.stage_info[stg_name]['info'] = 'No data found'
-        #    obj.save()
+            obj.save()
         if kwargs['instances']:
             obj.update(instances=kwargs['instances'])
         return True
