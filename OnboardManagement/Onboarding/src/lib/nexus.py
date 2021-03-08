@@ -15,7 +15,7 @@ def uploadToNexus(**kwargs):
                                       kwargs['repo']['repo_password']),
                                 data=rf.read(),verify=False)
             #To get content length
-            size = requests.get(targetFilePath[:-1],
+            size = requests.get(targetFilePath,
                                 auth=(kwargs['repo']['repo_username'],
                                       kwargs['repo']['repo_password']),
                                       verify=False)
