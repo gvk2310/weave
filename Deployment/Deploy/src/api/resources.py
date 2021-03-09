@@ -150,8 +150,7 @@ class Deploy(Resource):
             publish_event_message(payload={'id':args['deployment_id'],
                              'status':args['status'],
                              'message':args['message'],
-                             'stage_info':args['stage_info'],
-                             'instances':args['instances']})
+                             'stage_info':args['stage_info']})
             return {"msg": "Deploy status updated"}, 200
         if done is False:
             return {"msg": "Deployment Id does not exist"}, 400
@@ -194,8 +193,7 @@ class Deploy(Resource):
               publish_event_message(payload={'id':args['id'],
                                              'status':'DELETE_IN_PROGRESS',
                                              'message':'Deployment deletion initiated',
-                                             'stage_info':None,
-                                             'instances':None})
+                                             'stage_info':None})
               return {"msg": "Deployment deletion initiated."}, 200
         return {"msg": "Deployment deletion failed"}, 500
 
