@@ -205,7 +205,7 @@ class Deploy(Resource):
               elif check['status'] == 'DELETE_FAILED':
                 publish_event_message(payload={'id':args['id'],
                                                'status':'DELETE_FAILED',
-                                               'message':'Deployment deletion ffailed'})                
+                                               'message':'Deployment deletion failed'})                
         return {"msg": "Deployment deletion failed"}, 500
 
 
