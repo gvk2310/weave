@@ -187,7 +187,8 @@ class Deploy(Resource):
                              stage_info=None,
                              instances=None)
             if done:
-                return {"msg": "Deployment deletion initiated."}, 200
+              publish_event_message(args)
+              return {"msg": "Deployment deletion initiated."}, 200
         return {"msg": "Deployment deletion failed"}, 500
 
 
