@@ -18,7 +18,7 @@ spec:
       - name: devnetops
       containers:
       - name: devnetops-deployment
-        image: devnetops.azurecr.io/devnetops-deployment:S1_14
+        image: devnetops.azurecr.io/devnetops-deployment:S1_15
         imagePullPolicy: Always
         env:
         - name: jenkins_url
