@@ -109,7 +109,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					withSonarQubeEnv('SonarQube')
 					{
 					println('Sonar Method enter');
-					function.sonarMethod()
+					def scannerHome = tool 'Sonar Scanner';
+					sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$USERNAME -Dsonar.password=$PASSWORD";
+					println('Sonar Method exit');
 					echo "Access the SonarQube URL from the Platform Dashboard tile"
 					}
 					sleep 40
