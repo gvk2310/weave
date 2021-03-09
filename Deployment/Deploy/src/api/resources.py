@@ -196,6 +196,7 @@ class Deploy(Resource):
                                              'stage_info':None})
               return {"msg": "Deployment deletion initiated."}, 200
             check = db.get(id=args['id'])
+            print(check)
             if check['status'] == 'DELETE_COMPLETE':
               publish_event_message(payload={'id':args['id'],
                                                'status':'DELETE_COMPLETE',
