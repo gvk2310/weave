@@ -28,6 +28,6 @@ def publish_event_message(payload, event='deploy'):
         return True
     except Exception as e:
         logger.error(
-            f"Unable to publish message in redis for {args['deployment_id']}")
+            f"Unable to publish message in redis")
         logger.debug(traceback.format_exc())
         logger.error(e)
