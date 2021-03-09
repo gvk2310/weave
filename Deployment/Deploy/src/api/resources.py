@@ -201,7 +201,6 @@ class Deploy(Resource):
               publish_event_message(payload={'id':args['id'],
                                                'status':'DELETE_COMPLETE',
                                                'message':'Deployment deletion completed'})
-                return { "msg": "Deployment deleted from database"}, 200
               if done:
                 return { "msg": "Deployment deleted from database"}, 200
         return {"msg": "Deployment deletion failed"}, 500
