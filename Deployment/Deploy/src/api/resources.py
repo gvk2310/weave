@@ -195,7 +195,7 @@ class Deploy(Resource):
                                              'message':'Deployment deletion initiated',
                                              'stage_info':None})
             check = db.get(id=args['id'])
-              if check['status'] == 'DELETE_COMPLETE':
+            if check['status'] == 'DELETE_COMPLETE':
                 publish_event_message(payload={'id':args['id'],
                                                'status':'DELETE_COMPLETE',
                                                'message':'Deployment deletion completed'})
@@ -205,7 +205,7 @@ class Deploy(Resource):
               elif check['status'] == 'DELETE_FAILED':
                 publish_event_message(payload={'id':args['id'],
                                                'status':'DELETE_FAILED',
-                                               'message':'Deployment deletion failed'})                
+                                               'message':'Deployment deletion failed'})                              
         return {"msg": "Deployment deletion failed"}, 500
 
 
