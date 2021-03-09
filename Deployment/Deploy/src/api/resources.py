@@ -201,7 +201,11 @@ class Deploy(Resource):
                                                'message':'Deployment deletion completed'})
                 done = db.delete(id=args['id'])
                 if done:
-                  return { "msg": "Deployment deleted from database"}, 200       
+                  return { "msg": "Deployment deleted from database"}, 200  
+              elif check['status'] == 'DELETE_FAILED':
+                publish_event_message(payload={'id':args['id'],
+                                               'status':'DELETE_FAILED',
+                                               'message':'Deployment deletion ffailed'})                
         return {"msg": "Deployment deletion failed"}, 500
 
 
