@@ -133,7 +133,7 @@ class Deploy(Resource):
         parser.add_argument('deployment_id', type=nonEmptyString, required=True)
         parser.add_argument('status', type=nonEmptyString, required=True)
         parser.add_argument('message', type=str, required=True)
-        parser.add_argument('stage_info', type=str, default=None)
+        parser.add_argument('stage_info', type=dict, default=None)
         parser.add_argument('instances', type=dict, action="append")
         args = parser.parse_args()
         if args['instances'] == []:
