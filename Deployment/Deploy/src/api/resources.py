@@ -195,6 +195,11 @@ class Deploy(Resource):
                                              'message':'Deployment deletion initiated',
                                              'stage_info':None})
               return {"msg": "Deployment deletion initiated."}, 200
+            check = db.get(id=args['id'])
+            if check['status'] == 'DELETE_COMPLETE':
+              done = db.delete(id=args['id'])
+              if done:
+                return { "msg": "Deployment deleted from database"}, 200
         return {"msg": "Deployment deletion failed"}, 500
 
 
