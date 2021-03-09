@@ -194,15 +194,14 @@ class Deploy(Resource):
                                              'status':'DELETE_IN_PROGRESS',
                                              'message':'Deployment deletion initiated',
                                              'stage_info':None})
-              return {"msg": "Deployment deletion initiated."}, 204
-        check = db.get(id=args['id'])
-        if check['status'] == 'DELETE_COMPLETE':
-              publish_event_message(payload={'id':args['id'],
+              check = db.get(id=args['id'])
+              if check['status'] == 'DELETE_COMPLETE':
+                publish_event_message(payload={'id':args['id'],
                                                'status':'DELETE_COMPLETE',
                                                'message':'Deployment deletion completed'})
-              done = db.delete(id=args['id'])
-              if done:
-                return { "msg": "Deployment deleted from database"}, 200   
+                done = db.delete(id=args['id'])
+                if done:
+                  return { "msg": "Deployment deleted from database"}, 200       
         return {"msg": "Deployment deletion failed"}, 500
 
 
