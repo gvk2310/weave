@@ -80,8 +80,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					done
 					'''
 					sh '''
-					export SONAR_PROJECT_NAME='Onboard'
-					export SONAR_PROJECT_KEY='Onboard'
+					export SONAR_PROJECT_NAME='devnetops-onboardmgmt'
+					export SONAR_PROJECT_KEY='devnetops-onboardmgmt'
 					export SONAR_QG_NAME='Onboard_QG'
 					curl -u ${USERNAME}:${PASSWORD} -X POST "${SONAR_HOST_URL}/api/projects/create?project=$SONAR_PROJECT_KEY&name=$SONAR_PROJECT_NAME"
 					curl -u ${USERNAME}:${PASSWORD} "${SONAR_HOST_URL}/api/qualitygates/show?name=$SONAR_QG_NAME" > qualitygate.json
