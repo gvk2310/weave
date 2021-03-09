@@ -2,9 +2,10 @@ def label = "Devnetops-${UUID.randomUUID().toString()}"
 def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
            containers: [containerTemplate(name: 'python3', image: 'python:3.8-alpine', ttyEnabled: true, command: 'cat'),
-             containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
-                        containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
-               containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
+           containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
+		   containerTemplate(name: 'curl', image: 'devnetops.azurecr.io/curl', ttyEnabled: true, alwaysPullImage: true, command: 'cat'),
+           containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
+           containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
 				volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')],
            		imagePullSecrets: ['devnetops'])
 
@@ -17,6 +18,11 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def Docker_Image = 'devnetops-onboard'
         def Image_Tag = 't1'
         def K8s_Deployment = 'devnetops-onboard'
+		def SONAR_HOST_URL='https://a9df39b070e0b4f318517a4fb48d14d3-1933974976.us-west-2.elb.amazonaws.com/sonar/'
+		def SONAR_SCANNER='org.sonarsource.scanner.maven'
+        def SONAR_PLUGIN='sonar-maven-plugin:3.2'
+		 		
+		
 		try{
        stage('Git Checkout'){
             git branch: Git_Branch,
@@ -48,12 +54,12 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			container('curl')
 				{
 					sh '''
-					export SONAR_QG_NAME='dotnet_QG'
+					export SONAR_QG_NAME='Onboard_QG'
 					echo "Creating SonarQube Gateway"
 					curl -u ${USERNAME}:${PASSWORD} -X POST "${SONAR_HOST_URL}/api/qualitygates/create?name=$SONAR_QG_NAME"
 					'''
 					sh '''#!/bin/bash
-				export SONAR_QG_NAME='dotnet_QG'
+					export SONAR_QG_NAME='Onboard_QG'
 					curl -u ${USERNAME}:${PASSWORD} "${SONAR_HOST_URL}/api/qualitygates/show?name=$SONAR_QG_NAME" > qualitygate.json
 					cat qualitygate.json
 					curl_cmd=( curl -u ${USERNAME}:${PASSWORD} -X POST ${SONAR_HOST_URL}/api/qualitygates/ )
@@ -73,9 +79,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					done
 					'''
 					sh '''
-					export SONAR_PROJECT_NAME='dotnet'
-					export SONAR_PROJECT_KEY='dotnet'
-					export SONAR_QG_NAME='dotnet_QG'
+					export SONAR_PROJECT_NAME='Onboard'
+					export SONAR_PROJECT_KEY='Onboard'
+					export SONAR_QG_NAME='Onboard_QG'
 					curl -u ${USERNAME}:${PASSWORD} -X POST "${SONAR_HOST_URL}/api/projects/create?project=$SONAR_PROJECT_KEY&name=$SONAR_PROJECT_NAME"
 					curl -u ${USERNAME}:${PASSWORD} "${SONAR_HOST_URL}/api/qualitygates/show?name=$SONAR_QG_NAME" > qualitygate.json
 					QG_ID=$( jq -r ".id" qualitygate.json )
