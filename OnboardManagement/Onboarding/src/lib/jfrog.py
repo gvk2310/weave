@@ -17,7 +17,7 @@ def validateJfrog(args):
         logger.info('Jfrog Repo is validated')
         return repo_details
     except Exception as e:
-        logger.error('invalid jfrog repository credentials')
+        logger.error('invalid jfrog repository credentials/URL')
         logger.debug(traceback.format_exc())
         logger.error(e)
 
