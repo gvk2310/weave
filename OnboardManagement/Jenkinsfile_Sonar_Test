@@ -33,6 +33,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.bitbucketStatusNotify('INPROGRESS')
         }
+		 /**
            stage ('Encrypting Source codes'){
             container('python3'){
               sh '''#!/bin/sh
@@ -47,7 +48,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                     mkdir tmp/Onboarding/logs
               '''}
          }
-          
+           **/
           
        stage('SonarQube Analysis') {
 			withCredentials([usernamePassword(credentialsId: 'SONAR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]){
@@ -111,7 +112,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					println('Sonar Method enter');
 					
 					def scannerHome = tool 'Sonar Scanner';
-					sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$USERNAME -Dsonar.password=$PASSWORD -Dproject.settings=sonar-project.properties";
+					sh "${scannerHome}/bin/sonar-scanner -Dsonar.login=$USERNAME -Dsonar.password=$PASSWORD -Dproject.settings=../sonar-project.properties";
 					println('Sonar Method exit');
 					echo "Access the SonarQube URL from the Platform Dashboard tile"
 					}
