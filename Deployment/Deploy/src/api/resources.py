@@ -74,7 +74,6 @@ class Deploy(Resource):
                            "msg": "Template not provided in assets or "
                                   "multiple Template id provided"}, 400
             data = assetDownloadDetails(assets['template'])
-            print(data)
             if not data:
                 return {"msg": "Unable to get template download details"}, 400
             template = data[0]
@@ -133,13 +132,21 @@ class Deploy(Resource):
         parser.add_argument('deployment_id', type=nonEmptyString, required=True)
         parser.add_argument('status', type=nonEmptyString, required=True)
         parser.add_argument('message', type=str, required=True)
-        parser.add_argument('stage_info', type=str, default=None)
+        parser.add_argument('stage_info', type=dict, default=None)
         parser.add_argument('instances', type=dict, action="append")
         args = parser.parse_args()
         if args['instances'] == []:
             args['instances'] = None
+        if args['status'] == 'DELETE_FAILED':
+                publish_event_message(payload={'id':args['deployment_id'],
+                                               'status':'DELETE_FAILED',
+                                               'message':'Deployment deletion failed'})
         if args['status'] == "DELETE_COMPLETE":
+            publish_event_message(payload={'id':args['deployment_id'],
+                                               'status':'DELETE_COMPLETE',
+                                               'message':'Deployment deletion completed'})
             done = db.delete(id=args['deployment_id'])
+            
         else:
             done = db.update(id=args['deployment_id'],
                              status=args['status'],
@@ -147,7 +154,10 @@ class Deploy(Resource):
                              stage_info=args['stage_info'],
                              instances=args['instances'])
         if done:
-            publish_event_message(args)
+            publish_event_message(payload={'id':args['deployment_id'],
+                             'status':args['status'],
+                             'message':args['message'],
+                             'stage_info':args['stage_info']})
             return {"msg": "Deploy status updated"}, 200
         if done is False:
             return {"msg": "Deployment Id does not exist"}, 400
@@ -169,7 +179,6 @@ class Deploy(Resource):
         if depl['instances'] and depl['status'] not in \
                 ['DELETE_IN_PROGRESS']:
             done = deleteDeployment(depl)
-            # done=True
             if not done and not args['force_delete']:
                 return {"msg": "Deployment could not be deleted from the "
                                "infrastructure"}, 500
@@ -187,7 +196,10 @@ class Deploy(Resource):
                              stage_info=None,
                              instances=None)
             if done:
-                return {"msg": "Deployment deletion initiated."}, 200
+                publish_event_message(payload={'id':args['id'],
+                                             'status':'DELETE_IN_PROGRESS',
+                                             'message':'Deployment deletion initiated'})
+                return { "msg": "Deployment deletion initiated"}, 200
         return {"msg": "Deployment deletion failed"}, 500
 
 
@@ -210,11 +222,4 @@ class ConfigSpreadsheetGenerator(Resource):
         return {"msg": "Spreadsheet generation failed"}, 500
 
 
-#class ServerEventMessage(Resource):
 
-
-    #@verifyToken
-#    def get(self):
-#        stream = Response(SSEGenerator(), mimetype="text/event-stream",
-#                          headers={'Cache-Control': 'no-cache'})
-#        return stream
