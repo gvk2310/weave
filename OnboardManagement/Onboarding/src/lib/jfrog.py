@@ -5,7 +5,6 @@ from ..log import logger
 
 def validateJfrog(args):
     try:
-        jfrog_url = args['repo_url'][:-1]
         jfrog_url = args['repo_url'].split('/artifactory')[0]
         repo_details = requests.get(
             f"{jfrog_url}/artifactory/api/repositories",
