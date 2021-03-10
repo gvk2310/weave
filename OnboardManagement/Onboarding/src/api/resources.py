@@ -701,10 +701,10 @@ class Tests(Resource):
         repo_details = retrieveUrl(resp["test_repository"].lower())
         if not repo_details:
           return {"msg": "Unable to retrieve repo details"}, 500
-        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'jfrog':
+        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'JFrog':
         if repo_details['repo_vendor'] == 'JFrog':
           resp = deleteFromJfrog(resp['test_link'], repo_details)
-        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'nexus':
+        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'Nexus':
         if repo_details['repo_vendor'] == 'Nexus':
           resp = deleteFromNexus(resp['test_link'], repo_details)
         if not resp:
