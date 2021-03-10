@@ -192,9 +192,10 @@ class Deploy(Resource):
             if done:
               publish_event_message(payload={'id':args['id'],
                                              'status':'DELETE_IN_PROGRESS',
-                                             'message':'Deployment deletion initiated',
-                                             'stage_info':None})
+                                             'message':'Deployment deletion initiated'})
+            print(args['id'])
             check = db.get(id=args['id'])
+            print(check)
             if check['status'] == 'DELETE_COMPLETE':
                 publish_event_message(payload={'id':args['id'],
                                                'status':'DELETE_COMPLETE',
@@ -228,11 +229,4 @@ class ConfigSpreadsheetGenerator(Resource):
         return {"msg": "Spreadsheet generation failed"}, 500
 
 
-#class ServerEventMessage(Resource):
 
-
-    #@verifyToken
-#    def get(self):
-#        stream = Response(SSEGenerator(), mimetype="text/event-stream",
-#                          headers={'Cache-Control': 'no-cache'})
-#        return stream
