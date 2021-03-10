@@ -67,6 +67,10 @@ class Asset(Resource):
         repo_details = retrieveUrl(args['asset_repository'].lower())
         if not repo_details:
             return {"msg": "Unable to retrieve repo details"}, 400
+        # Currently only supporting Jfrog repo
+#        if repo_details['repo_vendor'].lower() != 'jfrog':
+#            return {
+#                       "msg": "Only jfrog supported currently"}, 500
         check = db.get(name=args['asset_name'],
                     vendor=args['asset_vendor'],
                     group=args['asset_group'],
@@ -78,9 +82,9 @@ class Asset(Resource):
                            'different version'}, 403
 
         if args['asset_path']:
-            if repo_details['repo_vendor'] == 'JFrog':
+            if repo_details['repo_vendor'] == 'jfrog':
                 size = checkJfrogRemote(args, repo_details)
-            if repo_details['repo_vendor'] == 'Nexus':
+            if repo_details['repo_vendor'] == 'nexus':
                 size = checkNexusRemote(args, repo_details)
             if not size:
                 return {
@@ -198,9 +202,9 @@ class Asset(Resource):
         repo_details = retrieveUrl(resp["asset_repository"].lower())
         if not repo_details:
             return {"msg": "Unable to retrieve repo details"}, 500
-        if repo_details['repo_vendor'] == 'JFrog':
+        if repo_details['repo_vendor'] == 'jfrog':
             resp = deleteFromJfrog(resp['asset_link'], repo_details)
-        if repo_details['repo_vendor'] == 'Nexus':
+        if repo_details['repo_vendor'] == 'nexus':
             resp = deleteFromNexus(resp['asset_link'], repo_details)
         if not resp:
             return {"msg": "Unable to delete asset from repository"}, 500
@@ -253,7 +257,7 @@ class Repository(Resource):
             if repolist and (args['repo_name'] in [item['repo_name'] for item in repolist]):
                 return {
                        "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400 
-            if args['repo_vendor'].lower() not in ['JFrog', 'Nexus']:
+            if args['repo_vendor'].lower() not in ['jfrog', 'nexus']:
                 return {'msg': f"'{args['repo_vendor']}' as repo vendor is not supported"}, 400
             if repolist and (args['repo_url'] in [item['repo_url'] for item in
                                               repolist]) and (args['repo_name'] not in [item['repo_name'] for item in
@@ -269,7 +273,7 @@ class Repository(Resource):
                 if (item['repo_url'] == args['repo_url']) and (item['repo_name'] != args['repo_name']):
                     return {
                             "msg": "Repository already exists, please create an another one"}, 400        
-        if args['repo_vendor'].lower() == 'JFrog':
+        if args['repo_vendor'].lower() == 'jfrog':
             resp = validateJfrog(args)
             if not resp:
                 return {"msg": "Repository validation failed"}, 500
@@ -278,7 +282,7 @@ class Repository(Resource):
                        "msg": "Either the repository does not exist or the "
                               "user doesnt have enough previliges to access "
                               "the repository"}, 400
-        if args['repo_vendor'].lower() == 'Nexus':
+        if args['repo_vendor'].lower() == 'nexus':
             resp = validateNexus(args)
             if not resp:
                 return {
@@ -577,10 +581,10 @@ class Tests(Resource):
         if args['test_path']:
             if args['test_path'].split('.')[-1] not in ['zip', 'gz']:
                 return {"msg": "Provided path is not a  zip or gz"}, 400
-            if repo_details['repo_vendor'] == 'JFrog':
+            if repo_details['repo_vendor'] == 'jfrog':
                 if checkJfrogUrl(args, repo_details) != True:
                     return {"msg": "Invalid test path details"}, 500
-            if repo_details['repo_vendor'] == 'Nexus':
+            if repo_details['repo_vendor'] == 'nexus':
                 if checkNexusUrl(args, repo_details) != True:
                     return {"msg": "Invalid test path details"}, 500
             args['test_id'] = datetime.datetime.now().strftime("TC%Y%m%d%H%M%S") 
@@ -701,11 +705,11 @@ class Tests(Resource):
         repo_details = retrieveUrl(resp["test_repository"].lower())
         if not repo_details:
           return {"msg": "Unable to retrieve repo details"}, 500
-        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'JFrog':
-        if repo_details['repo_vendor'] == 'JFrog':
+        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'jfrog':
+        if repo_details['repo_vendor'] == 'jfrog':
           resp = deleteFromJfrog(resp['test_link'], repo_details)
-        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'Nexus':
-        if repo_details['repo_vendor'] == 'Nexus':
+        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'nexus':
+        if repo_details['repo_vendor'] == 'nexus':
           resp = deleteFromNexus(resp['test_link'], repo_details)
         if not resp:
           return {"msg": "Unable to delete test from repository"}, 500
