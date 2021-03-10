@@ -33,7 +33,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.bitbucketStatusNotify('INPROGRESS')
         }
-		 /**
+		 
            stage ('Encrypting Source codes'){
             container('python3'){
               sh '''#!/bin/sh
@@ -48,7 +48,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                     mkdir tmp/Onboarding/logs
               '''}
          }
-           **/
+           
           
        stage('SonarQube Analysis') {
 			withCredentials([usernamePassword(credentialsId: 'SONAR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]){
