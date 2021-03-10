@@ -135,7 +135,6 @@ class Deploy(Resource):
         parser.add_argument('stage_info', type=dict, default=None)
         parser.add_argument('instances', type=dict, action="append")
         args = parser.parse_args()
-        print(args['status'])
         if args['instances'] == []:
             args['instances'] = None
         if args['status'] == 'DELETE_FAILED':
