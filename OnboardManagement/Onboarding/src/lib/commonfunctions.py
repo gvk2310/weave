@@ -72,10 +72,10 @@ def assetDeletefromRepo(asset):
     if not repo_details:
         return {"msg": "Unable to retrieve repo details"}, 500
     if repo_details[
-        'repo_vendor'].lower() == 'JFrog':
+        'repo_vendor'].lower() == 'jfrog':
         resp = deleteFromJfrog(asset['asset_link'], repo_details)
     if repo_details[
-        'repo_vendor'].lower() == 'Nexus':
+        'repo_vendor'].lower() == 'nexus':
         resp = deleteFromNexus(asset['asset_link'], repo_details)
         if not resp:
             return {"msg": "Unable to delete asset from repository"}, 500
@@ -129,12 +129,12 @@ def localAssetOnboarding(args, repo_details):
                           	  	 'scan_result':'Safe'})
     relTargetPath = f"{args['asset_name']}/{args['asset_vendor']}/{args['asset_group']}/" \
                         f"{args['asset_file_name']}-V{args['asset_version']}"
-    if repo_details['repo_vendor'] == 'JFrog':
+    if repo_details['repo_vendor'] == 'jfrog':
         resp = uploadToJfrog(relTargetPath=relTargetPath,
                              fileLoc=args['asset_file_loc'],
                              filename=args['asset_file'].filename,
                              repo=repo_details)
-    if repo_details['repo_vendor'] == 'Nexus':
+    if repo_details['repo_vendor'] == 'nexus':
         resp = uploadToNexus(relTargetPath=relTargetPath,
                              fileLoc=args['asset_file_loc'],
                              filename=args['asset_file'].filename,
@@ -195,12 +195,12 @@ def localTestOnboarding(args, repo_details):
                                  'scan_result':'Safe'})
     relTargetPath = f"{args['test_name']}/{args['test_category']}/" \
                     f"{args['test_file_name']}"
-    if repo_details['repo_vendor'] == 'JFrog':
+    if repo_details['repo_vendor'] == 'jfrog':
         resp = uploadToJfrog(relTargetPath=relTargetPath,
                          fileLoc=args['test_file_loc'],
                          filename=args['test_file'].filename,
                          repo=repo_details)
-    if repo_details['repo_vendor'] == 'Nexus':
+    if repo_details['repo_vendor'] == 'nexus':
         resp = uploadToNexus(relTargetPath=relTargetPath,
                              fileLoc=args['test_file_loc'],
                              filename=args['test_file'].filename,
