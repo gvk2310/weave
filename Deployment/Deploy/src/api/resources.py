@@ -197,6 +197,7 @@ class Deploy(Resource):
             check = db.get(id=args['id'])
             print(check)
             if check['status'] == 'DELETE_COMPLETE':
+                print("not entering the loop")
                 publish_event_message(payload={'id':args['id'],
                                                'status':'DELETE_COMPLETE',
                                                'message':'Deployment deletion completed'})
