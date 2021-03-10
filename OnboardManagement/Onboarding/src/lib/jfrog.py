@@ -5,12 +5,10 @@ from ..log import logger
 
 def validateJfrog(args):
     try:
-        #jfrog_url = args['repo_url'].split('artifactory')[0]
-        jfrog_url = args['repo_url']
-        #repo_details = requests.get(
-        #    f"{jfrog_url}artifactory/api/repositories",
-        #    auth=(args['repo_username'], args['repo_password']))
-        repo_details = requests.get(jfrog_url,
+        jfrog_url = args['repo_url'][:-1]
+        jfrog_url = args['repo_url'].split('artifactory')[0]
+        repo_details = requests.get(
+            f"{jfrog_url}artifactory/api/repositories",
             auth=(args['repo_username'], args['repo_password']))
         if repo_details.status_code != 200:
             raise Exception(
