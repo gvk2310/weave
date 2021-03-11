@@ -130,7 +130,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					}
 		}
           
-    
+     /** 
 	 stage (' Create Docker image'){
 			container('docker'){
               sh 'pwd'
@@ -148,7 +148,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
          }
              }
          }
-           
+		      
 		stage('Deploying to Kubernetes') {
 				container('kubectl') {
 				try{
@@ -166,6 +166,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               }
 			}
 		}
+		 **/
         
 		currentBuild.result = 'SUCCESS'
         echo "RESULT: ${currentBuild.result}"
