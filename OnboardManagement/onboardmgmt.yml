@@ -25,7 +25,7 @@ spec:
         - name: vaultToken
           value: devnetops
         - name: vaultUrl
-          value: http://vault1.ethan.svc.cluster.local:80
+          value: http://devnetops-vault.ethan.svc.cluster.local:80
         - name: usermgmtUrl
           value: http://devnetops-access.ethan.svc.cluster.local:80
         - name: mongohost
