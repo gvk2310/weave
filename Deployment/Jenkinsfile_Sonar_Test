@@ -85,6 +85,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					export SONAR_QG_NAME='Deployment_QG'
 					curl -u ${USERNAME}:${PASSWORD} -X POST "${SONAR_HOST_URL}/api/projects/create?project=$SONAR_PROJECT_KEY&name=$SONAR_PROJECT_NAME"
 					curl -u ${USERNAME}:${PASSWORD} "${SONAR_HOST_URL}/api/qualitygates/show?name=$SONAR_QG_NAME" > qualitygate.json
+					cat qualitygate.json
 					QG_ID=$( jq -r ".id" qualitygate.json )
 					curl -u ${USERNAME}:${PASSWORD} -X POST "${SONAR_HOST_URL}/api/qualitygates/select?gateId=$QG_ID&projectKey=$SONAR_PROJECT_KEY"
 					cat qualitygate.json | jq -r ".conditions[].id" > cgid.txt
