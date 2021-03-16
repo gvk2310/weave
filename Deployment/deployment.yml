@@ -38,11 +38,11 @@ spec:
         - name: usermgmtUrl
           value: http://devnetops-access.ethan.svc.cluster.local:80
         - name: mongohost
-          value:  mongodb://admin:password@mongo-devnetops.ethan.svc.cluster.local:80/devnetops?authSource=admin
+          value:  mongodb://admin:password@devnetops-mongo.ethan.svc.cluster.local:80/devnetops?authSource=admin
         - name: status_url
           value: http://devnetops-deployment.ethan.svc.cluster.local:80
         - name: vault_url
-          value: http://vault1.ethan.svc.cluster.local:80
+          value: http://devnetops-vault.ethan.svc.cluster.local:80
         - name: vault_token
           value: devnetops
         - name: redis_url
