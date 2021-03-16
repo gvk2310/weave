@@ -55,12 +55,12 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			container('curl')
 				{
 					sh '''
-					export SONAR_QG_NAME='DEPLOYMENT_QG'
+					export SONAR_QG_NAME='Deployment_QG'
 					echo "Creating SonarQube Gateway"
 					curl -u ${USERNAME}:${PASSWORD} -X POST "${SONAR_HOST_URL}/api/qualitygates/create?name=$SONAR_QG_NAME"
 					'''
 					sh '''#!/bin/bash
-					export SONAR_QG_NAME='DEPLOYMENT_QG'
+					export SONAR_QG_NAME='Deployment_QG'
 					curl -u ${USERNAME}:${PASSWORD} "${SONAR_HOST_URL}/api/qualitygates/show?name=$SONAR_QG_NAME" > qualitygate.json
 					cat qualitygate.json
 					curl_cmd=( curl -u ${USERNAME}:${PASSWORD} -X POST ${SONAR_HOST_URL}/api/qualitygates/ )
