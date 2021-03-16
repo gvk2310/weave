@@ -5,3 +5,29 @@
 
 2021-03-15 15:14:01,983 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | Data could not be added to Vault
 2021-03-15 15:14:01,994 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | (None, None)
+2021-03-15 16:16:47,817 | INFO | HDC1-L-DTNPFW2 |         [vault getRepoList] | No repositories onboarded
+2021-03-15 16:19:38,038 | INFO | HDC1-L-DTNPFW2 |         [vault getRepoList] | No repositories onboarded
+2021-03-15 16:19:38,618 | INFO | HDC1-L-DTNPFW2 |         [jfrog validateJfrog] | Jfrog Repo is validated
+2021-03-15 16:19:39,236 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | {"errors":[]}
+
+2021-03-15 16:19:39,236 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | Data could not be added to Vault
+2021-03-15 16:19:39,239 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | (None, None)
+2021-03-15 17:21:28,640 | INFO | HDC1-L-DTNPFW2 |         [vault getRepoList] | No repositories onboarded
+2021-03-15 17:21:34,534 | INFO | HDC1-L-DTNPFW2 |         [vault getRepoList] | No repositories onboarded
+2021-03-15 17:21:35,075 | INFO | HDC1-L-DTNPFW2 |         [jfrog validateJfrog] | Jfrog Repo is validated
+2021-03-15 17:21:35,659 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | {"errors":[]}
+
+2021-03-15 17:21:35,660 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | Data could not be added to Vault
+2021-03-15 17:21:35,662 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | (None, None)
+2021-03-15 17:26:54,641 | INFO | HDC1-L-DTNPFW2 |         [vault getRepoList] | No repositories onboarded
+2021-03-15 17:26:55,189 | INFO | HDC1-L-DTNPFW2 |         [jfrog validateJfrog] | Jfrog Repo is validated
+2021-03-15 17:26:55,789 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | {"errors":[]}
+
+2021-03-15 17:26:55,789 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | Data could not be added to Vault
+2021-03-15 17:26:55,790 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | (None, None)
+2021-03-15 17:38:35,703 | INFO | HDC1-L-DTNPFW2 |         [vault getRepoList] | No repositories onboarded
+2021-03-15 17:38:36,540 | INFO | HDC1-L-DTNPFW2 |         [jfrog validateJfrog] | Jfrog Repo is validated
+2021-03-15 17:38:37,103 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | {"errors":[]}
+
+2021-03-15 17:38:37,103 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | Data could not be added to Vault
+2021-03-15 17:38:37,105 | ERROR | HDC1-L-DTNPFW2 |         [vault addDataToVault] | (None, None)

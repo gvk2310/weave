@@ -285,6 +285,7 @@ class Repository(Resource):
                     "msg": "Either the repository does not exist or "
                                  "invalid credential to access "
                                  "the repository"}, 400
+        print('repolist:',repolist)
         check = []
         if (repolist):
             for item in repolist:
@@ -297,7 +298,9 @@ class Repository(Resource):
         args['repo_password'] = str(
             base64.b64encode(args['repo_password'].encode("utf-8")), "utf-8")
         repodata = {"data": args}
+        print('repodata:', repodata)
         resp = addDataToVault(args, repodata, 'Repo')
+
         if not resp:
             return {
                        "msg": f"Request not processed for repo {args['repo_name']}"}, 500
