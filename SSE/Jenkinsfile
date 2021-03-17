@@ -3,7 +3,9 @@ def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
            containers: [containerTemplate(name: 'python3', image: 'python:3.8-alpine', ttyEnabled: true, command: 'cat'),
              containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
-                        containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
+              containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
+              containerTemplate(name: 'maven', image: 'maven:3.3.9-jdk-8-alpine', ttyEnabled: true, alwaysPullImage: true, command: 'cat', ,resourceRequestCpu: '100m',resourceLimitCpu: '4000m',resourceRequestMemory: '100Mi',resourceLimitMemory: '6000Mi'),
+		      containerTemplate(name: 'maven', image: 'maven:3.3.9-jdk-8-alpine', ttyEnabled: true, alwaysPullImage: true, command: 'cat', ,resourceRequestCpu: '100m',resourceLimitCpu: '4000m',resourceRequestMemory: '100Mi',resourceLimitMemory: '6000Mi'),
                containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
 				volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')],
            		imagePullSecrets: ['devnetops'])
