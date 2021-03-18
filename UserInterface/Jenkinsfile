@@ -39,7 +39,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		 stage ('UI Code Build') {
         container('node') { 
          
-			sh '''#!/bin/bash
 			apk update
 			
 			
