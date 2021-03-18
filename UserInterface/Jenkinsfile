@@ -37,10 +37,10 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		 
 		 
 		 stage ('UI Code Build') {
-        container('node') { 
-         
-			apk update
-			
+				steps { 
+				sh 'sudo apt-get update'
+				sh 'sudo apt-get upgrade'
+				sh 'sudo apt-get install curl'
 			
         }
     }
