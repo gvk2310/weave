@@ -11,7 +11,7 @@ import Role from '../containers/access/role';
 import Services from '../containers/access/services';
 
 import Deployment from '../containers/deployment/deployment';
-import Status from '../containers/deployment/status';
+//import Status from '../containers/deployment/status';
 
 import Repository from '../containers/onboard/repository';
 import Infra from '../containers/onboard/infra';
