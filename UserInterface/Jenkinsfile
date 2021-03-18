@@ -1,0 +1,69 @@
+def label = "Devnetops-${UUID.randomUUID().toString()}"
+def serviceaccount = "jenkins-admin"
+podTemplate(label: label, serviceAccount: serviceaccount,
+           containers: [containerTemplate(name: 'python3', image: 'python:3.8-alpine', ttyEnabled: true, command: 'cat'),
+             containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
+			 containerTemplate(name: 'node', image: 'node:6-alpine', ttyEnabled: true, command: 'cat'),
+             containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
+             containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
+				volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')],
+           		imagePullSecrets: ['devnetops'])
+
+{
+    node(label)
+    {
+		def Commit_Id
+        def DockerReg_Url='devnetops.azurecr.io'
+		def DockerReg_Credentials='ACR'
+        def Docker_Image = 'devnetops-accessmgmt'
+        def Image_Tag = 'S1'
+        def K8s_Deployment = 'devnetops-access'
+	   try{
+       stage('Git Checkout'){
+            git branch: Git_Branch,
+            url: Git_Url,
+            credentialsId: Git_Credential
+         
+			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
+			this.bitbucketStatusNotify('INPROGRESS')
+        }
+      
+        
+		stage ('UI Code Build') {
+        container('node') { 
+            sh '''
+			sh '''#!/bin/bash
+			apk update
+			
+			
+        }
+    }
+		
+		
+		
+		currentBuild.result = 'SUCCESS'
+        echo "RESULT: ${currentBuild.result}"
+        echo "Finished: ${currentBuild.result}"
+		}
+		 catch (Exception err) {
+        currentBuild.result = 'FAILURE'
+        echo "RESULT: ${currentBuild.result}"
+        echo "Finished: ${currentBuild.result}"
+               }
+		finally {
+            // Success or failure, always send notifications to bitbucket           
+            this.bitbucketStatusNotify(currentBuild.result)
+        }
+
+	}
+}
+def bitbucketStatusNotify(String state) {
+ 
+    if('SUCCESS' == state || 'FAILED' == state) {
+    // Set result of currentBuild !Important!
+        currentBuild.result = state
+    }
+ 
+   // bitbucketStatusNotify commitSha1: this.Commit_Id, considerUnstableAsSuccess: true, credentialsId: Git_Credential, disableInprogressNotification: false, ignoreUnverifiedSSLPeer: true, includeBuildNumberInKey: false, prependParentProjectKey: false, projectKey: '', stashServerBaseUrl: 'https://innersource.accenture.com/'
+}
+ 
