@@ -1,0 +1,170 @@
+#ldapTable .btn {
+    box-shadow: none;
+}
+
+.modal-content .close{ 
+    font-family: "Arial"; 
+}
+
+#EditURL .modal-backdrop.show, #ConfirmEdit .modal-backdrop.show, #IncorrectEdit .modal-backdrop.show,
+#addCustomCartridge .modal-backdrop.show, #ConfirmAddCart .modal-backdrop.show, #IncorrectCartAdd .modal-backdrop.show,
+#AlreadyCartExist .modal-backdrop.show, #DuplicateTool .modal-backdrop.show, #addCustomTool .modal-backdrop.show,
+#ConfirmAdd .modal-backdrop.show, #IncorrectAdd .modal-backdrop.show, #AlreadyExist .modal-backdrop.show,
+#addLdapUserModal .modal-backdrop.show, #DuplicateEmail .modal-backdrop.show, #ConfirmModifyEmail .modal-backdrop.show,
+#IncorrectEmail .modal-backdrop.show, #IncorrectPassword .modal-backdrop.show, #ConfirmModifyPass .modal-backdrop.show,
+#IncorrectPass .modal-backdrop.show, #SimilarPass .modal-backdrop.show, #unchecked .modal-backdrop.show,
+#userModifyUser .modal-backdrop.show, #rescaleConfirm .modal-backdrop.show, #invalidValue .modal-backdrop.show { 
+    opacity: .5; z-index: -1; 
+}
+
+#tool-tab { cursor: pointer;}
+
+.nodeLegend {
+    font-size: 11.5px;
+    color: #000;
+}
+
+#nodes {
+    width: 100%;
+    margin: 0 auto;
+    white-space:nowrap;
+    overflow-x: hidden;
+    text-align: center;
+}
+
+#nodeLftNav {
+    font-size: 50px;
+    margin: 160px 0px 0px 0px;
+    float: left;
+}
+
+#nodeRgtNav {
+    font-size: 50px;
+    margin: -260px 0px 0px 0px;
+    float: right;
+}
+
+.errorMessage {
+    font-weight: bold;
+    color: darkred;
+}
+
+.modal { overflow-x: hidden; overflow-y: auto; }
+
+.tooltipStyle {
+    background-color: white; 
+    text-align: left;   
+    color:black; 
+    padding: 5px;
+    border: 1px solid #cccccc;
+}
+
+.tooltipStyle ul {
+    list-style-type: none;
+    text-align: left;
+    margin: 0px; 
+    padding: 5px; 
+    background-color: #ffffff; 
+    white-space: nowrap;
+}
+
+.tooltipStyle ul li {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin: 0;
+}
+
+#usersTable {
+    width: 80%;
+    margin: 0 auto;
+    border-bottom: none;
+}
+
+#totalText {
+    margin-top: -1.6rem;
+    margin-left: 2rem;
+    color: #60607F;
+}
+
+.dev-cartridges-col { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.dev-cartridges-col .dropdown-toggle { position: relative; }
+.dev-cartridges-col .dropdown-toggle:after { position: absolute; right: 0; top: 0.5rem; transform: rotate(135deg); }
+.dev-cartridges-col .dropdown-toggle.collapsed:after {  transform: rotate(-45deg); }
+.dev-cartridges-col .nav { background-color: #f2f2f2; padding: 0 0.625rem; margin-top: 0.5rem; }
+.dev-cartridges-col .nav-tabs .nav-link:after { height: 0.15rem; }
+.dev-cartridges-col .nav-tabs .nav-item + .nav-item { margin-left: 0.75rem; }
+.dev-cartridges-col .dev-tools-list  ul { margin: 0.5rem 0 0.5rem 0; }
+.dev-cartridges-col .dev-tools-list > ul { height: 120px; }
+.dev-catridge .dev-cartridge-card{ height: auto;  }
+
+
+.pvc-scale .progress-bar { border-radius: 0; }
+.cr-1 { background-color: #A9E206; }
+.cr-2 { background-color: #F6D403; }
+.cr-3 { background-color: #FF493F; }
+
+.smaller {
+    width: 102%;
+    font-size: 60%;
+    font-weight: 400;
+    position: absolute;
+}
+
+.smaller .lb-1 { margin-left: 45%; position: absolute; }
+.smaller .lb-2 { margin-left: 90%; position: absolute;}
+
+.progress .tooltip {
+    background: #5A5A5A;
+    bottom: 100%;
+    color: #fff;
+    display: block;
+    margin-bottom: 10px;
+    opacity: 1;
+    pointer-events: none;
+    position: absolute;
+    width: 13%;
+    font-size: 0.625rem;
+    font-weight: 400;
+    text-align: center;
+    border-radius: 5px;
+    padding: 0.1rem 0.3125rem;
+    bottom: 100%;
+}
+
+/* This bridges the gap so you can mouse into the tooltip without it disappearing */
+.progress .tooltip:before {
+    content: " ";
+    display: block;
+    height: 20px;
+    left: 0;
+    position: absolute;
+    width: 100%;
+}  
+
+.progress .tooltip:after {
+    border-left: solid transparent 5px;
+    border-right: solid transparent 5px;
+    border-top: solid #5A5A5A 5px;
+    bottom: -5px;
+    content: " ";
+    height: 0;
+    left: 50%;
+    position: absolute;
+    width: 0;
+    transform:translateX(-50%);
+}
+
+.dev-manage-card .card-footer{ 
+    background-color: #fff; 
+    border-top: 0; 
+    border-radius: .5rem; 
+    padding: 1rem 1rem;
+    overflow: visible;
+}
+
+.dev-manage-card .de-region {
+    left: 20%;
+    bottom: 50%;
+    width: 11rem;
+    color: #000;
+}
