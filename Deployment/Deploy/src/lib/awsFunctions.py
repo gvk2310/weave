@@ -10,6 +10,7 @@ from collections import defaultdict
 vault_url = os.environ['vault_url']
 vault_token = os.environ['vault_token']
 jenkins_cft_deploy_job = os.environ['jenkins_cft_deploy_job']
+jenkins_cft_generic_deploy_job = os.environ['jenkins_cft_generic_deploy_job']
 jenkins_cft_delete_job = os.environ['jenkins_cft_delete_job']
 status_url = os.environ['status_url']
 
@@ -74,7 +75,10 @@ def createConfigJson(file, infra, templateInfo):
 def triggerDeployment(depl_details, config, template):
     timestamp = datetime.datetime.utcnow()
     if depl_details['orchestrator'] == 'cloudformation':
+      if depl_details['type'] == 'versa':
         job_name = jenkins_cft_deploy_job
+      elif depl_details['type'] == 'generic':
+        job_name = jenkins_cft_generic_deploy_job
         parameters = {
             "deployment_id": timestamp.strftime("DP%Y%m%d%H%M%S"),
             "config": json.dumps(config),
