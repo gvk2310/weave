@@ -36,7 +36,6 @@ def getRepoList():
         reposList = requests.get(
             f'{vault_url}/v1/secret/metadata/devnetops/Repo_Details?list=true',
             headers={'X-Vault-Token': vault_token})
-        print('repos list in VAULT :',reposList)
         if reposList.status_code == 200:
             repos = reposList.json()['data']['keys']
             payload = []
@@ -48,7 +47,6 @@ def getRepoList():
                 repo_password = repoInfo.json()['data']['data']['repo_password']
                 decoded_repopassword = str(base64.b64decode(repo_password), "utf-8")
                 repo_list = get()
-                print('Repo list in vault:', repo_list)
                 if repo_list:
                     assets_info = []
                     for asset in repo_list:
