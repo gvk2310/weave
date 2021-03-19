@@ -79,7 +79,7 @@ def triggerDeployment(depl_details, config, template):
         job_name = jenkins_cft_deploy_job
       elif depl_details['type'] == 'generic':
         job_name = jenkins_cft_generic_deploy_job
-        parameters = {
+      parameters = {
             "deployment_id": timestamp.strftime("DP%Y%m%d%H%M%S"),
             "config": json.dumps(config),
             "assets": f"{template['asset_type']}, {template['asset_link']},"
@@ -88,12 +88,12 @@ def triggerDeployment(depl_details, config, template):
             "status_url": status_url,
             "type": f"{depl_details['orchestrator']}_{depl_details['type']}"
         }
-        if depl_details['type'] == 'versa':
-            parameters.update({
+      if depl_details['type'] == 'versa':
+        parameters.update({
                 "director_ip": depl_details['director_ip'],
                 "controller_ip": depl_details['controller_ip'],
             })
-        return timestamp if triggerJenkins(parameters, job_name) else None
+      return timestamp if triggerJenkins(parameters, job_name) else None
 
 
 def deleteDeployment(depl_details):
