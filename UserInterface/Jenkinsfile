@@ -42,13 +42,28 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               		npm -v
               '''}
          }
+		 
+			currentBuild.result = 'SUCCESS'
+			echo "RESULT: ${currentBuild.result}"
+			echo "Finished: ${currentBuild.result}"
 	
-             }
-         }
-        
-		currentBuild.result = 'SUCCESS'
+          }
+			 
+			 catch (Exception err) {
+        currentBuild.result = 'FAILURE'
         echo "RESULT: ${currentBuild.result}"
         echo "Finished: ${currentBuild.result}"
+               }
+		finally {
+            // Success or failure, always send notifications to bitbucket           
+            this.bitbucketStatusNotify(currentBuild.result)
+        }
+			 
+			 
+			 
+         }
+        
+		
 		}
 		 
 		
