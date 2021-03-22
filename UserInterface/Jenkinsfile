@@ -41,11 +41,12 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               sh '''#!/bin/sh
 					apk update
 					apk upgrade
+					ls -lrt
+					cd UserInterface/
 					apk add --no-cache build-base
 					npm install -g create-react-app
-					ls -rlt
-					cd UserInterface/
 					npm install
+					
               '''}
          }
 		 
