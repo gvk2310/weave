@@ -51,6 +51,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  npm install
 			  ls -rlt
 			  node --version
+			  npm run build 
 			  
               '''}
          }
