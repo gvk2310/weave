@@ -46,8 +46,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					ls -rlt
 					cd UserInterface/
 					npm install
-					
-					
               '''}
          }
 		 
