@@ -39,13 +39,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		stage ('UI Code Build'){
             container('node'){
               sh '''#!/bin/sh
-					apk update
-					apk upgrade
-					ls -lrt
-					cd UserInterface/
-					apk add --no-cache build-base
-					npm install -g create-react-app
-					npm install
+			  apk update
+			  apk upgrade
+			  ls -lrt
 					
               '''}
          }
