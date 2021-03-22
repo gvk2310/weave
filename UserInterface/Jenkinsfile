@@ -58,9 +58,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		finally {
             this.bitbucketStatusNotify(currentBuild.result)
         }
-
-	}
-}
+		
 def bitbucketStatusNotify(String state) {
  
     if('SUCCESS' == state || 'FAILED' == state) {
