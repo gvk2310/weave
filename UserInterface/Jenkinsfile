@@ -41,6 +41,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               sh '''#!/bin/sh
               		npm -v
 					apk update
+					apk add --no-cache build-base
 					
               '''}
          }
