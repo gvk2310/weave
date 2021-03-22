@@ -42,6 +42,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  apk update
 			  apk upgrade
 			  ls -lrt
+			  cd UserInterface/
+			  ls -lrt
 					
               '''}
          }
