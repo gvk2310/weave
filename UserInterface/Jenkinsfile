@@ -45,9 +45,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					npm install -g create-react-app
 					cd UserInterface/
 					npm install
-					ls -rlt
+					ls -rlt node_modules
 					npm install cross-env
-					ls -rlt
+					ls -rlt node_modules
 					
               '''}
          }
