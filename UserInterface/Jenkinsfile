@@ -44,6 +44,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  ls -lrt
 			  cd UserInterface/
 			  ls -lrt
+			  npm -v
 					
               '''}
          }
