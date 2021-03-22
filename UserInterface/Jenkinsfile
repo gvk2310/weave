@@ -43,11 +43,10 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					apk update
 					apk add --no-cache build-base
 					npm install -g create-react-app
+					ls -rlt
 					cd UserInterface/
 					npm install
-					ls -rlt node_modules
-					npm install cross-env
-					ls -rlt node_modules
+					
 					
               '''}
          }
