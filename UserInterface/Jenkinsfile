@@ -53,6 +53,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  node --version
 			  cd node_modules
 			  ls -rlt
+			  npm run build 
 			  
 			  
               '''}
