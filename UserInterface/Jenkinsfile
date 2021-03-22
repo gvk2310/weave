@@ -47,6 +47,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					npm install
 					ls -rlt
 					npm install cross-env
+					sh -c cross-env NODE_ENV=production webpack
 					npm run build
 					
               '''}
