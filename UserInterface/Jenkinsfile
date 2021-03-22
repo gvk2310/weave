@@ -51,9 +51,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  npm install
 			  ls -rlt
 			  node --version
-			  cd node_modules
-			  
-			  ls -lrt cross-env 
+			  cd node_modules/cross-env
+			  ls -lrt 
 			  
 			  
               '''}
