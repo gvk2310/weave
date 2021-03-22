@@ -50,7 +50,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  npm install -g create-react-app	
 			  npm install
 			  ls -rlt
-			  npm run build
+			  node --version
 			  
               '''}
          }
