@@ -50,14 +50,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         echo "RESULT: ${currentBuild.result}"
         echo "Finished: ${currentBuild.result}"
 		}
-		 catch (Exception err) {
-        currentBuild.result = 'FAILURE'
-        echo "RESULT: ${currentBuild.result}"
-        echo "Finished: ${currentBuild.result}"
-               }
-		finally {
-            this.bitbucketStatusNotify(currentBuild.result)
-        }
+		 
 		
 def bitbucketStatusNotify(String state) {
  
