@@ -40,6 +40,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             container('node'){
               sh '''#!/bin/sh
               		npm -v
+					apk update
+					
               '''}
          }
 		 
