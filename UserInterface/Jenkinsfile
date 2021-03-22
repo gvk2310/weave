@@ -43,7 +43,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					apk update
 					apk add --no-cache build-base
 					npm install -g create-react-app
-					ls -rlt 
+					cd UserInterface/
+					npm run build
               '''}
          }
 		 
