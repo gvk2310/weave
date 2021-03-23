@@ -52,6 +52,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  ls -rlt
 			  node --version
 			  npm install cross-env
+			  yarn install --production=false
 			  npm run build
 			  
 			  
