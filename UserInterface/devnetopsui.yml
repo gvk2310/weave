@@ -2,22 +2,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: devnetops
+  name: devnetops-ui
   labels:
-    app: devnetops
+    app: devnetops-ui
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: devnetops
+      app: devnetops-ui
   template:
     metadata:
       labels:
-        app: devnetops
+        app: devnetops-ui
     spec:
       containers:
-        - name: devnetops
-          image: devnetops.azurecr.io/devnetops-frontend:devnetops_2203d4
+        - name: devnetops-ui
+          image: devnetops.azurecr.io/devnetops-ui:t1
           imagePullPolicy: IfNotPresent
           resources:
             requests:
@@ -52,9 +52,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: devnetops
+  name: devnetops-ui
   labels:
-    app: devnetops
+    app: devnetops-ui
 spec:
   type: ClusterIP
   ports:
@@ -63,5 +63,5 @@ spec:
       protocol: TCP
       name: "devnetops"
   selector:
-    app: devnetops
+    app: devnetops-ui
 ---
