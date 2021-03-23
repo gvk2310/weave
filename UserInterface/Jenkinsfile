@@ -17,9 +17,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		def Commit_Id
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
-        def Docker_Image = 'devnetops-onboard'
+        def Docker_Image = 'devnetops-ui'
         def Image_Tag = 't1'
-        def K8s_Deployment = 'devnetops-onboard'
+        def K8s_Deployment = 'devnetops-ui'
 		def SONAR_HOST_URL='https://a71ea3e9d163d47c9a000b392eb54bc3-1901858758.us-west-2.elb.amazonaws.com/sonar/'
 		def SONAR_SCANNER='org.sonarsource.scanner.maven'
         def SONAR_PLUGIN='sonar-maven-plugin:3.2'
@@ -34,9 +34,24 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.Commit_Id = sh(returnStdout: true, script: 'git rev-parse --short=40 HEAD').trim()
 			this.bitbucketStatusNotify('INPROGRESS')
         }
-		 
-		 
-		stage ('UI Code Build'){
+		
+
+          stage ('Encrypting Source codes'){
+             container('python3'){
+               sh '''#!/bin/sh
+               		apk add --no-cache --virtual .build-deps openssl-dev libffi-dev gcc musl-dev
+                     pip3 install cython
+                     pip3 install -r SSE/sse/requirements.txt
+                     cd SSE && python3 setup.py build_ext --inplace
+                     mkdir tmp
+                     find . -name '*.so' -exec cp --parents \\{\\} tmp \\;
+                     find . -name "requirements.txt" -exec cp --parents \\{\\} tmp \\;
+                     find . -name "uwsgi.ini" -exec cp --parents \\{\\} tmp \\;
+                     mkdir tmp/sse/logs
+               '''}
+          }
+
+          stage ('UI Code Build'){
             container('node'){
               sh '''#!/bin/sh
 			  apk update
@@ -56,6 +71,44 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  
               '''}
          }
+          
+          
+         stage (' Create Docker image'){
+			container('docker'){
+              sh 'pwd'
+              sh 'ls'
+              sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserInterface/Dockerfile_Dev .")
+			}
+
+		}
+
+        stage('Pushing the Docker image to Container Registry') {
+              container('docker') {
+	             withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
+				 {
+			     sh ("docker login -u ${USERNAME} -p ${PASSWORD} "+DockerReg_Url)
+				 sh ("docker push ${DockerReg_Url}/${Docker_Image}:${Image_Tag}")
+         }
+             }
+         }
+
+         stage('Deploying to Kubernetes') {
+				container('kubectl') {
+				try{
+					sh("kubectl get deployment ${K8s_Deployment}")
+					if(true){
+						//sh ("kubectl set image deployment/${K8s_Deployment} ${K8s_Deployment}=${DockerReg_Url}/${Docker_Image}:${Image_Tag}")
+                      	//sh ("kubectl get pods | grep 'onboardmgmt-' | grep -v grep | awk '{print $1}' | xargs kubectl delete po")
+                      	sh("kubectl delete deployment ${K8s_Deployment}")
+                      	sh("kubectl apply -f UserInterface/devnetopsui.yml")
+					}
+				}
+				catch(e){
+                  	sh("kubectl apply -f UserInterface/devnetopsui.yml")
+					echo "deploying"
+              }
+			}
+		}
 		 
 			currentBuild.result = 'SUCCESS'
 			echo "RESULT: ${currentBuild.result}"
