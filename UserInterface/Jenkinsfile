@@ -50,7 +50,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  npm install
 			  npm install --save-dev cross-env
 			  npm install cross-spawn
-			  	  
+			  cd node_module/cross-spawn
+			  ls -rlt
               '''}
          }
 		 
