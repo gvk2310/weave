@@ -48,6 +48,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  apk add --no-cache make gcc g++ python3
 			  npm install -g create-react-app
 			  npm ci --prod
+			  npm install --save-dev cross-env
+			  npm install cross-spawn
 			  npm run build
 			  
               '''}
