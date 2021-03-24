@@ -49,9 +49,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  npm install -g create-react-app
 			  npm install
 			  npm install --save-dev cross-env
-			  cd node_modules/cross-env
-			  pwd
-			  ls -rlt
 			  npm run build			  
               '''}
          }
