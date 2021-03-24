@@ -48,8 +48,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  apk add --no-cache build-base
 			  npm install -g create-react-app
 			  npm install
-			  cd node_modules
-			  ls -lrt 
+			  cd node_modules/cross-env
+			  ls -rlt
+			  
 			 
               '''}
          }
