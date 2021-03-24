@@ -48,13 +48,6 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  npm install -g npm@7.6.3
 			  npm -v
 			  node -v
-			  cd UserInterface/
-			  npm install
-			  npm install -g create-react-app
-			  apt-get install -y build-essential
-			  ls -rlt 
-			  npm run build
-			  ls -rlt
 			  
               '''}
          }
