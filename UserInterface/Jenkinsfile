@@ -5,7 +5,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
            containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
 		   containerTemplate(name: 'curl', image: 'devnetops.azurecr.io/curl', ttyEnabled: true, alwaysPullImage: true, command: 'cat'),
            containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
-		   	containerTemplate(name: 'node', image: 'node:12.21.0-alpine3.11', ttyEnabled: true, command: 'cat'),
+		   containerTemplate(name: 'ubuntu', image: 'ubuntu:18.04', ttyEnabled: true, command: 'cat'),
 		   containerTemplate(name: 'maven', image: 'maven:3.3.9-jdk-8-alpine', ttyEnabled: true, alwaysPullImage: true, command: 'cat', ,resourceRequestCpu: '100m',resourceLimitCpu: '4000m',resourceRequestMemory: '100Mi',resourceLimitMemory: '6000Mi'),
            containerTemplate(name: 'docker', image: 'docker:18.09.9', ttyEnabled: true, command: 'cat')],
 				volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')],
@@ -37,20 +37,19 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		 
 		 
 		stage ('UI Code Build'){
-            container('node'){
+            container('ubuntu'){
               sh '''#!/bin/sh
-			  apk update
-			  apk upgrade
+			  apt-get update
+			  apt-get upgrade
+			  apt-get install curl
+			  apt-get install sudo
+			  curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+			  apt-get install -y nodejs
 			  npm install -g npm@7.6.3
-			  npm -v 
-			  node -v
-			  cd UserInterface/
-			  apk add --no-cache make gcc g++ python3
+			  cd devnetops/UserInterface
+			  npm install
 			  npm install -g create-react-app
-			  npm ci --prod
-			  npm install --save-dev cross-env
-			  npm install cross-spawn
-			  npm run build
+			  apt-get install -y build-essential
 			  
               '''}
          }
