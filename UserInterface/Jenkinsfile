@@ -46,7 +46,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 			  apt-get install -y nodejs
 			  npm install -g npm@7.6.3
-			  cd devnetops/UserInterface
+			  cd UserInterface/
 			  npm install
 			  npm install -g create-react-app
 			  apt-get install -y build-essential
