@@ -40,8 +40,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
             container('ubuntu'){
               sh '''#!/bin/sh
 			  apt-get update
-			  apt-get upgrade
-			  apt-get install curl
+			  echo Y |  apt-get upgrade
+			  echo Y | apt-get install curl
 			  apt-get install sudo
 			  curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 			  apt-get install -y nodejs
