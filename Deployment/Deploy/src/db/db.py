@@ -30,7 +30,6 @@ def get(**kwargs):
     try:
         if len(kwargs) > 0:
             depl = deployments.objects(id=kwargs['id']).first()
-            print(depl.id)
             return {'id': depl.id,
                     'name': depl.name,
                     'orchestrator': depl.orchestrator,
