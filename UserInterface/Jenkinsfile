@@ -55,6 +55,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  npm install -g create-react-app
 			  apt-get install -y build-essential
 			  ls -lrt
+			  npm run build
 			  
               '''}
          }
