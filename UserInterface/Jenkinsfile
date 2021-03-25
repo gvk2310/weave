@@ -42,6 +42,11 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  echo Y | apt-get update
 			  echo Y | apt-get upgrade
 			  echo Y | apt-get install curl
+			  curl -sL https://deb.nodesource.com/setup_12.x | sh -
+			  apt-get install -y nodejs
+			  npm install -g npm@7.6.3
+			  npm -v 
+			  node -v 
 			  
               '''}
          }
