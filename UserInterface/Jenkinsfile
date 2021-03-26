@@ -3,7 +3,7 @@ def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
            containers: [containerTemplate(name: 'python3', image: 'python:3.8-alpine', ttyEnabled: true, command: 'cat'),
            containerTemplate(name: 'kubectl', image: 'nexgtech/kubectl:1.15', ttyEnabled: true, command: 'cat'),
-		   containerTemplate(name: 'node', image: 'aiindevops.azurecr.io/node:latest', ttyEnabled: true, command: 'cat'),
+		   containerTemplate(name: 'node', image: 'devnetops.azurecr.io/node:latest', ttyEnabled: true, command: 'cat'),
            containerTemplate(name: 'tox', image: 'devnetops.azurecr.io/devnetops-tox-updated', ttyEnabled: true, command: 'cat'),
 		   containerTemplate(name: 'ubuntu', image: 'ubuntu:18.04', ttyEnabled: true, command: 'cat'),
 		  
