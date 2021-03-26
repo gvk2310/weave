@@ -35,7 +35,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			this.bitbucketStatusNotify('INPROGRESS')
         }
 		 
-		/** 
+		
 		stage ('UI Code Build'){
             container('node'){
               sh '''#!/bin/sh
@@ -45,7 +45,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  
               '''}
          }
-		 **/
+		
 			currentBuild.result = 'SUCCESS'
 			echo "RESULT: ${currentBuild.result}"
 			echo "Finished: ${currentBuild.result}"
