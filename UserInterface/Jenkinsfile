@@ -42,6 +42,13 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			  
 			  npm -v 
 			  node -v 
+			  echo Y | apt-get update
+			  echo Y | apt-get upgrade
+			  cd UserInterface
+			  npm install -g create-react-app
+			  apt-get install -y build-essential
+			  npm install
+			  npm run build
 			  
               '''}
          }
