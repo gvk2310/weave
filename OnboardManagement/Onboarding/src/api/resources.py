@@ -272,7 +272,7 @@ class Repository(Resource):
         if args['repo_vendor'].lower() == 'jfrog':
             resp = validateJfrog(args)
             if not resp:
-                return {"msg": "Repository validation failed"}, 500
+                return {"msg": "Invalid credentials.Repository authentication failed."}, 500
             if args['repo_url'] not in [item['url'] for item in resp.json()]:
                 return {
                        "msg": "Either the repository does not exist or the "
