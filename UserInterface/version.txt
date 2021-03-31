@@ -1,0 +1,54 @@
+
+    aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.0
+     Branding Changes
+     Adding is_Ui and display_name in add custom tool 
+     manage pvc tab added with manage pvc table 
+     added popup for Devopstools and Platform Tools if no Url
+     No url text for custom tool if there is no url and link should be disabled
+     Pipeline statistics(CI/CD Dashboard) dropdown for workspace name and pipeline
+     Pipeline statistics(Overall Trend) dropdown for workspace name and graph with pagination for 7 days jenkins pipeline
+     Workspace name attribute added to add custom cartridge
+     modify password issue fixed(old password should not match new password)
+     fix Pipeline statistics issue on refresh
+
+     aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.1
+     description of pipeline details and custom tools willchange based on logged in userrole
+     is_Ui option change with content
+     description added for pvc Dashboard
+     content changes
+
+    aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.2
+    content changes for version tooltip in Add custom cartridge
+
+    aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.3
+    workspace Name should be added as "NA" to mongo if value is not given
+    adding * mark with labels to describe manidatory fields
+    manage pvc button should hide for Non-PVC pods
+    in manage pvc page restricted input value i.e min 1 and less than 100 .
+    on scale an immediate pop-up for confirming scaling process started will be displayed for 5 seconds.
+    validation for pipeline path, cartridge name, and pipeline name    
+    update redux store to remove actions displaying in the console
+
+    aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.4
+    store file import issue fix
+
+    aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.5
+    heading content should be dispalayed according to userrole and selected tab in PVC Dashboard.
+
+    aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.6
+    Validation for version in add custom cartridge and add custom Tools with input length limit
+    In CI/CD Dashboard dropdown issue fixed, getting pipelines instead of cartridges
+    In manage PVC, input length limit is set to 4 digits and removed restriction for max input value
+    condition check for status code 1 added with displaying error pop-up box
+    added validation for jenkins container
+
+    aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.7
+    NA Check added for displaying tools image in the container
+
+    aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.8
+    Manual input for rescale pvc is restricted to max x0.5 time of current capacity
+    click on manage pvc, page is redirecting to manage platform
+
+    aiindevops.azurecr.io/aiindevops/###environment###/cloveplatformuichild:v6.9
+    removed preventing . from manual input in manage PVC
+    Changed text for no url in Devopstools and Platformtools

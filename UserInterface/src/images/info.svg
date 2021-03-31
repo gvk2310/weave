@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12.302" height="12.302" viewBox="0 0 12.302 12.302">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #9aa1a9;
+      }
+
+      .cls-2 {
+        fill: #9aa1a9;
+        font-size: 8px;
+        font-family: Graphik-Regular, Graphik;
+        letter-spacing: 0.044em;
+      }
+    </style>
+  </defs>
+  <g id="Group-3-Copy-8" transform="translate(0.5 0.5)">
+    <circle id="Oval" class="cls-1" cx="5.651" cy="5.651" r="5.651"/>
+    <text id="i" class="cls-2" transform="translate(4.521 9.578)"><tspan x="0" y="0">i</tspan></text>
+  </g>
+</svg>
