@@ -64,7 +64,7 @@ def validateNexus(args):
         repo_details = requests.get(Nexus_url,
                                     auth=(args['repo_username'],
                                           args['repo_password']),verify=False)
-        if repo_details.status_code != 200:
+        if repo_details.status_code != 200 and args['repo_vendor'] == 'JFrog':
             raise Exception(
                 logger.debug(traceback.format_exc()),
                 logger.error(repo_details.text))
