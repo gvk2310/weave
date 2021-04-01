@@ -270,21 +270,24 @@ class Repository(Resource):
                     return {
                             "msg": "Repository already exists, please create an another one"}, 400        
         if args['repo_vendor'].lower() == 'jfrog':
+            url = re.findall("artifactory", args['repo_url'])
+            if url != ['artifactory']:
+                return {"msg": "Invalid JFrog URL"}, 400
             resp = validateJfrog(args)
             if not resp:
-                return {"msg": "Invalid credentials.Repository authentication failed."}, 500
+                return {"msg": "Invalid Credentials. JFrog repository authentication failed"}, 500
             if args['repo_url'] not in [item['url'] for item in resp.json()]:
                 return {
-                       "msg": "Either the repository does not exist or the "
-                              "user doesnt have enough previliges to access "
-                              "the repository"}, 400
+                       "msg": "Repository does not exist in JFrog"}, 400
         if args['repo_vendor'].lower() == 'nexus':
+            url = re.findall("nexus", args['repo_url'])
+            if url != ['nexus']:
+                return {"msg": "Invalid Nexus URL"}, 400
             resp = validateNexus(args)
-            if not resp:
-                return {
-                    "msg": "Either the repository does not exist or "
-                                 "invalid credential to access "
-                                 "the repository"}, 400
+            if resp == 401:
+                return {"msg": "Invalid Credentials. Nexus repository authentication failed"}, 500
+            elif resp == 404 or resp ==400:
+                return {"msg": "Repository does not exist in Nexus"}, 400
         check = []
         if (repolist):
             for item in repolist:
