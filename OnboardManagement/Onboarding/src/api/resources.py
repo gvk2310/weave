@@ -323,6 +323,10 @@ class Repository(Resource):
             return {'msg': 'No repository information onboarded yet'}, 404
         if not data:
             return {"msg": "Unable to fetch repository details"}, 404
+        for dat in data:
+            if args['repo_name'] == dat['repo_name']:
+                if args['delete_assets'] == 'False' and dat['assets_info'] != []:
+                    return {'msg': 'Delete corresponding assets to delete the repository'}, 404
         if args['repo_name'] not in [item['repo_name'] for item in data]:
             return {'msg': 'Invalid Repo name'}, 404
         if args['delete_assets'] == "True":
