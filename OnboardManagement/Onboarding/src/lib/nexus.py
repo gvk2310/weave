@@ -15,11 +15,16 @@ def uploadToNexus(**kwargs):
                                       kwargs['repo']['repo_password']),
                                 data=rf.read(),verify=False)
             #To get content length
-            size = requests.get(targetFilePath,
+            checkUrl = targetFilePath.split('repository')
+            checkUrl.insert(1, 'service/rest/repository/browse')
+            checkUrl = ''.join(checkUrl)
+            checkUrl = checkUrl.rsplit('/', 1)[0]
+            size = requests.get(checkUrl,
                                 auth=(kwargs['repo']['repo_username'],
                                       kwargs['repo']['repo_password']),
-                                      verify=False)
-            size = size.headers['Content-Length']
+                                verify=False)
+            size = BeautifulSoup(size.text, 'lxml')
+            size = size.find_all('td')[3].text.strip()
         if resp.status_code != 201:
             raise Exception(
                 logger.error(
@@ -102,14 +107,18 @@ def checkNexusUrl(arg, repo):
 
 def checkNexusRemote(arg, repo):
     try:
-        checkUrl = arg['asset_path']
         requests.packages.urllib3.disable_warnings(
                                                 category=InsecureRequestWarning)
+        checkUrl = arg['asset_path'].split('repository')
+        checkUrl.insert(1, 'service/rest/repository/browse')
+        checkUrl = ''.join(checkUrl)
+        checkUrl = checkUrl.rsplit('/', 1)[0]
         resp = requests.get(checkUrl,
                             auth=(repo['repo_username'],
-                                  repo['repo_password']),verify=False)
-        size = resp.headers['Content-Length']
-
+                                  repo['repo_password']),
+                            verify=False)
+        size = BeautifulSoup(resp.text, 'lxml')
+        size = size.find_all('td')[3].text.strip()
         if resp.status_code != 200:
             raise Exception(
                 logger.error(
