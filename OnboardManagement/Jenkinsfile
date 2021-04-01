@@ -39,12 +39,12 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               		apk add --no-cache --virtual .build-deps openssl-dev libffi-dev gcc musl-dev
                     pip3 install cython
                     pip3 install -r OnboardManagement/Onboarding/requirements.txt
-                    cd Deployment && python3 setup.py build_ext --inplace
+                    cd OnboardManagement && python3 setup.py build_ext --inplace
                     mkdir tmp
                     find . -name '*.so' -exec cp --parents \\{\\} tmp \\;
                     find . -name "requirements.txt" -exec cp --parents \\{\\} tmp \\;
                     find . -name "uwsgi.ini" -exec cp --parents \\{\\} tmp \\;
-                    mkdir tmp/Deploy/logs
+                    mkdir tmp/Onboarding/logs
               '''}
          }
    
