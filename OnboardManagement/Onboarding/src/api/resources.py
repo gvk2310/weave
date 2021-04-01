@@ -553,13 +553,10 @@ class Tests(Resource):
                                   'characters'}, 422
         if not checkStringLength(args['test_name']):
             return {'message': 'Test name cannot have more than 25 characters'}, 422
-
-        if not validStrChecker(args['test_description']):
-            return {
-                       'message': 'Test description cannot have special '
-                                  'characters'}, 422
+          
         if not checkStringLength(args['test_description']):
             return {'message': 'Test description cannot have more than 25 characters'}, 422
+          
         if not args['test_file'] and not args['test_path']:
             return {
                        'message': 'either test file or test path should be provided'}, 422
@@ -648,7 +645,7 @@ class Tests(Resource):
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_id', type=non_empty_string, required=True)
-        parser.add_argument('test_description', type=non_empty_string, required=True)
+        parser.add_argument('test_description', type=str, required=True)
         parser.add_argument('test_category', type=non_empty_string,choices=['performance','sanity','smoke',
                                         'unit','regression','functional','integration'], required=True)
         args = parser.parse_args()
@@ -662,10 +659,7 @@ class Tests(Resource):
         if (resp['test_description'] == args['test_description']) and \
                 (resp['test_category'] == args['test_category']):
             return {'msg': "Test description and Test category details are already updated"}, 400
-      
-        if not validStrChecker(args['test_description']):
-            return {'message': 'Test description cannot have special characters'}, 422
-          
+             
         if not checkStringLength(args['test_description']):
             return {'message': 'Test description cannot have more than 25 characters'}, 422       
         done = db.updateTest(testcaseid=args['test_id'],
