@@ -74,6 +74,7 @@ def validateNexus(args):
         logger.error('invalid Nexus repository credentials')
         logger.debug(traceback.format_exc())
         logger.error(e)
+        return repo_details.status_code
 
 
 def checkNexusUrl(arg, repo):
