@@ -24,7 +24,7 @@ def uploadToNexus(**kwargs):
                                 auth=(kwargs['repo']['repo_username'],
                                       kwargs['repo']['repo_password']),
                                 verify=False)
-            size = BeautifulSoup(size.text, 'lxml')
+            size = BeautifulSoup(size.text, 'html.parser')
             size = size.find_all('td')[3].text.strip()
         if resp.status_code != 201:
             raise Exception(
@@ -118,7 +118,7 @@ def checkNexusRemote(arg, repo):
                             auth=(repo['repo_username'],
                                   repo['repo_password']),
                             verify=False)
-        size = BeautifulSoup(resp.text, 'lxml')
+        size = BeautifulSoup(resp.text, 'html.parser')
         size = size.find_all('td')[3].text.strip()
         if resp.status_code != 200:
             raise Exception(
