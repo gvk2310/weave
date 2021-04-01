@@ -1,6 +1,7 @@
 import requests
 import traceback
 from ..log import logger
+from bs4 import BeautifulSoup
 from urllib3.exceptions import InsecureRequestWarning
 
 def uploadToNexus(**kwargs):
