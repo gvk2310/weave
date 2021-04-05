@@ -272,7 +272,7 @@ class Repository(Resource):
                             "msg": "Repository already exists, please create an another one"}, 400        
         if args['repo_vendor'].lower() == 'jfrog':
             url = re.findall("artifactory", args['repo_url'])
-            if url != ['artifactory']:
+            if 'artifactory' not in url:
                 return {"msg": "Invalid JFrog URL"}, 400
             resp = validateJfrog(args)
             if not resp:
@@ -282,7 +282,7 @@ class Repository(Resource):
                        "msg": "Repository does not exist in JFrog"}, 400
         if args['repo_vendor'].lower() == 'nexus':
             url = re.findall("nexus", args['repo_url'])
-            if url != ['nexus']:
+            if 'nexus' not in url:
                 return {"msg": "Invalid Nexus URL"}, 400
             resp = validateNexus(args)
             if resp == 401:
