@@ -15,7 +15,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-project'
         def Image_Tag = 'S1'
-        def K8s_Deployment = 'project'
+        def K8s_Deployment = 'devnetops-project'
         
 	   try{
        stage('Git Checkout'){
