@@ -36,9 +36,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					if (type == 'cloudformation_generic'){
 					    sh 'python3 stack_generic_create.py'
 					}
-					//if (type == 'cloudformation_versa'){
-					//    sh 'python3 stack_create_versa.py'
-					//}
+					/*if (type == 'cloudformation_versa'){
+					    sh 'python3 stack_create_versa.py'
+					*/}
 				}
 				def instanceDetails = readFile(file: 'instanceDetails')
                 sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Stack created\", \"stage_info\":{\"${STAGE_NAME}\": \"Completed\"}, \"instances\":${instanceDetails}}'"
