@@ -110,49 +110,31 @@ def deleteDeployment(depl_details):
                               item]['Region']}
                       for item in
                       depl_details['configurations']['config']['branch']
-                  ]
-                  }
+                  ]}
         job_name = jenkins_cft_generic_delete_job
         parameters = {
             "deployment_id": depl_details['id'],
-            "status_url": status_url,
-            "type": f"{depl_details['orchestrator']}_{depl_details['type']}"
-        }
-        if depl_details['type'] == 'generic':
-            parameters.update({"config": json.dumps(config)})
-        if depl_details['type'] == 'versa':
-            parameters.update({
-                "director_ip": depl_details['configurations']['director_ip'],
-                "controller_ip": depl_details['configurations']['controller_ip']
-            })
-            parameters.update({"config": json.dumps(config)})
+            "status_url": status_url}
+        parameters.update({"config": json.dumps(config)})
         return triggerJenkins(parameters, job_name)
 
 
-def generateSpreadsheet(type, asset_id):
+def generateSpreadsheet(asset_id):
     try:
-        if type == 'generic':
-            resp = assetDownloadDetails(asset_id)
-            if not resp:
-                return 1001
-            templateInfo = resp[0]
-            resp = requests.get(templateInfo['asset_link'], auth=(
-                templateInfo['repo_username'],
-                templateInfo['repo_password']))
-            if resp.status_code != 200:
-                return 1002
-            template = resp.json()
-            conf_params = {item: template['Parameters'][item]['Default']
-            if 'Default' in template['Parameters'][item]
-            else '' for item in template['Parameters']}
-            conf_params = {**{"Name": "", "Region": ""}, **conf_params}
-        if type == 'versa':
-            headers = ['Name', 'Ami', 'WsAmi', 'Region', 'KeyPairPath', 'KeyPairName',
-                       'GatewayIp', 'VPCCIDR', 'DirectorManagementIP',
-                       'DirectorSouthboundIP', 'ManagementIP', 'InternetIP',
-                       'LanIP', 'WSLanIp', 'WSMgmtIp', 'ConToWS', 'SerialNum',
-                       'SiteId']
-            conf_params = {item: '' for item in headers}
+        resp = assetDownloadDetails(asset_id)
+        if not resp:
+            return 1001
+        templateInfo = resp[0]
+        resp = requests.get(templateInfo['asset_link'], auth=(
+            templateInfo['repo_username'],
+            templateInfo['repo_password']))
+        if resp.status_code != 200:
+            return 1002
+        template = resp.json()
+        conf_params = {item: template['Parameters'][item]['Default']
+        if 'Default' in template['Parameters'][item]
+        else '' for item in template['Parameters']}
+        conf_params = {**{"Name": "", "Region": ""}, **conf_params}
         return dictToXls(conf_params)
     except Exception as e:
         logger.error("Excel generation failed")
