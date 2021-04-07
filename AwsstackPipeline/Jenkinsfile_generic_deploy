@@ -13,8 +13,8 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			stage('CHECKOUT SOURCE CODE'){
 				last_stage = STAGE_NAME.toLowerCase()
 				ui_stage = 'Deploy'
-				git branch: "devnetops-upd",
-				url: "https://innersource.accenture.com/scm/dnp/versa-sdwan.git",
+				git branch: "AwsstackPipeline",
+				url: "https://innersource.accenture.com/scm/dnp/devnetops.git",
 				credentialsId: innersource_cred
                 sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Stack created\", \"stage_info\":{\"${STAGE_NAME}\": \"Completed\"}}'"
 			}
