@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: project
+  name: devnetops-project
   labels:
-    app: project
+    app: devnetops-project
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: project
+      app: devnetops-project
   template:
     metadata:
       labels:
-        app: project
+        app: devnetops-project
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: project
+      - name: devnetops-project
         image: devnetops.azurecr.io/devnetops-project:S1
         imagePullPolicy: Always
         env:
@@ -34,12 +34,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: project
+  name: devnetops-project
   labels:
-    app: project
+    app: devnetops-project
 spec:
   selector:
-    app: project
+    app: devnetops-project
   type: LoadBalancer
   ports:
   - port: 80
