@@ -210,7 +210,7 @@ class ConfigSpreadsheetGenerator(Resource):
     def get(self, orchestrator, type, asset_id):
         if orchestrator != 'cloudformation' or type not in ['versa', 'generic']:
             return {"msg": "Not Supported"}, 400
-        output = generateSpreadsheet(type, asset_id)
+        output = generateSpreadsheet(asset_id)
         if output == 1001:
             return {"msg": "Error retrieving template details"}, 500
         elif output == 1002:
