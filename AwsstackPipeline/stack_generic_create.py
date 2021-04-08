@@ -160,6 +160,7 @@ if __name__ == '__main__':
         params = create_params(template, config, br)
         if not params:
             logger.error(f'Skipping stack creation for branch {br}')
+            continue
         stack_id = create_stack(config['branch'][br]['Region'], br,
                                 json.dumps(template, indent=4), params)
         if stack_id:
