@@ -4,7 +4,7 @@ import datetime
 import pytz
 import json
 import boto3
-from logger import logger
+from log import logger
 from botocore.exceptions import ClientError
 
 def delete_stack(stackname, region):

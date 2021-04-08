@@ -7,8 +7,7 @@ import datetime
 import pytz
 import os
 import time
-import re
-from deleteStack import delete_stack, check_delete_status
+from stack_delete import delete_stack, check_delete_status
 
 
 def create_stack(region, stackname, template):

@@ -30,7 +30,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			stage('GENERIC BRANCHES IN CLOUD'){
 				last_stage = STAGE_NAME
 				container('python'){
-					sh 'python3 AwsstackPipeline/stack_generic_create.py'
+					sh 'python3 AwsstackPipeline/stack_create.py'
 				}
 				def instanceDetails = readFile(file: 'instanceDetails')
                 sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Stack created\", \"stage_info\":{\"${last_stage}\": \"Completed\"}, \"instances\":${instanceDetails}}'"

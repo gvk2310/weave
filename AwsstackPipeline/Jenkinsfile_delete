@@ -19,7 +19,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			stage('DELETE BRANCH IN CLOUD'){
 				last_stage = STAGE_NAME.toLowerCase()
 				container('python'){
-					sh 'python3 stack_generic_delete.py'
+					sh 'python3 AwsstackPipeline/stack_delete.py'
 				}
 				sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DELETE_COMPLETE\", \"message\":\"Stacks deleted in cloud\"}'"
 			}		
