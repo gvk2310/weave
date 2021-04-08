@@ -10,7 +10,7 @@ import time
 from stack_delete import delete_stack, check_delete_status
 
 
-def create_stack(region, stackname, template):
+def create_stack(region, stackname, template, params):
     global msg
     try:
         client = boto3.client('cloudformation', region_name=region)
