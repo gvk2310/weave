@@ -129,8 +129,8 @@ def delete_stacks(stackList, referenceTime):
 
 if __name__ == '__main__':
     msg = ''
-    director_ip = os.environ['director_ip']
-    controller_ip = os.environ['controller_ip']
+    #director_ip = os.environ['director_ip']
+    #controller_ip = os.environ['controller_ip']
     assets = os.environ['assets']
 
     Instance_details = []
