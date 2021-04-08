@@ -85,8 +85,7 @@ def triggerDeployment(depl_details, config, template):
             "assets": f"{template['asset_type']}, {template['asset_link']},"
                       f"{template['repo_username']},"
                       f"{template['repo_password']}",
-            "status_url": status_url,
-            "type": f"{depl_details['orchestrator']}_{depl_details['type']}"
+            "status_url": status_url
         }
       #if depl_details['type'] == 'versa':
       #  parameters.update({
