@@ -16,7 +16,8 @@ def create_stack(region, stackname, template):
     try:
         client = boto3.client('cloudformation', region_name=region)
         response = client.create_stack(
-            StackName=stackname, TemplateBody=template, Parameters=params)
+            StackName=stackname, TemplateBody=template, Parameters=params,
+            OnFailure='DO_NOTHING')
         logger.info(f"Create in progress for Stack Id {response['StackId']}")
         return response['StackId']
     except ClientError as e:
