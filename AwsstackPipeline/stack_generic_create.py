@@ -1,4 +1,4 @@
-from logger import logger
+from log import logger
 import boto3
 from botocore.exceptions import ClientError
 from urllib.parse import unquote
