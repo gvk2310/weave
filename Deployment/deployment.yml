@@ -29,10 +29,10 @@ spec:
           value: sUh7s0wJk2XMLV2D91
         - name: jenkins_token
           value: 11d2cc12486764cb4e2862d2388b70a826
-        - name: jenkins_cft_generic_deploy_job
-          value: Dev_Workspace/devnetops/cft_generic_deploy
-        - name: jenkins_cft_generic_delete_job
-          value: Dev_Workspace/devnetops/cft_generic_delete
+        - name: jenkins_cft_deploy_job
+          value: Dev_Workspace/devnetops/cft_deploy
+        - name: jenkins_cft_delete_job
+          value: Dev_Workspace/devnetops/cft_delete
         - name: onboarding_url
           value: http://devnetops-onboard.ethan.svc.cluster.local:80
         - name: usermgmtUrl
