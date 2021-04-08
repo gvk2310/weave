@@ -88,11 +88,11 @@ def triggerDeployment(depl_details, config, template):
             "status_url": status_url,
             "type": f"{depl_details['orchestrator']}_{depl_details['type']}"
         }
-      if depl_details['type'] == 'versa':
-        parameters.update({
-                "director_ip": depl_details['director_ip'],
-                "controller_ip": depl_details['controller_ip'],
-            })
+      #if depl_details['type'] == 'versa':
+      #  parameters.update({
+      #          "director_ip": depl_details['director_ip'],
+      #          "controller_ip": depl_details['controller_ip'],
+      #      })
       return timestamp if triggerJenkins(parameters, job_name) else None
 
 
