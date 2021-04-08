@@ -16,7 +16,7 @@ def create_stack(region, stackname, template):
     try:
         client = boto3.client('cloudformation', region_name=region)
         response = client.create_stack(
-            StackName=stackname, TemplateBody=template)
+            StackName=stackname, TemplateBody=template, Parameters=params)
         logger.info(f"Create in progress for Stack Id {response['StackId']}")
         return response['StackId']
     except ClientError as e:
@@ -24,14 +24,15 @@ def create_stack(region, stackname, template):
         logger.error(e)
 
 
-def create_template(template, config, br):
-    region = config['branch'][br]['Region']
-    for parameter in template['Parameters']:
-        template['Parameters'][parameter]['Default'] = config['branch'][br][
-            parameter]
-
-    json.dump(template, open(br, 'w'), indent=4)
-    return json.dumps(template, indent=4), region
+def create_params(template, config, br):
+    try:
+        return [{'ParameterKey': parameter,
+                 'ParameterValue': config['branch'][br][parameter]} for
+                parameter in
+                template['Parameters']]
+    except Exception as e:
+        logger.error(f'Failed to generate parameters for branch {br}')
+        logger.error(e)
 
 
 def update_eip(logs, stack_id):
@@ -128,10 +129,6 @@ def delete_stacks(stackList, referenceTime):
 
 if __name__ == '__main__':
     msg = ''
-    config = json.loads(os.environ.get('config'))
-    os.environ['AWS_ACCESS_KEY_ID'] = config['defaults']['aws_access_key_id']
-    os.environ['AWS_SECRET_ACCESS_KEY'] = \
-        config['defaults']['aws_secret_access_key']
     director_ip = os.environ['director_ip']
     controller_ip = os.environ['controller_ip']
     assets = os.environ['assets']
@@ -148,6 +145,7 @@ if __name__ == '__main__':
         logger.error('Template file not found or Error opening template file')
         exit(-1)
 
+    config = json.loads(os.environ.get('config'))
     if not config:
         logger.error('Error retrieving config file')
         exit(-1)
@@ -158,8 +156,11 @@ if __name__ == '__main__':
     StackIds = []
     referenceTime = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
     for br in config['branch']:
-        json_temp, region = create_template(template, config, br)
-        stack_id = create_stack(region, br, json_temp)
+        params = create_params(template, config, br)
+        if not params:
+            logger.error(f'Skipping stack creation for branch {br}')
+        stack_id = create_stack(config['branch'][br]['Region'], br,
+                                json.dumps(template, indent=4), params)
         if stack_id:
             StackIds.append(stack_id)
         else:
