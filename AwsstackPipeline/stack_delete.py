@@ -7,6 +7,7 @@ import boto3
 from log import logger
 from botocore.exceptions import ClientError
 
+
 def delete_stack(stackname, region):
     try:
         client = boto3.client('cloudformation', region_name=region)
@@ -25,12 +26,11 @@ def check_delete_status(stackname, region, referenceTime):
                                'DELETE_COMPLETE'])['StackSummaries']
         stack_det = [item for item in resp if
                      item['StackName'] == stackname and item[
-                         'DeletionTime'] > referenceTime][0]
-        return stack_det['StackStatus']
+                         'DeletionTime'] > referenceTime]
+        return stack_det[0]['StackStatus'] if stack_det else 0
     except ClientError as e:
         logger.error(e)
     except Exception as e:
-        logger.error(e)
         logger.error(e)
 
 
@@ -50,7 +50,6 @@ if __name__ == '__main__':
     logger.info('Checking the deletion status of the stacks')
     while len(que) > 0:
         recheck = []
-        time.sleep(15)
         for item in que:
             status = check_delete_status(item[0], item[1], referenceTime)
             if status == 'DELETE_FAILED':
@@ -58,15 +57,19 @@ if __name__ == '__main__':
                 logger.info(f"Stack deletion failed for {item[0]}")
             elif status == 'DELETE_IN_PROGRESS':
                 recheck.append((item[0], item[1]))
+            elif status == 0:
+                logger.info(
+                    f"Stack :{item[0]} not found. Please check manually")
             else:
                 logger.info(
                     f"Stack deletion successful for {item[0]}")
         que = recheck
-    with open('deletionStatus', 'w') as f:
-        if failed_list:
-            f.write(
-                f"Delete following stacks manually: {','.join(failed_list)}")
-        else:
-            f.write("Done")
+        if que:
+            time.sleep(15)
     if failed_list:
+        with open('fail_msg', 'w') as f:
+            f.write(
+                f"Delete following stacks manually: "
+                f"{','.join(failed_list)}")
+
         exit(-1)
