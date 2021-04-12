@@ -31,7 +31,10 @@ spec:
         - name: service_list
           value: devnetops-project,devnetops-onboard,devnetops-deployment,devnetops-testing,devnetops-monitor,devnetops-security
         - name: username
-          value: ethanadmin
+          valueFrom:
+            configMapKeyRef:
+              key: INITIAL_ADMIN_USER
+              name: jenkins-blueocean-env
         ports:
         - containerPort: 8080
 ---
