@@ -77,8 +77,8 @@ def deleteProject(id):
 
 @app.before_first_request
 def initial_data_setup():
-        createProject(project_id=datetime.datetime.now().strftime("PR%Y%m%d%H%M%S"),
-                      name='Devnetops',
-                      details='Devnetops project')
+    createProject(project_id=datetime.datetime.now().strftime("PR%Y%m%d%H%M%S"),
+                  name='Devnetops',
+                  details='Devnetops project')
 
         
