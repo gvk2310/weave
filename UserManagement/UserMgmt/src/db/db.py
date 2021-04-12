@@ -305,7 +305,7 @@ def initial_data_setup():
         for k in service_list:
             createSvc(k,'Disabled','Disabled','None')
         createRole('admin',service_list, 'write')
-        username = os.environ.get('username')
+        username = os.environ.get('jenkins_username')
         createUser(name=username,
                    email='ethanadmin@xyz.com',               
                    roles='admin')
