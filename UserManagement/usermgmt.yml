@@ -29,7 +29,7 @@ spec:
         - name: jwtsecretkey
           value: eKHjwE761qUucC7FXtHKkeFI5O7c8GJ41PVcfLrMFA7oE-tINxTCB78SwyoNPhN7iHE
         - name: service_list
-          value: devnetops-onboard,devnetops-deployment,devnetops-testing,devnetops-monitor,devnetops-security
+          value: devnetops-project,devnetops-onboard,devnetops-deployment,devnetops-testing,devnetops-monitor,devnetops-security
         ports:
         - containerPort: 8080
 ---
