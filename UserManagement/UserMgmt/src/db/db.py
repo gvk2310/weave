@@ -299,16 +299,17 @@ def getUserSvcs(name=''):
         logger.error(e)
 
 
+
 @app.before_first_request
 def initial_data_setup():
-        service_list = os.environ.get('service_list').split(',')
-        print(service_list)
-        for k in service_list:
-            createSvc(k,'Disabled','Disabled','None')
-        createRole('admin',service_list, 'write')
-        username = os.environ.get('jenkins_username')
-        print(username)
-        createUser(name=username,
-                   email='ethanadmin@xyz.com',               
-                   roles='admin')
+    service_list = os.environ.get('service_list').split(',')
+    print(service_list)
+    for k in service_list:
+        createSvc(k, 'Disabled', 'Disabled', 'None')
+    createRole('admin', service_list, 'write')
+    username = os.environ.get('username')
+    print(username)
+    createUser(name=username,
+               email='ethanadmin@xyz.com',
+               roles='admin')
                
