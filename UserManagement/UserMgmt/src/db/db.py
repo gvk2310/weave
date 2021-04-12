@@ -305,3 +305,8 @@ def initial_data_setup():
         for k in service_list:
             createSvc(k,'Disabled','Disabled','None')
         createRole('admin',service_list, 'write')
+        username = os.environ.get('username')
+        createUser(name=username,
+                   email='ethanadmin@xyz.com',               
+                   roles='admin')
+               
