@@ -13,7 +13,7 @@ db = MongoEngine(app)
 
 class Project(db.Document):
     project_id = db.StringField(unique=True, required=True)
-    name = db.StringField(required=True)
+    name = db.StringField(unique=True, required=True)
     details = db.StringField(required=True)
 
 def getProject(**kwargs):
