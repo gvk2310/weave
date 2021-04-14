@@ -115,10 +115,10 @@ class Asset(Resource):
                 return {"msg": "Upload non empty file"}, 422
 				
 			if (args['asset_file_name'].split('.')[-1] not in ['zip', 'gz']):
-            return {'msg': 'Not a zip or gzip file input'}, 422
+              return {'msg': 'Not a zip or gzip file input'}, 422
 				
 			if (args['asset_path'].split('.')[-1] not in ['zip', 'gz']):
-            return {'msg': 'Not a zip or gzip file input'}, 422
+              return {'msg': 'Not a zip or gzip file input'}, 422
 				
             check = db.create(
                 assetid=args['assetid'],
