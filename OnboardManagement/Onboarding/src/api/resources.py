@@ -114,7 +114,7 @@ class Asset(Resource):
             if (os.path.getsize(args['asset_file_loc'])== 0):
                 return {"msg": "Upload non empty file"}, 422
 				
-			if (args['asset_file_name'].split('.')[-1] not in ['zip', 'gz']):
+            if (args['asset_file_name'].split('.')[-1] not in ['zip', 'gz']):
                 return {'msg': 'Not a zip or gzip file input'}, 422
 				
             check = db.create(
