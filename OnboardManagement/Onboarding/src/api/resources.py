@@ -46,7 +46,7 @@ class Asset(Resource):
                             type=non_empty_string, required=True)
         parser.add_argument('asset_type', nullable=False, type=non_empty_string,
                             required=True, choices=[
-                'key files', 'template', 'nsd', 'vnfd', 'qcow'])
+                'key files', 'cloudformation template','terraform template', 'nsd', 'vnfd', 'qcow'])
         parser.add_argument('asset_version', type=int, required=True)
         parser.add_argument('asset_repository', nullable=False,
                             type=non_empty_string, required=True)
@@ -113,6 +113,13 @@ class Asset(Resource):
             args['asset_file'].save(args['asset_file_loc'])
             if (os.path.getsize(args['asset_file_loc'])== 0):
                 return {"msg": "Upload non empty file"}, 422
+				
+			if (args['asset_file_name'].split('.')[-1] not in ['zip', 'gz']):
+            return {'msg': 'Not a zip or gzip file input'}, 422
+				
+			if (args['asset_path'].split('.')[-1] not in ['zip', 'gz']):
+            return {'msg': 'Not a zip or gzip file input'}, 422
+				
             check = db.create(
                 assetid=args['assetid'],
                 name=args['asset_name'],
@@ -737,3 +744,4 @@ class TestDownloadDetails(Resource):
                            "repo_password": repo_details['repo_password']})
         return output
   
+
