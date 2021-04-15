@@ -29,7 +29,7 @@ class User(Resource):
         args = parser.parse_args()
         users = db.getUsers(email=args['email'])
         if users is False:
-            return {'message': 'User already exist'}, 400
+            return {'message': 'User already exists'}, 400
         role = db.getRoles(args['roles'])
         if role is False:
             return {'message': "Given role doesn't exist"}, 400
