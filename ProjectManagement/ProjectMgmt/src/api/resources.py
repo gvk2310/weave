@@ -2,17 +2,16 @@ import datetime
 import re
 import os
 from ..db import db
-from kubernetes import config, client
 from ..lib.commonFunctions import *
 from flask_restful import Resource, reqparse, inputs
 
 class Project(Resource):
 
     def get(self):
-        prj = db.getProject()
-        if prj:
-            return prj, 200
-        if prj is False:
+        project = db.getProject()
+        if project:
+            return project, 200
+        if project is False:
             return {'msg': 'No projects record found'}, 404
         return {'message': 'Unable to fetch projects'}, 500
 
@@ -38,28 +37,30 @@ class Project(Resource):
 
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('project_id', type=nonEmptyString, required=True,
-                            nullable=False)
         parser.add_argument('name', type=nonEmptyString, required=True, nullable=False)
         parser.add_argument('details', type=str, required=True, nullable=False)
         args = parser.parse_args()
         check = db.getProject(name=args['name'])
         if check is False:
             return {'message': 'Project does not exist'}, 400
-        done = db.updateProject(project_id=args['project_id'],
-                                name=args['name'],
+        if check['details'] == args['details']:
+            return {'message': 'Project details already updated'}, 400
+        done = db.updateProject(name=args['name'],
                                 details=args['details'])
         if done:
             return {'message': 'Project details is updated'}, 200
         else:
             return {'message': 'Unable to update project details'}, 400
         return {'message': 'Unable to process this request'}, 500
-
+      
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('project_id', type=nonEmptyString, required=True,nullable=False)
+        parser.add_argument('name', type=nonEmptyString, required=True,nullable=False)
         args = parser.parse_args()
-        done = db.deleteProject(args['project_id'])
+        check = db.getProject(name=args['name'])
+        if check is False:
+            return {'message': 'Project does not exist'}, 400
+        done = db.deleteProject(name=args['name'])
         if done:
             return {'message': 'Project is deleted'}, 200
         if not done:
