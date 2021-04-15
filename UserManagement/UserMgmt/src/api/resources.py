@@ -27,8 +27,7 @@ class User(Resource):
         parser.add_argument('name', type=nonEmptyString, required=True)
         parser.add_argument('roles', type=nonEmptyString, required=True)
         args = parser.parse_args()
-        users = db.getUsers(email=args['email'])
-        if users is False:
+        if db.getUsers(email=args['email']):
             return {'message': 'User already exists'}, 400
         role = db.getRoles(args['roles'])
         if role is False:
