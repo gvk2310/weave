@@ -5,7 +5,22 @@ from functools import wraps
 from kubernetes import config, client
 from ..log import logger
 
+mongohost= os.environ['mongohost']
 
+def getProject(project):
+    try:
+        client = pymongo.MongoClient(f"{mongohost}")
+        db = client["devnetops"]
+        collections = db["project"]
+        projects = [item["name"] for item in collections.find()]
+        if project in projects:
+            return True
+    except Exception as e:
+        logger.error("Unable to get poject details")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
+        
+        
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
