@@ -49,11 +49,11 @@ class User(Resource):
 
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('user_id', type=nonEmptyString, required=True, nullable=False)
+        parser.add_argument('email', type=nonEmptyString, required=True, nullable=False)
         parser.add_argument('roles', type=nonEmptyString, required=True, nullable=False)
         parser.add_argument('project', type=nonEmptyString, required=True, nullable=False)
         args = parser.parse_args()
-        role = db.getUsers(user_id=args['user_id'])
+        role = db.getUsers(email=args['email'])
         if (role['roles'] == args['roles'] and role['project'] == args[
             'project']):
             return {
@@ -65,7 +65,7 @@ class User(Resource):
             data = db.getProject(args['project'])
             if data is None:
                 return {'message': 'Project doesnt exist'}, 400
-            resp = db.updateUserdetails(user_id=args['user_id'],
+            resp = db.updateUserdetails(email=args['email'],
                                         project=args['project'],
                                         roles=args['roles'])
             if resp:
