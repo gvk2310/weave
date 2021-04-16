@@ -23,37 +23,56 @@ class User(Resource):
 
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('email', type=nonEmptyEmail, required=True)
-        parser.add_argument('name', type=nonEmptyString, required=True)
-        parser.add_argument('roles', type=nonEmptyString, required=True)
+        parser.add_argument('email', type=nonEmptyEmail, required=True, nullable=False)
+        parser.add_argument('name', type=nonEmptyString, required=True, nullable=False)
+        parser.add_argument('project', type=nonEmptyString, required=True, nullable=False)
+        parser.add_argument('roles', type=nonEmptyString, required=True, nullable=False)
         args = parser.parse_args()
         if db.getUsers(email=args['email']):
             return {'message': 'User already exists'}, 400
         role = db.getRoles(args['roles'])
         if role is False:
             return {'message': "Given role doesn't exist"}, 400
-        resp = db.createUser(args['email'], args['name'], args['roles'])
+        data = getProject(args['project'])
+        if data is None:
+            return {'message': 'Given Project doesnt exist'}, 400
+        args['user_id'] = datetime.datetime.now().strftime("UR%Y%m%d%H%M%S")
+        resp = db.createUser(user_id=args['user_id'],
+                             name=args['name'],
+                             email=args['email'],
+                             project=args['project'],
+                             roles=args['roles'])
         if resp:
             return {'message': 'User created'}, 200
         return {'message': 'Unable to create user '}, 500
 
+
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('email', type=nonEmptyEmail, required=True)
-        parser.add_argument('roles',type=nonEmptyString , required=True)
+        parser.add_argument('user_id', type=nonEmptyString, required=True, nullable=False)
+        parser.add_argument('roles', type=nonEmptyString, required=True, nullable=False)
+        parser.add_argument('project', type=nonEmptyString, required=True, nullable=False)
         args = parser.parse_args()
-        role = db.getUsers(email= args['email'])
-        if role['roles'] == args['roles']:
-            return {'message': 'Role already associated with the user'}, 400
+        role = db.getUsers(user_id=args['user_id'])
+        if (role['roles'] == args['roles'] and role['project'] == args[
+            'project']):
+            return {
+                       'message': 'Role/project already associated with the user'}, 400
         else:
             data = db.getRoles(role=args['roles'])
             if data is False:
                 return {'message': 'Role doesnt exist'}, 400
-            resp = db.updateUserRole(args['email'], args['roles'])
+            data = db.getProject(args['project'])
+            if data is None:
+                return {'message': 'Project doesnt exist'}, 400
+            resp = db.updateUserdetails(user_id=args['user_id'],
+                                        project=args['project'],
+                                        roles=args['roles'])
             if resp:
-                return {'message': 'Role updated to user'}, 200
+                return {'message': 'Role/project updated to user'}, 200
             else:
-                return {'message': 'Unable to add role(s) from user'}, 400
+                return {
+                           'message': 'Unable to update role/project from user'}, 400
 
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
