@@ -50,7 +50,7 @@ def createProject(**kwargs):
 
 def updateProject(**kwargs):
     try:
-        project = Project.objects(name=kwargs['project_name']).first()
+        project = Project.objects(project_name=kwargs['project_name']).first()
         if 'project_details' in kwargs:
             project.update(project_details=kwargs['project_details'])
         return True
