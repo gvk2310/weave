@@ -15,7 +15,7 @@ def getProject(project):
         client = pymongo.MongoClient(f"{mongohost}")
         db = client["devnetops"]
         collections = db["project"]
-        projects = [item["name"] for item in collections.find()]
+        projects = [item["project_name"] for item in collections.find()]
         if project in projects:
             return True
     except Exception as e:
