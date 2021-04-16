@@ -1,6 +1,7 @@
 import traceback
 import json
 import os
+import datetime
 from ..log import logger
 from ..config.config import app
 from flask_mongoengine import MongoEngine
@@ -29,8 +30,10 @@ class Role(db.Document):
 
 
 class User(db.Document):
+    user_id = db.StringField(unique=True, required=True)
     email = db.EmailField(required=True, unique=True)
     name = db.StringField(required=True)
+    project = db.StringField(required=True)
     roles = db.StringField(required=True)
 
 
@@ -38,12 +41,16 @@ def getUsers(**kwargs):
     try:
         if len(kwargs) > 0:
             usr = User.objects(__raw__=kwargs).first()
-            return {"email": usr.email,
+            return {"user_id": usr.user_id,
                     "name": usr.name,
+                    "email": usr.email,
+                    "project": usr.project,
                     "roles": usr.roles} if usr else False
         data = [{
-            "email": usr.email,
+            "user_id": usr.user_id,
             "name": usr.name,
+            "email": usr.email,
+            "project": usr.project,
             "roles": usr.roles}
             for usr in User.objects()
         ]
@@ -54,26 +61,36 @@ def getUsers(**kwargs):
         logger.error(e)
 
 
-def createUser(email, name, roles):
+def createUser(**kwargs):
     try:
-        usr = User(email=email, roles=roles, name=name)
+        usr = User(user_id=kwargs['user_id'],
+                   name=kwargs['name'],
+                   email=kwargs['email'],
+                   project=kwargs['project'],
+                   roles=kwargs['roles'])
         usr.save()
         return True
     except Exception as e:
-        logger.error(f"Failed to create user '{name}'")
+        logger.error(f"Failed to create user '{kwargs['name']}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
 
-def updateUserRole(user, role):
+def updateUserdetails(**kwargs):
     try:
-        usr = User.objects(email=user).first()
-        usr.update(roles=role)
-        logger.info(f"User '{role}' has been updated")
+        usr = User.objects(user_id=kwargs['user_id']).first()
+        if 'project' in kwargs:
+            usr.update(project=kwargs['project'])
+        if 'roles' in kwargs:
+            usr.update(roles=kwargs['roles'])
+        logger.info(
+            f"User '{kwargs['roles']}/{kwargs['project']}' has been updated")
         return True
     except Exception as e:
-        logger.error(f"Unable to update role to the user '{user}'")
+        logger.error(
+            f"Unable to update role/project to the user '{kwargs['user_id']}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
+
 
 
 def deleteUser(user):
@@ -301,11 +318,13 @@ def getUserSvcs(name=''):
 
 @app.before_first_request
 def initial_data_setup():
-    service_list = os.environ.get('service_list').split(',')
-    for k in service_list:
-        createSvc(k, 'Disabled', 'Disabled', 'None')
-    createRole('admin', service_list, 'write')
-    username = os.environ.get('user_name')
-    createUser(name=username,
+        service_list = os.environ.get('service_list').split(',')
+        for k in service_list:
+            createSvc(k,'Disabled','Disabled','None')
+        createRole('admin',service_list, 'write')
+        username = os.environ.get('username')
+        createUser(user_id=datetime.datetime.now().strftime("UR%Y%m%d%H%M%S"),
+               name=username,
                email='ethanadmin@xyz.com',
+               project='Devnetops',
                roles='admin')
