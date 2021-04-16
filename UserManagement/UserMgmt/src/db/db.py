@@ -77,7 +77,7 @@ def createUser(**kwargs):
 
 def updateUserdetails(**kwargs):
     try:
-        usr = User.objects(user_id=kwargs['user_id']).first()
+        usr = User.objects(email=kwargs['email']).first()
         if 'project' in kwargs:
             usr.update(project=kwargs['project'])
         if 'roles' in kwargs:
@@ -87,7 +87,7 @@ def updateUserdetails(**kwargs):
         return True
     except Exception as e:
         logger.error(
-            f"Unable to update role/project to the user '{kwargs['user_id']}'")
+            f"Unable to update role/project to the user '{kwargs['email']}'")
         logger.debug(traceback.format_exc())
         logger.error(e)
 
