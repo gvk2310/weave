@@ -60,7 +60,7 @@ class Project(Resource):
         check = db.getProject(project_name=args['project_name'])
         if check is False:
             return {'message': 'Project does not exist'}, 400
-        done = db.deleteProject(name=args['project_name'])
+        done = db.deleteProject(project_name=args['project_name'])
         if done:
             return {'message': 'Project is deleted'}, 200
         if not done:
