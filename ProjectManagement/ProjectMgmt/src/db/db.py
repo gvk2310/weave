@@ -13,20 +13,20 @@ db = MongoEngine(app)
 
 class Project(db.Document):
     project_id = db.StringField(unique=True, required=True)
-    name = db.StringField(required=True,unique=True)
-    details = db.StringField(required=True)
+    project_name = db.StringField(required=True,unique=True)
+    project_details = db.StringField(required=True)
 
 def getProject(**kwargs):
     try:
         if len(kwargs) >0:
             project = Project.objects(__raw__=kwargs).first()
             return {"project_id": project.project_id,
-                    "name": project.name,
-                    "details": project.details
+                    "project_name": project.project_name,
+                    "project_details": project.project_details
                     } if project else False
         data = [{"project_id": project.project_id,
-                 "name": project.name,
-                 "details": project.details
+                 "project_name": project.project_name,
+                 "project_details": project.project_details
                  }
                 for project in Project.objects()]
         return data if data else False
@@ -39,8 +39,8 @@ def getProject(**kwargs):
 def createProject(**kwargs):
     try:
         project = Project(project_id=kwargs['project_id'],
-                          name=kwargs['name'],
-                          details=kwargs['details'])
+                          project_name=kwargs['project_name'],
+                          project_details=kwargs['project_details'])
         project.save()
         return True
     except Exception as e:
@@ -50,9 +50,9 @@ def createProject(**kwargs):
 
 def updateProject(**kwargs):
     try:
-        project = Project.objects(name=kwargs['name']).first()
-        if 'details' in kwargs:
-            project.update(details=kwargs['details'])
+        project = Project.objects(name=kwargs['project_name']).first()
+        if 'project_details' in kwargs:
+            project.update(project_details=kwargs['project_details'])
         return True
     except Exception as e:
         logger.error("Failed to create project")
@@ -61,7 +61,7 @@ def updateProject(**kwargs):
 
 def deleteProject(**kwargs):
     try:
-        project = Project.objects(name=kwargs['name']).first()
+        project = Project.objects(project_name=kwargs['project_name']).first()
         project.delete()
         logger.info(f"Project '{project}' has been deleted")
         return True
@@ -73,7 +73,7 @@ def deleteProject(**kwargs):
 @app.before_first_request
 def initial_data_setup():
     createProject(project_id=datetime.datetime.now().strftime("PR%Y%m%d%H%M%S"),
-                  name='Devnetops',
-                  details='Devnetops project')
+                  project_name='Devnetops',
+                  project_details='Devnetops project')
 
         
