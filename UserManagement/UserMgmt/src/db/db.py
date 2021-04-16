@@ -309,6 +309,7 @@ def getUserSvcs(name=''):
         resp = getRoles(role=data['roles'])
         return {'name': name.lower(),
                 'role': data['roles'],
+                'project':data['project'],
                 'services': resp['access']['access_on']}
     except Exception as e:
         logger.error("unable to fetch user")
