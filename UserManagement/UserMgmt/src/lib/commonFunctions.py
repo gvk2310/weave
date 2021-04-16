@@ -1,6 +1,7 @@
 import re
 import os
 import traceback
+import pymongo
 from ..db import db
 from flask_jwt_extended import get_jwt_identity
 from functools import wraps
