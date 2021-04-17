@@ -62,7 +62,7 @@ class User(Resource):
             data = db.getRoles(role=args['roles'])
             if data is False:
                 return {'message': 'Role doesnt exist'}, 400
-            data = db.getProject(args['project'])
+            data = getProject(args['project'])
             if data is None:
                 return {'message': 'Project doesnt exist'}, 400
             resp = db.updateUserdetails(email=args['email'],
