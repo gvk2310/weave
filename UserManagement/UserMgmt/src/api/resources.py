@@ -49,7 +49,7 @@ class User(Resource):
 
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('email', type=nonEmptyString, required=True, nullable=False)
+        parser.add_argument('email', type=nonEmptyEmail, required=True, nullable=False)
         parser.add_argument('roles', type=nonEmptyString, required=True, nullable=False)
         parser.add_argument('project', type=nonEmptyString, required=True, nullable=False)
         args = parser.parse_args()
