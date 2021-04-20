@@ -4,14 +4,16 @@ import { HashRouter as Router, Route, Switch, Redirect, Link } from 'react-route
 import NavigationBar from "./NavigationBar";
 import '../css/devnetops.css';
 import '../css/style.css';
-import {setPipelineData} from '../store/Actions/Tools';
+import { setPipelineData } from '../store/Actions/Tools';
 import Overview from '../containers/overview/Overview';
 import User from '../containers/access/user';
 import Role from '../containers/access/role';
 import Services from '../containers/access/services';
+//import Project from '../containers/access/project';
+import Project from '../containers/project/project';
 
 import Deployment from '../containers/deployment/deployment';
-//import Status from '../containers/deployment/status';
+// import Status from '../containers/deployment/status';
 
 import Repository from '../containers/onboard/repository';
 import Infra from '../containers/onboard/infra';
@@ -26,7 +28,7 @@ const mapStateToProps = (state) => {
 
 class RoutingModule extends Component {
     render() {
-                return (
+        return (
 
             <Router basename="/devnetops/">
                 <Switch>
@@ -37,7 +39,7 @@ class RoutingModule extends Component {
                         <div id="main" className="myw-content d-flex flex-column flex-fill">
                             <div className="row flex-fill no-gutters">
                                 <NavigationBar />
-                                <Overview/>
+                                <Overview />
                             </div>
                         </div>
                     </Route>
@@ -49,7 +51,7 @@ class RoutingModule extends Component {
                             </div>
                         </div>
                     </Route>
-                    
+
                     <Route exact path="/onboarding/infra">
                         <div id="main" className="myw-content d-flex flex-column flex-fill">
                             <div className="row flex-fill no-gutters">
@@ -88,7 +90,7 @@ class RoutingModule extends Component {
                                 <NavigationBar />
                                 <User />
                             </div>
-                            </div>
+                        </div>
                     </Route>
                     <Route exact path="/access/role">
                         <div id="main" className="myw-content d-flex flex-column flex-fill">
@@ -96,7 +98,7 @@ class RoutingModule extends Component {
                                 <NavigationBar />
                                 <Role />
                             </div>
-                            </div>
+                        </div>
                     </Route>
                     <Route exact path="/access/service">
                         <div id="main" className="myw-content d-flex flex-column flex-fill">
@@ -104,13 +106,23 @@ class RoutingModule extends Component {
                                 <NavigationBar />
                                 <Services />
                             </div>
-                            </div>
+                        </div>
                     </Route>
-                </Switch>
-            </Router>
+                    <Route exact path="/project/project">
+                        <div id="main" className="myw-content d-flex flex-column flex-fill">
+                            <div className="row flex-fill no-gutters">
+                                <NavigationBar />
+                                <Project />
+                            </div>
+                        </div>
+                    </Route >
+
+
+                </Switch >
+            </Router >
         )
     }
 
 }
 
-export default connect(mapStateToProps, {setPipelineData})(RoutingModule)
+export default connect(mapStateToProps, { setPipelineData })(RoutingModule)

@@ -7,6 +7,7 @@ class Role extends React.Component{
     constructor(props){
         super(props);
         this.state={
+            checkPoint: false,
             showInOption: 'Select something',
             newRole : '',            
             roles:[],
@@ -19,7 +20,6 @@ class Role extends React.Component{
             showAddModal:false,
             showEditModal:false,
             showDelModal:false,
-            showSuccessModal:false,
             editservice:'',
             currentRole: '',
             currentService: [],
@@ -81,8 +81,8 @@ class Role extends React.Component{
     handleShowModal = (modalId) => {
         if(modalId === 'addroleModal')this.setState({showAddModal:!this.state.showAddModal});
         if(modalId === 'editroleModal')this.setState({showEditModal:!this.state.showEditModal});
-        if(modalId === 'deleteroleModal')this.setState({showDelModal:!this.state.showDelModal}); 
-        if(modalId === 'SuccessModal')this.setState({showSuccessModal:!this.state.showSuccessModal});  
+        if(modalId === 'deleteroleModal')this.setState({showDelModal:!this.state.showDelModal});   
+        if(modalId === 'checkpoint')this.setState({checkpoint:!this.state.checkpoint});   
     }
   
       handleDictionary = (event) => {
@@ -112,8 +112,7 @@ class Role extends React.Component{
                     this.setState({roles: findresponse});
                 }
             })
-            .catch(error => {
-                 
+            .catch(error => {                
                 console.log('error', error);
             });
     }    
@@ -185,7 +184,7 @@ class Role extends React.Component{
               .then((response) => {
                   console.log(response.status);
                   if(response.status == 200){
-                      this.setState({alertmessage:'success',checkpoint:true});     
+                    this.setState({alertmessage:'success',checkpoint:true});     
                       this.setState({msgClass:'successMessage'}); 
                       this.handleGetRole();}
                   else{ 
@@ -345,18 +344,18 @@ class Role extends React.Component{
           }
 
           if(typeof fields.role !== "undefined"){
-              if(!fields.role.match(/^[A-Za-z0-9_-]/)){
-                  formIsValid = false;
-                  errors.role = "Invalid Input";
-              }        
-          }
+            if(!fields.role.match(/^[A-Za-z0-9_-]/)){
+                formIsValid = false;
+                errors.role = "Invalid Input";
+            }        
+        }
           
           this.setState({errors});
           return formIsValid;
       }            
 
       render(){
-          console.log("Roles",this.state.roles)
+        console.log("Roles",this.state.roles)
           console.log(this.state.services);
           //Style for modal
           const showModalStyle={
@@ -406,7 +405,7 @@ class Role extends React.Component{
 
           /* Display Roles in Table */
           let role = '';
-          console.log(this.state.roles);
+          console.log('roles array ',this.state.roles);
           console.log(this.state.roles.length);
           if(this.state.roles.length>0){
               role = this.state.roles.map((value,index) => {
@@ -416,8 +415,8 @@ class Role extends React.Component{
                           {[...value.access.access_on.join(", ")]} 
                       </td>
                       <div class="dev-actions">
-                          <a href="javascript:void(0)" data-toggle="modal" data-toggle="modal" data-target="#editroleModal" onClick={() => this.handleEditRole(value,index)}><img src={require("images/edit.svg")} alt="Edit"/></a>
-                          <a href="javascript:void(0)" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.role)}><img src={require("images/delete-icon.svg")} alt="Delete"/></a>
+                            <a href="javascript:void(0)" data-toggle="modal" data-toggle="modal" data-target="#editroleModal" onClick={() => this.handleEditRole(value,index)}><img src={require("images/edit.svg")} alt="Edit"/></a>
+                            <a href="javascript:void(0)" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.role)}><img src={require("images/delete-icon.svg")} alt="Delete"/></a>
                       </div>
                   </tr>;
               });
@@ -434,17 +433,15 @@ class Role extends React.Component{
                           <div className="d-flex align-items-center flex-wrap">
                               <div className="dev-page-title">Role Configuration</div>
                               <div className="ml-auto dev-actions">
-                                  <button type="button" className="btn btn-secondary" data-toggle="modal" data-target="#addroleModal" onClick={() => {this.handleShowModal('addroleModal');}} ><img src={require("images/add.svg")} alt="Add"/> <span>Add </span></button>
+                                  <button type="button" className="btn btn-secondary" data-toggle="modal" data-target="#addroleModal" onClick={() => {this.handleShowModal('addroleModal')}} ><img src={require("images/add.svg")} alt="Add"/> <span>Add </span></button>
                               </div>
                           </div>
-                          <div className="dev-section my-4">
-                              {this.state.checkpoint  && <div className="alert myw-toast myw-alert alert-success messagepopup alert-dismissible show"  role="alert" >
+                          <div className="dev-section my-4"> <div style={this.state.checkpoint?showModalStyle:hideModalStyle} >
+                           {this.state.checkpoint && <div className="alert myw-toast myw-alert alert-success alert-dismissible show" role="alert" >
                                   <div>New role added successfully.</div>
-                                  <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => {this.handleShowModal('SuccessModal');}} >
-                                      
-                                  </button>
-                              </div>
-                              }
+                                  <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => {this.handleShowModal('checkpoint')}}></button>
+                              </div> }
+                                 </div>
                               <div className="table-responsive">
                                   <table className="table table-striped dev-anlytics-table">
                                       <thead>
@@ -463,78 +460,78 @@ class Role extends React.Component{
                           </div>
                           {/* <!-- modal - Add Role --> */}
                           <div className="modal" id="addroleModal" tabIndex="-1" role="dialog" aria-labelledby="addroleModaltitle" aria-hidden="true" data-backdrop="static" style={this.state.showAddModal?showModalStyle:hideModalStyle}>
-                              <div className="modal-backdrop show"></div>
-                              <div className="modal-dialog modal-dialog-centered" role="document">
-                                  <div className="modal-content">
-                                      <div className="modal-header">
-                                          <h5 className="modal-title" id="addroleModaltitle">Add Role</h5>
-                                          <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => {this.handleShowModal('addroleModal');}} >
-                                              <span aria-hidden="true">&times;</span>
-                                          </button>
-                                      </div>
-                                      <div className="modal-body">
-                                          {addRoleModal}
-                                      </div>
-                                      <div className="modal-footer">
-                                          <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => {this.handleShowModal('addroleModal');}}>Cancel</button>
-                                          <button type="button" className="btn btn-primary" onClick={(e) => this.contactSubmit(e)}>Submit</button>
-                                          {/*  onClick={(e) => this.funcnName(e)} */}
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          {/* <!-- /modal -  Add Role --> */}
-                          {/* <!-- modal - edit Role --> */}
-                          <div className="modal" id="editroleModal" tabIndex="-1" role="dialog" aria-labelledby="editroleModaltitle" aria-hidden="true" data-backdrop="static" style={this.state.showEditModal?showModalStyle:hideModalStyle}>
-                              <div className="modal-backdrop show"></div>
-                              <div className="modal-dialog modal-dialog-centered" role="document">
-                                  <div className="modal-content">
-                                      <div className="modal-header">
-                                          <h5 className="modal-title" id="editroleModaltitle">Edit Role</h5>
-                                          {/* <td><span  data-toggle="modal" data-target="#editroleModal" onClick={() => {this.handleShowModal('editroleModal');}}><img src={require("images/edit.svg")} alt="Edit"/></span></td> */}
-                                          <button type="button" className="close" data-target="#editroleModal" data-dismiss="modal" aria-label="Close" onClick={() => {this.handleShowModal('editroleModal');}} >
-                                              <span aria-hidden="true">&times;</span>
-                                          </button>
-                                      </div>
-                                      <div className="modal-body">
+                                    <div className="modal-backdrop show"></div>
+                                        <div className="modal-dialog modal-dialog-centered" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title" id="addroleModaltitle">Add Role</h5>
+                                                    <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => {this.handleShowModal('addroleModal');}} >
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    {addRoleModal}
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => {this.handleShowModal('addroleModal');}}>Cancel</button>
+                                                    <button type="button" className="btn btn-primary" onClick={(e) => this.contactSubmit(e)}>Submit</button>
+                                                    {/*  onClick={(e) => this.funcnName(e)} */}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* <!-- /modal -  Add Role --> */}
+                                    {/* <!-- modal - edit Role --> */}
+                                    <div className="modal" id="editroleModal" tabIndex="-1" role="dialog" aria-labelledby="editroleModaltitle" aria-hidden="true" data-backdrop="static" style={this.state.showEditModal?showModalStyle:hideModalStyle}>
+                                    <div className="modal-backdrop show"></div>
+                                        <div className="modal-dialog modal-dialog-centered" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title" id="editroleModaltitle">Edit Role</h5>
+                                                    {/* <td><span  data-toggle="modal" data-target="#editroleModal" onClick={() => {this.handleShowModal('editroleModal');}}><img src={require("images/edit.svg")} alt="Edit"/></span></td> */}
+                                                    <button type="button" className="close" data-target="#editroleModal" data-dismiss="modal" aria-label="Close" onClick={() => {this.handleShowModal('editroleModal');}} >
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div className="modal-body">
                                                     
-                                          <div className="form-group">
-                                              {editServiceModal}
-                                              {/* <label className="form-label">Description</label> */}
-                                              {/* <input type="text" className="form-control" placeholder="Enter role description here" /> */}
-                                          </div>
-                                      </div>
-                                      <div className="modal-footer">
-                                          <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => {this.handleShowModal('editroleModal');}}>Cancel</button>
-                                          <button type="button" className="btn btn-primary" onClick={() => this.handleAddService()} >Edit Role</button>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          {/* <!-- /modal -  Edit Role --> */}
+                                                    <div className="form-group">
+                                                        {editServiceModal}
+                                                        {/* <label className="form-label">Description</label> */}
+                                                        {/* <input type="text" className="form-control" placeholder="Enter role description here" /> */}
+                                                    </div>
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => {this.handleShowModal('editroleModal');}}>Cancel</button>
+                                                    <button type="button" className="btn btn-primary" onClick={() => this.handleAddService()} >Edit Role</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* <!-- /modal -  Edit Role --> */}
 
-                          {/* <!-- modal - Delete Role --> */}
-                          <div className="modal" id="deleteroleModal" tabIndex="-1" role="dialog" aria-labelledby="deleteroleModaltitle" aria-hidden="true" data-backdrop="static" style={this.state.showDelModal?showModalStyle:hideModalStyle}>
-                              <div className="modal-backdrop show"></div>
-                              <div className="modal-dialog modal-dialog-centered" role="document">
-                                  <div className="modal-content">
-                                      <div className="modal-header">
-                                          <h5 className="modal-title" id="deleteroleModaltitle">Delete Role</h5>
-                                          <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => {this.handleShowModal('deleteroleModal');}}>
-                                              <span aria-hidden="true">&times;</span>
-                                          </button>
-                                      </div>
-                                      <div className="modal-body">
+                                    {/* <!-- modal - Delete Role --> */}
+                                    <div className="modal" id="deleteroleModal" tabIndex="-1" role="dialog" aria-labelledby="deleteroleModaltitle" aria-hidden="true" data-backdrop="static" style={this.state.showDelModal?showModalStyle:hideModalStyle}>
+                                    <div className="modal-backdrop show"></div>
+                                        <div className="modal-dialog modal-dialog-centered" role="document">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title" id="deleteroleModaltitle">Delete Role</h5>
+                                                    <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => {this.handleShowModal('deleteroleModal');}}>
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div className="modal-body">
                                                     Are you sure?
-                                      </div>
-                                      <div className="modal-footer">
-                                          <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => {this.handleShowModal('deleteroleModal');}}>Cancel</button>
-                                          <button type="button" className="btn btn-primary" onClick={() => this.handleDelete()}>Delete</button>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          {/* <!-- /modal -  Delete Role --> */}                                 
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => {this.handleShowModal('deleteroleModal');}}>Cancel</button>
+                                                    <button type="button" className="btn btn-primary" onClick={() => this.handleDelete()}>Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* <!-- /modal -  Delete Role --> */}                                 
                       </div>
                   </div>
                   {/* <!-- /content --></div> */}

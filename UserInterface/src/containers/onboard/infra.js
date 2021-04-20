@@ -327,7 +327,7 @@ class Infra extends React.Component{
 
         // invalid name
         if(typeof fields.infra_name !== "undefined"){
-            if(!fields.infra_name.match(/^[A-Za-z0-9_-]/)){
+            if(!fields.infra_name.match(/^[a-zA-Z]+$/)){
                 formIsValid = false;
                 errors.infra_name = "Only letters";
             }        
@@ -403,7 +403,7 @@ class Infra extends React.Component{
 
         // invalid name
         if(typeof fields.infra_name !== "undefined"){
-            if(!fields.infra_name.match(/^[A-Za-z0-9_-]/)){
+            if(!fields.infra_name.match(/^[a-zA-Z]+$/)){
                 formIsValid = false;
                 errors.infra_name = "Only letters";
             }        

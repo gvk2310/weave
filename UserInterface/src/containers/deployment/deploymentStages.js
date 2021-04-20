@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment';
 
 class DeploymentStages extends React.Component{
 constructor(props){
@@ -11,6 +12,12 @@ constructor(props){
 render(){
     let deployStage = '';
     let currDeployment = this.props.currentDep;
+    // var timeLog=currDeployment.logs.split("|");
+    // var endTime=timeLog[0];
+    // var startTime=this.props.currDepTime;
+    // var timeTaken=moment.utc(moment(endTime,"DD-MM-YYYY HH:mm:ss").diff(moment(startTime,"DD-MM-YYYY HH:mm:ss"))).format("mm");       
+    // var depDate=startTime.split(" ");
+
     if(currDeployment.stage_info) {
         console.log("currDeploy",currDeployment.stage_info)
         
@@ -62,6 +69,7 @@ render(){
         <div className="devnet-deploy-info open">
             <div className="devnet-deploy-head">
                 <div>Deployment Stages: <span>{this.props.currDepName}</span></div>
+                {/* <div className="devnet-deploy-time">Deployed: <span>{depDate[0]} | {timeTaken} min</span></div> */}
                 {/* <div className="devnet-deploy-time">Deployed 14/10/2020 | 01:10 P.M.</div> */}
             </div>
             <div className="devnet-deploy-body">

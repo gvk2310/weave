@@ -325,7 +325,8 @@
     #addtestModal .modal-backdrop.show,#edittestModal .modal-backdrop.show,#deletetestModal .modal-backdrop.show,
     #adduserModal .modal-backdrop.show, #edituserModal .modal-backdrop.show, #deleteuserModal .modal-backdrop.show,
     #addroleModal .modal-backdrop.show, #editroleModal .modal-backdrop.show, #deleteroleModal .modal-backdrop.show,
-    #adddeployModal .modal-backdrop.show, #editdeployModal .modal-backdrop.show, #deletedeployModal .modal-backdrop.show{
+    #adddeployModal .modal-backdrop.show, #editdeployModal .modal-backdrop.show, #deletedeployModal .modal-backdrop.show,
+    #addprojectModal .modal-backdrop.show, #editprojectModal .modal-backdrop.show, #deleteprojectModal .modal-backdrop.show {
       opacity: .5; z-index: -1; 
     }
     /* Left Navigation */
