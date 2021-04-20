@@ -975,6 +975,10 @@ a.dev-dash-hd-chart {  font-size: 1rem; color: #000088; }
 .dev-accordian-item.dev-onboard.active { background: url(../images/onboard-active.svg) no-repeat 3rem center #4941ba; color: #ffffff;   }
 .dev-accordian-item.dev-deploy { background: url(../images/deploy.svg) no-repeat 3rem center; padding: 1rem 1rem 1rem 6rem; }
 .dev-accordian-item.dev-deploy.active { background: url(../images/deploy-active.svg) no-repeat 3rem center #4941ba; color: #ffffff;   }
+
+.dev-accordian-item.dev-project.active { background: url(../images/project-management.svg) no-repeat 3rem center #4941ba; color: #ffffff; }
+.dev-accordian-item.dev-project{ background: url(../images/project-management-inactive.svg) no-repeat 3rem center; padding: 1rem 1rem 1rem 6rem;  }
+
 .dev-accordian-item.dev-net-security { background: url(../images/security.svg) no-repeat 3rem center; padding: 1rem 1rem 1rem 6rem; }
 .dev-accordian-item.dev-net-security.active { background: url(../images/security-active.svg) no-repeat 3rem center #4941ba; color: #ffffff;   }
 .dev-accordian-item.dev-net-monitor { background: url(../images/monitor.svg) no-repeat 3rem center; padding: 1rem 1rem 1rem 6rem; }
@@ -998,7 +1002,7 @@ a.dev-dash-hd-chart {  font-size: 1rem; color: #000088; }
 /* Devnet Deploy  */
 .devnet-deploy-status { display:flex; align-items: center; }
 .devnet-deploy-status img { margin-top: -0.1rem; }
-.devnet-deploy-head { padding-top: 3rem; }
+.devnet-deploy-head { padding-top: 0rem; }
 .devnet-deploy-head span { display: none; font-weight: 500;  }
 .devnet-deploy-default { font-size: .75rem; padding: 4rem 0; }
 .devnet-deploy-time { font-size: .625rem; display: none; }
