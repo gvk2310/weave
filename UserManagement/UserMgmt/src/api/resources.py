@@ -28,6 +28,8 @@ class User(Resource):
         parser.add_argument('project', type=nonEmptyString, required=True, nullable=False)
         parser.add_argument('roles', type=nonEmptyString, required=True, nullable=False)
         args = parser.parse_args()
+        args['name']=args['name'].lower()
+        args['roles']=args['roles'].lower()
         if db.getUsers(email=args['email']):
             return {'message': 'User already exists'}, 400
         role = db.getRoles(args['roles'])
@@ -53,6 +55,7 @@ class User(Resource):
         parser.add_argument('roles', type=nonEmptyString, required=True, nullable=False)
         parser.add_argument('project', type=nonEmptyString, required=True, nullable=False)
         args = parser.parse_args()
+        args['roles']=args['roles'].lower()
         role = db.getUsers(email=args['email'])
         if (role['roles'] == args['roles'] and role['project'] == args[
             'project']):
@@ -100,6 +103,7 @@ class Role(Resource):
         parser.add_argument('access_type', choices=('read', 'write'),
                             default='write')
         args = parser.parse_args()
+        args['role']=args['role'].lower()
         if db.getRoles(args['role']):
             return {'message': 'Role already exists'}, 400
         services = formatList(args['services'])
@@ -117,6 +121,7 @@ class Role(Resource):
         parser.add_argument('role', type=nonEmptyString, required=True)
         parser.add_argument('services', action='append', required=True)
         args = parser.parse_args()
+        args['role']=args['role'].lower()
         services = formatList(args['services'])
         if not isinstance(services, list):
             return {'message': {'services': services}}, 400
@@ -137,6 +142,7 @@ class Role(Resource):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=nonEmptyString, required=True)
         args = parser.parse_args()
+        args['role']=args['role'].lower()
         data= db.getRoles(role= args['role'])
         if data is False:
             return {'message': 'Role doesnt exist'}, 400
