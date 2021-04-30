@@ -17,7 +17,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 				credentialsId: innersource_cred
                 sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Source code checked out\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"
 			}
-			stage('Deployment Files'){
+			stage('Get Deployment Files'){
 				last_stage = STAGE_NAME
 				for (item in assets.split(';')){
 					def url = item.split(',')[1]
