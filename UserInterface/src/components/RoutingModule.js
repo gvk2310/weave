@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { HashRouter as Router, Route, Switch, Redirect, Link } from 'react-router-dom';
+import { HashRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import NavigationBar from "./NavigationBar";
 import '../css/devnetops.css';
 import '../css/style.css';

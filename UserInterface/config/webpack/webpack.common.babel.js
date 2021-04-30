@@ -1,30 +1,41 @@
-import webpack from 'webpack';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
-
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { ModuleFederationPlugin } = require("webpack").container;
+const deps = require("../../package.json").dependencies;
 import paths from './paths';
 import rules from './rules';
 
 module.exports = {
     entry: paths.entryPath,
+    target:"web",
     module: {
         rules
     },
     resolve: {
         modules: ['src', 'node_modules'],
-        extensions: ['*', '.js', '.scss', '.css']
+        extensions: ['*', '.js', '.scss', '.css'],
+        alias: { "crypto": false }
     },
     plugins: [
-        new webpack.ProgressPlugin(),
-       new ModuleFederationPlugin({
+        new ModuleFederationPlugin({
             name: "devnetops",
-            library: { type: "var", name: "devnetops" },
             filename: 'remoteEntry.js',
             exposes: {
-                App: './src/containers/App',
+                './App' : './src/containers/App',
             },
-            shared: ["react", "react-dom", "react-apollo"]
-          }),
+            shared: {
+                react: {
+                    requiredVersion: deps.react,
+                    import: "react", // the "react" package will be used a provided and fallback module
+                    shareKey: "react", // under this name the shared module will be placed in the share scope
+                    shareScope: "default", // share scope with this name will be used
+                    singleton: true, // only a single version of the shared module is allowed
+                },
+                "react-dom": {
+                    requiredVersion: deps["react-dom"],
+                    singleton: true, // only a single version of the shared module is allowed
+                },
+            }
+        }),
         new HtmlWebpackPlugin({
             template: paths.templatePath,
             minify: {
