@@ -36,8 +36,8 @@ module.exports = {
         new webpack.EnvironmentPlugin({
             DEBUG: true,
             API_URL: 'http://localhost:15006',
-            MYWD_IV:'REVDVlFHMHV5RHllY00yMQ==',
-            MYWD_KEY:'cVB4UTR4NXBocjJVWUlqdmhHU3RNbTBYSjhHd3FEWms=',
+            MYWD_KEY: '###MYWD_KEY###',
+            MYWD_IV: '###MYWD_IV###',
           }),
         new webpack.HotModuleReplacementPlugin()
     ]

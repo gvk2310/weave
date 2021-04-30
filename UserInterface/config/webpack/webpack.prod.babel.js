@@ -7,9 +7,9 @@ module.exports = {
     mode: 'production',
     output: {
         publicPath: `###REACT_APP_PLATFORM_URL###/devnetops/`,
-        filename: `${paths.jsFolder}/[name].[hash].js`,
+        filename: `${paths.jsFolder}/[name].[fullhash].js`,
         path: paths.outputPath,
-        chunkFilename: '[name].[chunkhash].js'
+        chunkFilename: '[name].[contenthash].js'
     },
     performance: {
         hints: 'warning',
@@ -30,7 +30,9 @@ module.exports = {
     plugins: [
         new webpack.EnvironmentPlugin({
             DEBUG: false,
-            PLATFORM_URL: `${process.env.REACT_APP_PLATFORM_URL}/gqlapi`
+            PLATFORM_URL: `###REACT_APP_PLATFORM_URL###/gqlapi`,
+            MYWD_KEY: '###MYWD_KEY###',
+            MYWD_IV: '###MYWD_IV###',
           }),
         new CleanWebpackPlugin({cleanOnceBeforeBuildPatterns:[paths.outputPath]})
     ],
