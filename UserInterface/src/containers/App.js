@@ -14,7 +14,7 @@ import 'core-js/features/object/assign';
 
 
 export const client = new ApolloClient({
-    uri: `${process.env.REACT_APP_PLATFORM_URL}/graphql`,
+    uri: `${process.env.PLATFORM_URL}/graphql`,
     request: async (operation) => {
         const token = getCookie('AuthToken') === undefined ? '' : getCookie('AuthToken')
         let encToken = Base64DecodeUrl(token)
@@ -27,8 +27,7 @@ export const client = new ApolloClient({
     }
 });
 
-const App = ({ storeremote }) => {
-
+const App = () => {
     return (
         <Provider store={store}>
             <ApolloProvider client={client}>

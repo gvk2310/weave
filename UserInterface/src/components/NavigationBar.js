@@ -32,7 +32,8 @@ const NavigationBar = (props) => {
             })
             .catch(error => console.log('error', error));
 
-        fetch('###REACT_APP_PLATFORM_URL###/access/', requestOptions)
+        let decUsername = decryptionAlgorithm(cookies['cookies'].username);
+        fetch(`###REACT_APP_PLATFORM_URL###/access/userinfo/${decUsername}`, requestOptions)
             .then(response => response.json())
             .then((findresponse) => {
                 setcheckName(findresponse);
@@ -49,19 +50,13 @@ const NavigationBar = (props) => {
                 else
                     if (accordianName == 'project') { setprojectAcc(!projectAcc); }
     };
-    let Rolebuff = new Buffer(cookies.get("userrole"), 'base64');
+   
+    let Rolebuff = new Buffer(cookies.get("userrole"));
     userRole = Rolebuff.toString('ascii');
-    console.log(cookies['cookies'].username);
-    console.log(userRole);
-    console.log(checkRole);
-    console.log("checkName", checkName);
-    decUsername = decryptionAlgorithm(cookies['cookies'].username)
-    decUserRole = decryptionAlgorithm(userRole)
-    console.log("Veda: Userdata after decrypt");
-    console.log(decUsername);
-    console.log(decUserRole);
-        UserRole = decUserRole; 
-
+    let decUsername = decryptionAlgorithm(cookies['cookies'].username);
+    let decUserRole = decryptionAlgorithm(userRole);
+    userRole = decUserRole.toString('ascii');
+    
     return (
         <Fragment>
             <div className="col-auto dev-navbar pt-3">
