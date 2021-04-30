@@ -660,7 +660,7 @@ class Deployment extends React.Component {
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
                                 <label className="form-label">Name</label>
-                                <input type="text" name="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} maxLength="24" />
+                                <input type="text" name="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} minLength="4" maxLength="24" />
                                 <span style={{ color: "red" }}>{this.state.errors.name}</span>
                             </div>
                         </div>
