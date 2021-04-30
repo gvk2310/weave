@@ -121,7 +121,7 @@ class User extends React.Component {
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
         myHeaders.append('GET', 'POST', 'OPTIONS');
 
-        const requestOptions = {
+        const requestOptions = { 
             method: 'GET',
             headers: myHeaders,
         };
