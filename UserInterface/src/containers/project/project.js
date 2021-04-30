@@ -350,14 +350,14 @@ class Project extends React.Component {
             <div className="form-group">
                 <label className="form-label">Project Name<span style={{ color: "red" }}>*</span></label>
                 <input type="text" name="project_name"
-                    className="form-control" placeholder="Enter Project Name" onChange={this.handleChange.bind(this, "project_name")} maxLength="24" />
+                    className="form-control" placeholder="Enter Project Name" onChange={this.handleChange.bind(this, "project_name")} minLength="4" maxLength="24" />
                 <span style={{ color: "red" }}>{this.state.errors.project_name}</span>
             </div>
             <br />
             <div className="form-group">
                 <label className="form-label">Description<span style={{ color: "red" }}>*</span></label>
                 <input type="text" name="project_details"
-                    className="form-control" placeholder="Enter Description" onChange={this.handleChange.bind(this, "project_details")} maxLength="120" />
+                    className="form-control" placeholder="Enter Description" onChange={this.handleChange.bind(this, "project_details")} minLength="20" maxLength="120" />
                 <span style={{ color: "red" }}>{this.state.errors.project_details}</span>
             </div>
         </form>;
@@ -373,7 +373,7 @@ class Project extends React.Component {
             <div className="form-group">
                 <label className="form-label">Description<span style={{ color: "red" }}>*</span></label>
                 <input type="text" name="edit_project_details" value={this.state.edit_project_details}
-                    className="form-control" placeholder="Enter Description" onChange={this.handleChangeEdit.bind(this, "edit_project_details")} maxLength="120" />
+                    className="form-control" placeholder="Enter Description" onChange={this.handleChangeEdit.bind(this, "edit_project_details")} minLength="20" maxLength="120" />
                 <span style={{ color: "red" }}>{this.state.editErrors.edit_project_details}</span>
             </div>
         </form>;
