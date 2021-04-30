@@ -526,14 +526,14 @@ class Test extends React.Component {
                 <div class="col-6">
                     <div class="form-group">
                         <label class="form-label">Test Name<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="test_name" onChange={this.handleChange.bind(this, "test_name")} className="form-control" placeholder="Enter Name" maxLength="24" />
+                        <input type="text" name="test_name" onChange={this.handleChange.bind(this, "test_name")} className="form-control" placeholder="Enter Name" minLength="4" maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.errors.test_name}</span>
                     </div>
                 </div>
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Test Description<span style={{ color: "red" }}>*</span></label>
-                        <input name="test_description" type="text" onChange={this.handleChange.bind(this, "test_description")} className="form-control" placeholder="Enter Description" maxLength="120" />
+                        <input name="test_description" type="text" onChange={this.handleChange.bind(this, "test_description")} className="form-control" placeholder="Enter Description" minLength="20" maxLength="120" />
                         <span style={{ color: "red" }}>{this.state.errors.test_description}</span>
                     </div>
                 </div>
@@ -612,14 +612,14 @@ class Test extends React.Component {
                 <div class="col-6">
                     <div class="form-group">
                         <label class="form-label">Test Name<span style={{ color: "red" }}>*</span></label>
-                        <input name="edit_test_name" value={this.state.edit_test_name} type="text" class="form-control" placeholder="Enter Name" readOnly maxLength="24" />
+                        <input name="edit_test_name" value={this.state.edit_test_name} type="text" class="form-control" placeholder="Enter Name" readOnly  minLength="4" maxLength="24" />
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="form-group">
                         <label class="form-label">Test Description<span style={{ color: "red" }}>*</span></label>
                         <input name="edit_test_description" type="text" value={this.state.edit_test_description} class="form-control" placeholder="Enter Description"
-                            onChange={this.handleChangeEdit.bind(this, "edit_test_description")} maxLength="120" />
+                            onChange={this.handleChangeEdit.bind(this, "edit_test_description")} minLength="20" maxLength="120" />
                         <span style={{ color: "red" }}>{this.state.editErrors.edit_test_description}</span>
                     </div>
                 </div>
