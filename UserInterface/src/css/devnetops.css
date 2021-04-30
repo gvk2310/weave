@@ -13,6 +13,12 @@
   .alert.alert-success {
     border-color: #009654;
     background-color: #009654;
+    color:white;
+  }
+  .alert.alert-failed{
+    border-color: #96001c;
+    background-color: #96001c;
+    color:white;
   }
   .myw-toast {
     position: fixed;
@@ -40,7 +46,7 @@
   }
   
   .alert-dismissible {
-    padding-right: 7rem;
+    padding-right: 3rem;
   }
   .alert {
    
@@ -319,6 +325,7 @@
       color:red;
       font-size: 25px;
     }
+
     #addrepositoryModal .modal-backdrop.show, #editrepositoryModal .modal-backdrop.show, #deleterepositoryModal .modal-backdrop.show,
     #addinfraModal .modal-backdrop.show, #editinfraModal .modal-backdrop.show, #deleteinfraModal .modal-backdrop.show,
     #addassetModal .modal-backdrop.show,#updateassetModal .modal-backdrop.show,#deleteassetModal .modal-backdrop.show,
@@ -331,3 +338,22 @@
     }
     /* Left Navigation */
     
+    .infra_submit {
+      margin:-30px;
+    }  
+    .repo_alignment {
+      padding: 4px!important;
+  }
+  a.back_button:link {
+         text-decoration: none;
+         cursor:pointer;
+  }
+  a.back_button:visited {
+    text-decoration: none;
+    cursor:pointer;
+}
+  a.back_button:hover {
+  text-decoration: underline;
+  cursor:pointer;
+}
+  

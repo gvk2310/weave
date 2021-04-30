@@ -1026,6 +1026,12 @@ a.dev-dash-hd-chart {  font-size: 1rem; color: #000088; }
 .devnet-steps a.completed{ color: #000; }
 .devnet-steps a.completed:before{ background: url("../images/completed.svg") no-repeat center center #fff; background-size: 80% 80%;
 	border-color: #018fff; opacity: 1; }
+	
+.devnet-steps a.failed{ color: #000; }
+.devnet-steps a.failed:before{ background: url("../images/incomplete.svg") no-repeat center center #fff; background-size: 80% 80%; opacity: 1;}
+.devnet-steps a.inprog{ color: #000; }
+.devnet-steps a.inprog:before{ background: url("../images/inprogress.svg") no-repeat center center #fff; background-size: 80% 80%; opacity: 1;}
+	
 
 /* steps */
 .myw-steps{ display: -ms-flexbox; display: flex; -ms-flex-align: start; align-items: flex-start; 
