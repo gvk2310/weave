@@ -8,16 +8,16 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 {
     node(label){
 		def TOKEN="11d2cc12486764cb4e2862d2388b70a826"
-        sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"\",\"stage_info\":{\"CHECKOUT SOURCE CODE\": \"\", \"GET DEPLOYMENT FILES\": \"\",\"SDWAN BRANCHES IN CLOUD\": \"\"}}'"
+        sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"\",\"stage_info\":{\"Checkout Source Code\": \"\", \"Get Deployment Files\": \"\",\"StackDeployment In Cloud\": \"\"}}'"
 		try{
-			stage('CHECKOUT SOURCE CODE'){
+			stage('Checkout Source Code'){
 				last_stage = STAGE_NAME
 				git branch: "DevNetOps-MP-Integration-V1",
 				url: "https://innersource.accenture.com/scm/dnp/devnetops.git",
 				credentialsId: innersource_cred
                 sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Source code checked out\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"
 			}
-			stage('GET DEPLOYMENT FILES'){
+			stage('Deployment Files'){
 				last_stage = STAGE_NAME
 				for (item in assets.split(';')){
 					def url = item.split(',')[1]
@@ -27,7 +27,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                 sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Assets retrieved\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"
 				}
 				}
-			stage('SDWAN BRANCHES IN CLOUD'){
+			stage('StackDeployment In Cloud'){
 				last_stage = STAGE_NAME
 				container('python'){
 					sh 'python3 AwsstackPipeline/stack_create.py'
