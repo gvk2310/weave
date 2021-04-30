@@ -482,7 +482,8 @@ class Deployment extends React.Component {
         this.selectedId = currDeployment.id;
         console.log(this.selectedId);
         console.log(currDeployment);
-        this.setState({ currentDep: currDeployment, currentDepName: currDeployment.name });
+        // this.setState({ currentDep: currDeployment, currentDepName: currDeployment.name });
+        this.setState({ currentDep: currDeployment, currentDepName: currDeployment.name, currentDepTime : currDeployment["created (utc)"] });
     }
 
     getDeploymentData = (data) => {
@@ -659,7 +660,7 @@ class Deployment extends React.Component {
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
                                 <label className="form-label">Name</label>
-                                <input type="text" name="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} />
+                                <input type="text" name="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} minLength="4" maxLength="24" />
                                 <span style={{ color: "red" }}>{this.state.errors.name}</span>
                             </div>
                         </div>
@@ -690,7 +691,7 @@ class Deployment extends React.Component {
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
                                 <label className="form-label">Orchestrator</label>
-                                <select className="form-control" ref="orchestrator" name="orchestrator" onChange={this.handleChange.bind(this, "orchestrator")}>
+                                <select className="form-control" ref="depOrchestrator" name="orchestrator" onChange={this.handleChange.bind(this, "orchestrator")}>
                                     <option>Select Orchestrator</option>
                                     <option value="cloudformation">cloudformation</option>
                                     <option value="OSM">OSM</option>
@@ -878,7 +879,8 @@ class Deployment extends React.Component {
                                     }
                                     {this.state.currentDep && <>
                                         {/* <p className="DepName dn-capital">{this.state.currentDepName}</p> */}
-                                        <DeploymentStages currentDep={this.state.currentDep} currDepName={this.state.currentDepName} />
+                                        {/* <DeploymentStages currentDep={this.state.currentDep} currDepName={this.state.currentDepName} /> */}
+                                        <DeploymentStages currentDep={this.state.currentDep} currDepName={this.state.currentDepName} currDepTime={this.state.currentDepTime}/>
                                     </>
                                     }
                                 </div>
@@ -983,7 +985,7 @@ class Deployment extends React.Component {
                     <div className="py-4 myw-container">
                         <nav aria-label="breadcrumb" className="dev-breadcumb">
                             <ol className="breadcrumb">
-                                <li className="breadcrumb-item"><a data-toggle="tab" data-target="#adddeployPage" onClick={() => { this.handleShowModal('adddeployPage'); }}>Deployment</a></li>
+                                <li className="breadcrumb-item"><a data-toggle="tab" data-target="#adddeployPage" className="back_button" onClick={() => { this.handleShowModal('adddeployPage'); }}>Deployment</a></li>
                                 <li className="breadcrumb-item active" aria-current="page">Add Deployment</li>
                             </ol>
                         </nav>

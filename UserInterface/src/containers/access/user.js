@@ -1,6 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Redirect } from 'react-router-dom';
 
 class User extends React.Component {
 
@@ -24,7 +22,7 @@ class User extends React.Component {
             userArr: [],
             roles: [],
             projectArr: [],
-            project_name: '',
+            project: '',
             editContent: '',
             edit: false,
             searchResult: '',
@@ -32,6 +30,8 @@ class User extends React.Component {
             fields: {},
             errors: {},
             checkPoint: false,
+            isError: false,
+            status: ''
         };
     }
 
@@ -48,7 +48,15 @@ class User extends React.Component {
     }
 
     handleShowModal = (modalId) => {
-        if (modalId === 'adduserModal') this.setState({ showAddModal: !this.state.showAddModal });
+        if (modalId === 'adduserModal') {
+            const clear = this.state.showAddModal;
+            this.setState({ showAddModal: !this.state.showAddModal });
+            if (!clear) {
+                document.getElementById('addUserForm').reset();
+                const errors = {};
+                this.setState({ errors });
+            }
+        }
         if (modalId === 'edituserModal') this.setState({ showEditModal: !this.state.showEditModal });
         if (modalId === 'deleteuserModal') this.setState({ showDelModal: !this.state.showDelModal });
         if (modalId === 'checkpoint') this.setState({ checkpoint: !this.state.checkpoint });
@@ -69,11 +77,7 @@ class User extends React.Component {
         const editUserForm = document.getElementById('editUserForm');
         const formData = new FormData(editUserForm);
         var raw = JSON.stringify({ "project": formData.get('projectArr'), "email": formData.get('email'), "roles": formData.get('roles') });
-        // const raw = JSON.stringify(Object.fromEntries(formData));
-        console.log(formData);
         console.log(raw);
-
-        /* Edit User */
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         const requestOptions = {
@@ -86,44 +90,68 @@ class User extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/access/users`, requestOptions)
             .then((response) => {
                 console.log(response.status);
-
                 if (response.status == 200) {
-                    let duplicateIndex = null;
-                    const checkDuplicate = this.state.userArr.filter((task, index) => {
-                        console.log("task.email", task.email)
-                        console.log("raw.email", JSON.parse(raw).email)
-                        if (new String(task.email).valueOf() == new String(JSON.parse(raw).email).valueOf()) {
-                            duplicateIndex = index;
-                            return task;
-                        }
-                    });
-                    console.log("checkDuplicate", checkDuplicate);
-                    if (checkDuplicate.length > 0) {
-                        this.state.userArr.splice(duplicateIndex, 1)
-                        checkDuplicate[0].roles = JSON.parse(raw).roles;
-                        checkDuplicate[0].project = JSON.parse(raw).project;
-                    }
-                    this.setState({ msgClass: 'successMessage', userArr: [...this.state.userArr, checkDuplicate[0]] })
+                    this.handleGetUser();
+                    this.setState({ isError: false, checkpoint: true });                
                 }
                 else {
-                    this.setState({ msgClass: 'errorMessage' });
+                    this.setState({ isError: true, checkpoint: true });
                 }
                 return response.text();
             })
             .then(result => {
                 this.setState({ displayLoader: false });
                 this.setState({ status: JSON.parse(result).message });
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 this.setState({ displayLoader: false });
                 console.log('error', error);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
     }
 
 
     componentDidMount = () => {
+        this.handleGetUser();
+        const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
+        console.log(process.env);
+        const myHeaders = new Headers();
+        myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
+        myHeaders.append('Access-Control-Allow-Credentials', 'true');
+        myHeaders.append('GET', 'POST', 'OPTIONS');
 
+        const requestOptions = { 
+            method: 'GET',
+            headers: myHeaders,
+        };
+        // Get Roles
+        fetch(`###REACT_APP_PLATFORM_URL###/access/roles`, requestOptions)
+            .then(response => response.json())
+            .then((findresponse) => {
+
+                if (findresponse.msg) {
+                    this.setState({ response: findresponse.msg });
+                } else {
+                    this.setState({ roles: findresponse });
+                }
+            })
+            .catch(error => console.log('error', error));
+
+        // Get Projects
+        fetch(`###REACT_APP_PLATFORM_URL###/project/projects`, requestOptions)
+            .then(response => response.json())
+            .then((findresponse) => {
+                if (findresponse.msg) {
+                    this.setState({ response: findresponse.msg });
+                } else {
+                    this.setState({ projectArr: findresponse });
+                }
+            })
+            .catch(error => console.log('error', error));
+    }
+
+    handleGetUser = () => {
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
         console.log(process.env);
         const myHeaders = new Headers();
@@ -148,34 +176,9 @@ class User extends React.Component {
                 }
             })
             .catch(error => {
-
                 this.setState({ displayLoader: false });
                 console.log('error', error);
             });
-        // Get Roles
-        fetch(`###REACT_APP_PLATFORM_URL###/access/roles`, requestOptions)
-            .then(response => response.json())
-            .then((findresponse) => {
-
-                if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
-                } else {
-                    this.setState({ roles: findresponse });
-                }
-            })
-            .catch(error => console.log('error', error));
-
-        // Get Projects
-        fetch(`https://devnetops.acndevopsengineering.com/project/projects`, requestOptions)
-            .then(response => response.json())
-            .then((findresponse) => {
-                if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
-                } else {
-                    this.setState({ projectArr: findresponse });
-                }
-            })
-            .catch(error => console.log('error', error));
     }
 
     // Add User
@@ -185,10 +188,9 @@ class User extends React.Component {
         console.log(process.env);
         const addUserForm = document.getElementById('addUserForm');
         const formData = new FormData(addUserForm);
-        const raw = JSON.stringify({ "email": formData.get('email'), "name": formData.get('name'), "password": formData.get('password'), "project": formData.getAll('project_name')[0], "roles": formData.getAll('role')[0] });
+        const raw = JSON.stringify({ "email": formData.get('email'), "name": formData.get('name'),"project": formData.getAll('project')[0], "roles": formData.getAll('role')[0] });
         console.log(formData);
         console.log(raw);
-
         /* Add Service */
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -203,22 +205,27 @@ class User extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/access/users`, requestOptions)
             .then((response) => {
                 console.log(response.status);
-                (response.status == 200) ? this.setState({ alertmessage: 'success', checkpoint: true, userArr: [...this.state.userArr, JSON.parse(raw)] }) : this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                // (response.status == 200) ? this.setState({ isError: false, checkpoint: true, userArr: [...this.state.userArr, JSON.parse(raw)] }) : this.setState({ isError: true, checkpoint: true, status: 'There was an unknown error' });
+                if(response.status == 200){
+                    this.setState({ isError: false, checkpoint: true });
+                    this.handleGetUser();
+                }
+                else{
+                    this.setState({ isError: true, checkpoint: true, status: 'There was an unknown error' });
+                } 
                 return response.text();
             })
             .then(result => {
                 this.setState({ displayLoader: false });
                 this.setState({ status: JSON.parse(result).message });
-                setTimeout(() => {
-                    this.setState({ status: '', msgClass: '' });
-                }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 this.setState({ displayLoader: false });
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
                 console.log('error', error);
             });
-            document.getElementById('addUserForm').reset();
+        document.getElementById('addUserForm').reset();
     }
 
     // Delete User
@@ -245,26 +252,25 @@ class User extends React.Component {
                 console.log(response.status);
                 if (response.status == 200) {
                     this.state.userArr.splice(this.state.delUserWithIndex, 1);
-                    this.setState({ msgClass: 'successMessage' });
+                    this.setState({ isError: false, checkpoint: true });
+                    // this.setState({ msgClass: 'successMessage' });
                 }
                 else {
-                    this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                    this.setState({ isError: true, status: 'There was an unknown error', checkpoint: true });
                 }
                 return response.text();
             })
             .then(result => {
-
                 this.setState({ displayLoader: false });
                 this.setState({ status: JSON.parse(result).message });
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
-
                 this.setState({ displayLoader: false });
                 console.log('error', error);
                 this.setState({ disabledBtn: false });
                 document.querySelector('#myDeleteConfirmationModal .close').click();
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
     }
 
@@ -276,23 +282,20 @@ class User extends React.Component {
     contactSubmit = (e) => {
         console.log('inside contactSubmit');
         e.preventDefault();
-        //   if(this.handleValidation()){
         this.handleShowModal('edituserModal');
         this.handleEditData();
-        //   }else{
-        //       alert("Form has errors.")
-        //   }
     }
 
     contactSubmit1 = (e) => {
         console.log('inside contactSubmit1');
         e.preventDefault();
-        //   if(this.handleValidation1()){
-        this.handleShowModal('adduserModal');
-        this.handleAddUser();
-        //   }else{
-        //       alert("Form has errors.")
-        //   }
+        if (this.handleValidation()) {
+            this.handleShowModal('adduserModal');
+            this.handleAddUser();
+        }
+        else {
+            alert("Form has errors.")
+        }
     }
 
     handleChange(field, e) {
@@ -303,34 +306,11 @@ class User extends React.Component {
         this.setState({ errors });
     }
 
-    //   handleValidation(){
-    //       console.log('inside handle validations');
-    //       const {fields} = this.state;
-    //       const errors = {};
-    //       let formIsValid = true;
-    //       this.setState({fields});
-
-    //       Name             
-    //       if(!fields.name){
-    //           formIsValid = false;
-    //           errors.name = "Cannot be empty";                  
-    //       }
-    //       if(typeof fields.role !== "undefined"){
-    //         if(!fields.role.match(/^[A-Za-z0-9_-]/)){
-    //             formIsValid = false;
-    //             errors.role = "Only letters";
-    //         }        
-    //     }
-    //       this.setState({errors: errors});
-    //       return formIsValid;
-    //   }   
-
-    handleValidation1() {
+    handleValidation() {
         console.log('inside handle validations');
-        const { fields } = this.state;
+        const fields = this.state.fields;
         const errors = {};
         let formIsValid = true;
-        this.setState({ fields });
 
         // null email              
         if (!fields.email) {
@@ -358,7 +338,13 @@ class User extends React.Component {
             formIsValid = false;
             errors.role = "Cannot be empty";
         }
-        this.setState({ errors: errors });
+        // Project
+        if (!fields.project) {
+            formIsValid = false;
+            errors.project = "Cannot be empty";
+        }
+        this.setState({ errors });
+        console.log('formIsValid', formIsValid)
         return formIsValid;
     }
 
@@ -396,57 +382,56 @@ class User extends React.Component {
 
         // Edit User Form
         const modalEditContent = <form className="modalbody" id='editUserForm'>
-            <label className="form-label" htmlFor="name">Email :</label>
+            <label className="form-label" htmlFor="name">Email<span style={{ color: "red" }}>*</span></label>
             <input type="email" name="email"
                 id="email" className="form-control" value={this.state.editContent.email}
-                readOnly placeholder="Enter Email" onChange={this.handleChange.bind(this, "email")} />
-
+                readOnly placeholder="Enter Email" />
             <br />
-            <label className="form-label" htmlFor="name">Project :</label>
+            <label className="form-label" htmlFor="name">Project<span style={{ color: "red" }}>*</span></label>
             <select className="form-control" name="projectArr">
+                <option disabled>Select Project</option>
                 {this.state.projectArr && this.state.projectArr.map((item, key) => {   // here I call other options
-                    return (<option key={key} directory={item}>{item.project_name}</option>);
+                    return (<option key={key} selected={this.state.editContent.project === item.project_name ? true : false} directory={item}>{item.project_name}</option>);
                 })}
-                <span style={{ color: "red" }}>{this.state.errors.project_name}</span>
+                {/* <span style={{ color: "red" }}>{this.state.errors.project}</span> */}
             </select>
 
             <br />
-            <label className="form-label" htmlFor="name">Role :</label>
+            <label className="form-label" htmlFor="name">Role<span style={{ color: "red" }}>*</span></label>
             <select className="form-control" name="roles">
+                <option disabled>Select Role</option>
                 {this.state.roles && this.state.roles.map((item, key) => {   // here I call other options
-                    return (<option key={key} directory={item}>{item.role}</option>);
+                    return (<option key={key} selected={this.state.editContent.roles === item.role ? true : false} directory={item}>{item.role}</option>);
                 })}
-                <span style={{ color: "red" }}>{this.state.errors.role}</span>
+                {/* <span style={{ color: "red" }}>{this.state.errors.role}</span> */}
             </select>
-
-
         </form>;
 
         // Add User Form
         const modalAddContent = <form className="modalbody" id='addUserForm'>
-            <label className="w-25 px-3" htmlFor="email">Email :</label>
+            <label className="w-25 px-3" htmlFor="email">Email<span style={{ color: "red" }}>*</span></label>
             <input type="email" name="email"
-                id="email" className="form-control" placeholder="Enter Email" onChange={this.handleChange.bind(this, "email")} />
+                id="email" className="form-control" placeholder="Enter Email" onChange={this.handleChange.bind(this, "email")}  />
             <span style={{ color: "red" }}>{this.state.errors.email}</span>
 
             <br />
-            <label className="w-25 px-3" htmlFor="email">Name :</label>
+            <label className="w-25 px-3" htmlFor="email">Name<span style={{ color: "red" }}>*</span></label>
             <input type="text" name="name"
-                id="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} />
+                id="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} minLength="4" maxLength="24" />
             <span style={{ color: "red" }}>{this.state.errors.name}</span>
 
             <br />
-            <label className="w-25 px-3" htmlFor="email">Projects</label>
-            <select name="project_name" id="project_name" className="form-control" onChange={this.handleChange.bind(this, "project_name")} >
+            <label className="w-25 px-3" htmlFor="email">Projects<span style={{ color: "red" }}>*</span></label>
+            <select name="project" id="project" className="form-control" onChange={this.handleChange.bind(this, "project")} >
                 <option>Select Project</option>
                 {this.state.projectArr && this.state.projectArr.map((item, key) => {   // here I call other options
                     return (<option key={key} directory={item}>{item.project_name}</option>);
                 })}
             </select>
-            <span style={{ color: "red" }}>{this.state.errors.project_name}</span>
+            <span style={{ color: "red" }}>{this.state.errors.project}</span>
 
             <br />
-            <label className="w-25 px-3" htmlFor="email">Roles :</label>
+            <label className="w-25 px-3" htmlFor="email">Roles<span style={{ color: "red" }}>*</span></label>
             <select name="role" id="role" className="form-control" onChange={this.handleChange.bind(this, "role")} >
                 <option>Select Role</option>
                 {this.state.roles && this.state.roles.map((item, key) => {   // here I call other options
@@ -456,7 +441,6 @@ class User extends React.Component {
             <span style={{ color: "red" }}>{this.state.errors.role}</span>
 
         </form>;
-        // Add User Form
 
         return (
             <>
@@ -468,12 +452,13 @@ class User extends React.Component {
                                 <button type="button" className="btn btn-secondary" data-toggle="modal" data-target="#adduserModal" onClick={() => { this.handleShowModal('adduserModal'); }}><img src={require("images/add.svg")} alt="Add" /> <span>Add</span></button>
                             </div>
                         </div>
-                        <div className="dev-section my-4"> <div style={this.state.checkpoint ? showModalStyle : hideModalStyle}>
-                            {this.state.checkpoint && <div className="alert myw-toast myw-alert alert-success alert-dismissible show" role="alert" >
-                                <div>New user added successfully.</div>
-                                <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => { this.handleShowModal('checkpoint') }}></button>
-                            </div>}
-                        </div>
+                        <div className="dev-section my-4">
+                            <div style={this.state.checkpoint ? showModalStyle : hideModalStyle}>
+                                {this.state.checkpoint && <div className={`alert myw-toast myw-alert alert-dismissible show ${this.state.isError ? 'alert-failed' : 'alert-success'}`} role="alert" >
+                                    <div>{this.state.status}</div>
+                                    <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => { this.handleShowModal('checkpoint') }}></button>
+                                </div>}
+                            </div>
                             <div className="table-responsive">
                                 <table className="table table-striped dev-anlytics-table">
                                     <thead>
@@ -497,7 +482,7 @@ class User extends React.Component {
                             <div className="modal-dialog modal-dialog-centered modal-md" role="document">
                                 <div className="modal-content">
                                     <div className="modal-header">
-                                        <h5 className="modal-title" id="adduserModaltitle">Add</h5>
+                                        <h5 className="modal-title" id="adduserModaltitle">Add User</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('adduserModal'); }}>
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -506,13 +491,14 @@ class User extends React.Component {
                                         {modalAddContent}
                                     </div>
                                     <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('adduserModal'); }}>Cancel</button>
                                         <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={(e) => this.contactSubmit1(e)} >Submit</button>
                                     </div>
 
                                 </div>
                             </div>
                         </div>
-                        {/* <!-- /modal -  Add User --> */}
+
                         {/* <!-- modal - Edit User --> */}
                         <div className="modal" id="edituserModal" tabIndex="-1" role="dialog" aria-labelledby="edituserModaltitle" aria-hidden="true" data-backdrop="static" style={this.state.showEditModal ? showModalStyle : hideModalStyle}>
                             <div className="modal-backdrop show"></div>
@@ -528,13 +514,14 @@ class User extends React.Component {
                                         {modalEditContent}
                                     </div>
                                     <div className="modal-footer">
+                                        <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('edituserModal'); }}>Cancel</button>
                                         <button type="button" className="btn btn-primary" data-dismiss="modal" aria-label="Close" onClick={this.contactSubmit.bind(this)} >Submit</button>
                                     </div>
 
                                 </div>
                             </div>
                         </div>
-                        {/* <!-- /modal -  Edit User --> */}
+
                         {/* <!-- modal - Delete User --> */}
                         <div className="modal" id="deleteuserModal" tabIndex="-1" role="dialog" aria-labelledby="deleteuserModaltitle" aria-hidden="true" data-backdrop="static" style={this.state.showDelModal ? showModalStyle : hideModalStyle}>
                             <div className="modal-backdrop show"></div>
@@ -556,11 +543,8 @@ class User extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        {/* <!-- /modal -  Delete User --> */}
-
                     </div>
                 </div>
-                {/* <!-- /content --> */}
             </>
         );
 

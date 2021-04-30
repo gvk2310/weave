@@ -44,9 +44,14 @@ class Asset extends React.Component {
             typeList: [],
             sizeList: [],
             versionList: [],
+            editFields: {},
+            editErrors:{},
             securityList: [],
             fileStatus: 'No file chosen',
             asset_id:'',
+            checkpoint: false,
+            isError: false,
+
         };
         this.handleRepoType = this.handleRepoType.bind(this);
     }
@@ -169,9 +174,26 @@ class Asset extends React.Component {
     }
 
     handleShowModal = (modalId) => {
-        if (modalId === 'addassetModal') this.setState({ showAddModal: !this.state.showAddModal });
-        if (modalId === 'editassetModal') this.setState({ showEditModal: !this.state.showEditModal });
+        if (modalId === 'addassetModal') {
+            const clear = this.state.showAddModal;
+            this.setState({ showAddModal: !this.state.showAddModal });
+            if (!clear) {
+                document.getElementById('addAssetForm').reset();
+                this.setState({ fileStatus: 'No file chosen' });
+                const errors = {};
+                this.setState({ errors });
+            }
+        }
+        if (modalId === 'editassetModal') {
+            const clear = this.state.showEditModal;
+            this.setState({ showEditModal: !this.state.showEditModal });
+            if (!clear) {
+                const editErrors = {};
+                this.setState({ editErrors });
+            }
+        }
         if (modalId === 'deleteassetModal') this.setState({ showDelModal: !this.state.showDelModal });
+        if (modalId === 'checkpoint') this.setState({ checkpoint: !this.state.checkpoint });
     }
 
     handleAddAsset = () => {
@@ -203,9 +225,11 @@ class Asset extends React.Component {
                 console.log(response.status);
                 if (response.status == 200) {
                     this.setState({ listening: true });
-
+                    this.setState({ isError: false, checkpoint: true });
+                   
                 } else {
-                    this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                   // this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                   this.setState({ isError: true, checkpoint: true });
                 }
                 // console.log(response.json())
                 return response.json();
@@ -215,16 +239,19 @@ class Asset extends React.Component {
                 console.log(typeof (result));
                 if (typeof (result) === 'object') {
                     const jsonData = JSON.parse(raw);
-                    this.setState({ status: result.msg, asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });
+                    this.setState({ status: 'Asset Onboarded Successfully' });
+                    this.setState({asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });
                     this.handleSSE(this.state.asset);
                     console.log(JSON.parse(result).msg);
                 }
                 else { this.setState({ status: JSON.parse(result).message }); }
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
             })
             .catch(error => {
                 console.log('error' + error);
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
             });
         document.getElementById("addAssetForm").reset();
         this.setState({ fileStatus: 'No file chosen' });
@@ -253,6 +280,8 @@ class Asset extends React.Component {
                 if (response.status == 200) {
                     console.log('response in edit project', response);
                     this.handleGetAsset();
+                    //this.setState({ alertmessage: 'success' });
+                    this.setState({ isError: false, checkpoint: true });
                     // var duplicateIndex = '';
                     // const checkDuplicate = this.state.asset.filter((task, index) => {
                     //     if (task.asset_id == this.state.assetId) {
@@ -269,7 +298,8 @@ class Asset extends React.Component {
                     // this.setState({ msgClass: 'successMessage', asset: [...this.state.asset, JSON.parse(raw)] });
                 }
                 else {
-                    this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                   // this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                   this.setState({ isError: true, checkpoint: true });
                 }
                 return response.json();
             })
@@ -280,11 +310,13 @@ class Asset extends React.Component {
                     this.setState({ status: result.msg });
                 }
                 else { this.setState({ status: JSON.parse(result).msg }); }
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 console.log('error', error);
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
         document.getElementById("addAssetForm").reset();
     }
@@ -314,10 +346,12 @@ class Asset extends React.Component {
                 console.log(response.status, response.statusText);
                 if (response.status == 200) {
                     this.state.asset.splice(this.state.delAssetWithIndex, 1);
-                    this.setState({ msgClass: 'successMessage' });
+                   // this.setState({ msgClass: 'successMessage', checkpoint: true });
+                   this.setState({ isError: false, checkpoint: true })
                 }
                 else {
-                    this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                    //this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' , checkpoint: true});
+                    this.setState({ status: 'There was an unknown error', isError: true, checkpoint: true })
                 };
                 return response.text();
             })
@@ -325,14 +359,16 @@ class Asset extends React.Component {
 
                 console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+               // setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+               setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             })
             .catch(error => {
 
                 console.log('error', error);
                 this.setState({ disabledBtn: false });
                 document.querySelector('#myDeleteConfirmationModal .close').click();
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+               // setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+               setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             });
     }
 
@@ -380,7 +416,18 @@ class Asset extends React.Component {
         fields[field] = e.target.value;
         this.setState({ ...fields, fields });
         const errors = {};
-        this.setState({ errors: errors });
+        // this.setState({ errors: errors });
+
+        const checkDuplicate = this.state.asset.filter(task => task.asset_name == fields.asset_name);
+        console.log(checkDuplicate);
+        if (checkDuplicate.length > 0) {
+            errors.asset_name = "asset name already exists, Do you want to update?";
+            this.setState({ errors: errors });
+        }
+        else {
+            errors.asset_name = "";
+            this.setState({ errors: errors });
+        }
 
         // Call handleRepoType based on user choice of Upload To
         if (fields.asset_repository != undefined) {
@@ -454,84 +501,99 @@ class Asset extends React.Component {
                 errors.asset_version = "Only Float";
             }
         }
-        if (this.state.repoType == 'local') {
-            // asset_file
-            if (!fields.asset_file) {
+        if (this.state.radioVal == 1 && this.state.fileStatus === 'No file chosen') {
+            formIsValid = false;
+            errors.fileStatus = "Cannot be empty";
+        }
+        if (this.state.radioVal == 2 && !fields.asset_path) {
+            formIsValid = false;
+            errors.fileStatus = "Cannot be empty";
+        }
+        if (this.state.radioVal == 2 && fields.asset_path) {
+            const regexp = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+            const formElements = document.forms.addAssetForm.elements.asset_path.value;
+            if (!regexp.test(formElements)) {
                 formIsValid = false;
-                errors.asset_file = "Cannot be empty";
+                errors.asset_path = "Not a valid URL";
             }
         }
-        if (this.state.repoType == 'remote') {
-            console.log('inside remote');
-            // asset_path
-            if (!fields.asset_path) {
-                formIsValid = false;
-                errors.asset_path = "Cannot be empty";
-            }
-        }
+        // if (this.state.repoType == 'local') {
+        //     // asset_file
+        //     if (!fields.asset_file) {
+        //         formIsValid = false;
+        //         errors.asset_file = "Cannot be empty";
+        //     }
+        // }
+        // if (this.state.repoType == 'remote') {
+        //     console.log('inside remote');
+        //     // asset_path
+        //     if (!fields.asset_path) {
+        //         formIsValid = false;
+        //         errors.asset_path = "Cannot be empty";
+        //     }
+        // }
         this.setState({ errors: errors });
         return formIsValid;
     }
 
-    handleValidation1() {
-        const fields = this.state.fields;
-        const errors = {};
-        let formIsValid = true;
+    handleChangeEdit(field, e) {
+        const { editFields } = this.state;
+        editFields[field] = e.target.value;
+        this.setState({ ...editFields, editFields });
+        const editErrors = {};
+        this.setState({ editErrors });
+    }
 
-        // Asset Group name
-        if (!fields.asset_group) {
+    handleValidationEdit = () => {
+        let editFields={
+            asset_group: this.state.editFields.asset_group ? this.state.editFields.asset_group : this.state.asset_group,
+            asset_vendor: this.state.editFields.asset_vendor ? this.state.editFields.asset_vendor : this.state.asset_vendor,
+            asset_version: this.state.editFields.asset_version ? this.state.editFields.asset_version : this.state.asset_version
+        }
+        const editErrors = {};
+        let formIsValid = true;
+        console.log('editFields inside Validation', editFields);
+
+                // Asset Group name
+        if (!editFields.asset_group) {
             formIsValid = false;
-            errors.asset_group = "Cannot be empty";
+            editErrors.asset_group = "Cannot be empty";
         }
 
         // invalid Asset Group name
-        if (typeof fields.asset_group !== "undefined") {
-            if (!fields.asset_group.match(/^[A-Za-z0-9_-]/)) {
+        if (typeof editFields.asset_group !== "undefined") {
+            if (!editFields.asset_group.match(/^[A-Za-z0-9_-]/)) {
                 formIsValid = false;
-                errors.asset_group = "Only letters";
+                editErrors.asset_group = "Only letters";
             }
         }
 
-        // asset_type
-        if (!fields.asset_type) {
+        // asset_vendor
+        if (!editFields.asset_vendor) {
             formIsValid = false;
-            errors.asset_type = "Cannot be empty";
+            editErrors.asset_vendor = "Cannot be empty";
         }
+
         // invalid vendor name
-        if (typeof fields.asset_vendor !== "undefined") {
-            if (!fields.asset_vendor.match(/^[A-Za-z0-9_-]/)) {
+        if (typeof editFields.asset_vendor !== "undefined") {
+            if (!editFields.asset_vendor.match(/^[A-Za-z0-9_-]/)) {
                 formIsValid = false;
-                errors.asset_vendor = "Only letters";
+                editErrors.asset_vendor = "Only letters";
             }
         }
-        // asset_version 
-        if (!fields.asset_version) {
+        //asset_version 
+        if (!editFields.asset_version) {
             formIsValid = false;
-            errors.asset_version = "Cannot be empty";
+            editErrors.asset_version = "Cannot be empty";
         }
         // invalid asset_version
-        if (typeof fields.asset_version !== "undefined") {
-            if (!fields.asset_version.match(/^[0-9\b]+$/)) {
+        if (typeof editFields.asset_version !== "undefined") {
+            if (!editFields.asset_version.match(/^\d+(\.\d{1,2})?$/)) {
                 formIsValid = false;
-                errors.asset_version = "Only number";
+                editErrors.asset_version = "Only float";
             }
         }
-        if (this.state.repoType == 'local') {
-            // asset_file
-            if (!fields.asset_file) {
-                formIsValid = false;
-                errors.asset_file = "Cannot be empty";
-            }
-        }
-        if (this.state.repoType == 'remote') {
-            console.log('inside remote');
-            // asset_path
-            if (!fields.asset_path) {
-                formIsValid = false;
-                errors.asset_path = "Cannot be empty";
-            }
-        }
-        this.setState({ errors: errors });
+        this.setState({ editErrors: editErrors });
         return formIsValid;
     }
 
@@ -546,8 +608,8 @@ class Asset extends React.Component {
 
     contactSubmit1 = (e) => {
         e.preventDefault();
-        if (this.handleValidation1()) {
-            this.handleAddAsset();
+        if (this.handleValidationEdit()) {
+            this.handleUpdateAsset();
         } else {
             alert("Form has errors.");
         }
@@ -560,6 +622,8 @@ class Asset extends React.Component {
 
     handleFileUpload = () => {
         this.setState({ fileStatus: document.getElementById('asset_file').files[0].name });
+        const errors = {};
+        this.setState({ errors });
     }
 
     render() {
@@ -630,7 +694,7 @@ class Asset extends React.Component {
                 <div className="col-12 dev-templates">
                     <div className="form-group">
                         <label className="myw-checkbox myw-radio myw-inline">
-                            <input type="radio" name="dev-asset-rd" value="1" onClick={(e) => this.handleRadio(e)} />
+                            <input type="radio" name="dev-asset-rd" value="1" onClick={(e) => this.handleRadio(e)} defaultChecked/>
                             <span>New</span>
                         </label>
                         <label className="myw-checkbox myw-radio myw-inline">
@@ -641,21 +705,21 @@ class Asset extends React.Component {
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Name</label>
-                        <input type="text" name="asset_name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "asset_name")} />
+                        <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
+                        <input type="text" name="asset_name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "asset_name")} minLength="4" maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.errors.asset_name}</span>
                     </div>
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Asset Group</label>
-                        <input type="text" name="asset_group" className="form-control" placeholder="Enter Asset Group" onChange={this.handleChange.bind(this, "asset_group")} />
+                        <label className="form-label">Asset Group<span style={{ color: "red" }}>*</span></label>
+                        <input type="text" name="asset_group" className="form-control" placeholder="Enter Asset Group" onChange={this.handleChange.bind(this, "asset_group")} minLength="20" maxLength="120" />
                         <span style={{ color: "red" }}>{this.state.errors.asset_group}</span>
                     </div>
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Type</label>
+                        <label className="form-label">Type<span style={{ color: "red" }}>*</span></label>
                         <select name="asset_type" className="asset_type form-control" onChange={this.handleChange.bind(this, "asset_type")}>
                             <option>Select Type</option>
                             <option value="key files">Key files</option>
@@ -667,14 +731,14 @@ class Asset extends React.Component {
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Vendor</label>
-                        <input type="text" name="asset_vendor" className="form-control" placeholder="Enter Vendor" onChange={this.handleChange.bind(this, "asset_vendor")} />
+                        <label className="form-label">Vendor<span style={{ color: "red" }}>*</span></label>
+                        <input type="text" name="asset_vendor" className="form-control" placeholder="Enter Vendor" onChange={this.handleChange.bind(this, "asset_vendor")} minLength="4" maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.errors.asset_vendor}</span>
                     </div>
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Upload to</label>
+                        <label className="form-label">Upload to<span style={{ color: "red" }}>*</span></label>
 
                         <select name="asset_repository" className="form-control" onChange={this.handleChange.bind(this, "asset_repository")}>
                             <option>Select</option>
@@ -687,7 +751,7 @@ class Asset extends React.Component {
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Version</label>
+                        <label className="form-label">Version<span style={{ color: "red" }}>*</span></label>
                         <input type="text" name="asset_version"
                             className="form-control" placeholder="Enter Version" onChange={this.handleChange.bind(this, "asset_version")} />
                         <span style={{ color: "red" }}>{this.state.errors.asset_version}</span>
@@ -696,21 +760,20 @@ class Asset extends React.Component {
 
                 {this.state.radioVal == 1 && <div className={`col-6 devnet-upload ${this.state.radioVal == '1' ? "" : "d-none"}`}>
                     <div className="form-group">
-                        <label className="form-label">Upload file</label>
+                        <label className="form-label">Upload file<span style={{ color: "red" }}>*</span></label>
                         <div className="myw-upload-browse d-flex align-items-center">
                             <label className="btn btn-secondary">
                                 <span>Browse</span>
                                 <input id="asset_file" type="file" onChange={this.handleFileUpload}></input>
                             </label>
                             <span className="ml-2 text-secondary">{this.state.fileStatus}</span><br></br>
-                            <span style={{ color: "red" }}>{this.state.errors.asset_file}</span>
-
                         </div>
+                        <span style={{ color: "red" }}>{this.state.errors.fileStatus}</span>
                     </div>
                 </div>}
                 {this.state.radioVal == 2 && <div className={`col-6 devnet-url ${this.state.radioVal == '2' ? "" : "d-none"}`}>
                     <div className="form-group">
-                        <label className="form-label">URL</label>
+                        <label className="form-label">URL<span style={{ color: "red" }}>*</span></label>
                         <input type="text" name="asset_path" className="form-control" placeholder="Enter URL" />
                         <span style={{ color: "red" }}>{this.state.errors.asset_path}</span>
                     </div>
@@ -719,27 +782,27 @@ class Asset extends React.Component {
         </form>;
 
         /* Update Asset Modal Body */
-        const updateAssetModal = <form className="modalbody" id='updateAssetForm' onSubmit={this.contactSubmit.bind(this)}>
+        const updateAssetModal = <form className="modalbody" id='updateAssetForm' onSubmit={this.contactSubmit1.bind(this)}>
             <div className="row">
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Name</label>
-                        <input type="text" name="asset_name" value={this.state.asset_name} className="form-control" placeholder="Enter Name" readOnly/>
+                        <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
+                        <input type="text" name="asset_name" value={this.state.asset_name} className="form-control" placeholder="Enter Name" minLength="4" maxLength="24" readOnly/>
                         <br />
                     </div>
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Asset Group</label>
-                        <input type="text" name="asset_group" className="form-control" value={this.state.asset_group} placeholder="Enter Asset Group" onChange={this.handleChange.bind(this, "asset_group")} />
-                        <span style={{ color: "red" }}>{this.state.errors.asset_group}</span>
+                        <label className="form-label">Asset Group<span style={{ color: "red" }}>*</span></label>
+                        <input type="text" name="asset_group" className="form-control" value={this.state.asset_group} placeholder="Enter Asset Group" onChange={this.handleChangeEdit.bind(this, "asset_group")} minLength="20" maxLength="120" />
+                        <span style={{ color: "red" }}>{this.state.editErrors.asset_group}</span>
                         <br />
 
                     </div>
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Type</label>
+                        <label className="form-label">Type<span style={{ color: "red" }}>*</span></label>
                         <select name="asset_type" className="asset_type form-control" disabled>
                             <option selected disabled>{this.state.asset_type}</option>
                         </select>
@@ -747,24 +810,25 @@ class Asset extends React.Component {
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Vendor</label>
-                        <input type="text" name="asset_vendor" value={this.state.asset_vendor} className="form-control" placeholder="Enter Vendor" onChange={this.handleChange.bind(this, "asset_vendor")} />
+                        <label className="form-label">Vendor<span style={{ color: "red" }}>*</span></label>
+                        <input type="text" name="asset_vendor" value={this.state.asset_vendor} className="form-control" placeholder="Enter Vendor" onChange={this.handleChangeEdit.bind(this, "asset_vendor")} minLength="4" maxLength="24" />
+                        <span style={{ color: "red" }}>{this.state.editErrors.asset_vendor}</span>
                     </div>
                 </div>
 
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Version</label>
+                        <label className="form-label">Version<span style={{ color: "red" }}>*</span></label>
                         <input type="text" name="asset_version" value={this.state.asset_version}
-                            className="form-control" placeholder="Enter Version" onChange={this.handleChange.bind(this, "asset_version")} />
-                        <span style={{ color: "red" }}>{this.state.errors.asset_version}</span>
+                            className="form-control" placeholder="Enter Version" onChange={this.handleChangeEdit.bind(this, "asset_version")} />
+                        <span style={{ color: "red" }}>{this.state.editErrors.asset_version}</span>
                     </div>
                 </div>
                 <div className="col-6 devnet-url d-none">
                     <div className="form-group">
-                        <label className="form-label">URL</label>
+                        <label className="form-label">URL<span style={{ color: "red" }}>*</span></label>
                         <input type="text" id="remoteRepoFile" name="asset_path" className="form-control" placeholder="Enter URL" onChange={this.handleChange.bind(this, "asset_path")} />
-                        <span style={{ color: "red" }}>{this.state.errors.asset_path}</span>
+                        <span style={{ color: "red" }}>{this.state.editErrors.asset_path}</span>
                     </div>
                 </div>
             </div>
@@ -783,6 +847,12 @@ class Asset extends React.Component {
                             </div>
                         </div>
                         <div className="dev-section my-4">
+                        <div style={this.state.checkpoint ? showModalStyle : hideModalStyle}>
+                            {this.state.checkpoint && <div className={`alert myw-toast myw-alert alert-dismissible show ${this.state.isError ? 'alert-failed':'alert-success'}`} role="alert" >
+                                <div>{this.state.status}</div>
+                                <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => { this.handleShowModal('checkpoint') }}></button>
+                            </div>}
+                        </div>
                             <div className="table-responsive">
                                 <table className="table table-striped dev-anlytics-table">
                                     <thead>
@@ -794,7 +864,7 @@ class Asset extends React.Component {
                                             <th scope="col">Repository</th>
                                             <th scope="col">Size</th>
                                             <th scope="col">Version</th>
-                                            <th scope="col" className="text-center">Scan</th>
+                                            <th scope="col" className="text-center">Security</th>
                                             <th scope="col">Status</th>
                                             <th scope="col" className="text-center">Action</th>
                                         </tr>
@@ -843,7 +913,7 @@ class Asset extends React.Component {
                                     </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('editassetModal'); }}>Cancel</button>
-                                        <button type="button" className="btn btn-primary" onClick={this.handleUpdateAsset}>Submit</button>
+                                        <button type="button" className="btn btn-primary" onClick={this.contactSubmit1}>Submit</button>
                                     </div>
                                 </div>
                             </div>
@@ -879,6 +949,6 @@ class Asset extends React.Component {
             </>
         );
     }
-}
+    }
 
 export default Asset;
