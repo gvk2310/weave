@@ -603,7 +603,7 @@ class Infra extends React.Component {
         let addInfraModal = <form className="modalbody" id='addInfraForm' onSubmit={this.contactSubmit.bind(this)}>
             <div>
                 <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
-                <input type="text" className="form-control" name="infra_name" onChange={this.handleChange.bind(this, "infra_name")} placeholder="Enter Name" maxLength="24" />
+                <input type="text" className="form-control" name="infra_name" onChange={this.handleChange.bind(this, "infra_name")} placeholder="Enter Name" minLength="4" maxLength="24" />
                 <span style={{ color: "red" }}>{this.state.errors["infra_name"]}</span>
                 <br />
 
@@ -681,7 +681,7 @@ class Infra extends React.Component {
         let updateInfraModal = <form className="modalbody" id='updateInfraForm'>
             <div>
                 <label className="form-label" htmlFor="email">Name<span style={{ color: "red" }}>*</span></label>
-                <input type="text" className="form-control" name="edit_infra_name" value={this.state.edit_infra_name} onChange={this.handleChangeEdit.bind(this, "edit_infra_name")} maxLength="24" readOnly />
+                <input type="text" className="form-control" name="edit_infra_name" value={this.state.edit_infra_name} onChange={this.handleChangeEdit.bind(this, "edit_infra_name")} minLength="4" maxLength="24" readOnly />
                 <br />
                 <label className="form-label" htmlFor="email">Cloud <span style={{ color: "red" }}>*</span></label>
                 <select name="edit_infra_cloud_type" value={this.state.edit_infra_cloud_type} className="form-control" disabled>
@@ -744,7 +744,7 @@ class Infra extends React.Component {
                         <span style={{ color: "red" }}>{this.state.errors["orchestrator_url"]}</span>
                         <br />
                         <label className="w-25 px-3" htmlFor="email">User Name :</label>
-                        <input type="text" className="form-control" name="orchestrator_username" onChange={this.handleChangeEdit.bind(this, "orchestrator_username")} maxLength="24" />
+                        <input type="text" className="form-control" name="orchestrator_username" onChange={this.handleChangeEdit.bind(this, "orchestrator_username")}  minLength="4" maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.errors["orchestrator_username"]}</span>
                         <br />
                         <label className="w-25 px-3" htmlFor="email">Password :</label>
