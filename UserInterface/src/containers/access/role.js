@@ -384,7 +384,7 @@ class Role extends React.Component {
         const addRoleModal = <form className="modalbody" id='addRolesForm'>
             <div className="form-group">
                 <label className="form-label">Role Name<span style={{ color: "red" }}>*</span></label>
-                <input type="text" className="form-control" name="role" id="roleId" placeholder="Enter Role Name" onChange={this.handleChange.bind(this, "role")} maxLength="24" />
+                <input type="text" className="form-control" name="role" id="roleId" placeholder="Enter Role Name" onChange={this.handleChange.bind(this, "role")} minLength="4" maxLength="24" />
                 <span style={{ color: "red" }}>{this.state.errors.role}</span>
             </div>
             <div className="form-group">
@@ -405,7 +405,7 @@ class Role extends React.Component {
         const editServiceModal = <form className="modalbody" id='editServicesForm'>
             <div className="form-group">
                 <label className="form-label">Role Name<span style={{ color: "red" }}>*</span></label>
-                <input name="role" type="text" className="form-control" value={this.state.editName} maxLength="24" readOnly/>
+                <input name="role" type="text" className="form-control" value={this.state.editName} minLength="4" maxLength="24" readOnly/>
             </div>
             <div>
                 <label className="form-label">Service<span style={{ color: "red" }}>*</span></label>
