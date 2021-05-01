@@ -9,7 +9,7 @@ class Deployment extends React.Component {
         super(props);
         this.state = {
             deploy: [],
-            asset: [],
+            assets: [],
             openDeploymentPage: false,
             isHiddenSearchBox: true,
             delDeploy: '',
@@ -532,27 +532,6 @@ class Deployment extends React.Component {
         }
     }
 
-    // handleChange_infra(field, e) {
-    //     const { fields } = this.state;
-    //     fields[field] = e.target.value;
-    //     this.setState({ fields });
-    //     const errors = {};
-    //     this.setState({ errors });
-    //     let infra_result = this.state.infra.filter(item => item.infra_name == e.target.value)
-    //     console.log(infra_result);
-
-    //     let infra_value = infra_result[0].environment;
-    //     let infra_value2 = infra_result[1].orchestrator;
-
-    //     this.refs.infraName.value = infra_value;
-    //     this.refs.orchestrator.value = infra_value2;
-
-    //     // if (this.refs.changeCloudType) {
-    //     //     this.handleChangeCloudType();
-    //     // }
-    // }
-
-
     handleValidation1() {
         console.log('inside handle validations');
         const { fields } = this.state;
@@ -659,14 +638,14 @@ class Deployment extends React.Component {
                     <div className="row">
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
-                                <label className="form-label">Name</label>
-                                <input type="text" name="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} minLength="4" maxLength="24" />
+                                <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
+                                <input type="text" name="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} maxLength="24" />
                                 <span style={{ color: "red" }}>{this.state.errors.name}</span>
                             </div>
                         </div>
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
-                                <label className="form-label">Infrastructure_cloud</label>
+                                <label className="form-label">Infrastructure_cloud<span style={{ color: "red" }}>*</span></label>
                                 <select name="infra" className="form-control" onChange={this.handleChange.bind(this, "infra")}>
                                     <option>Select Infra</option>
                                     {this.state.infra.map((item, index) => {
@@ -678,7 +657,7 @@ class Deployment extends React.Component {
                         </div>
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
-                                <label className="form-label">Environment</label>
+                                <label className="form-label">Environment<span style={{ color: "red" }}>*</span></label>
                                 <select className="form-control" name="environment" ref="infraName" onChange={this.handleChange.bind(this, "environment")}>
                                     <option>Select Environment</option>
                                     {this.state.environment.map((item, index) => {
@@ -690,7 +669,7 @@ class Deployment extends React.Component {
                         </div>
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
-                                <label className="form-label">Orchestrator</label>
+                                <label className="form-label">Orchestrator<span style={{ color: "red" }}>*</span></label>
                                 <select className="form-control" ref="depOrchestrator" name="orchestrator" onChange={this.handleChange.bind(this, "orchestrator")}>
                                     <option>Select Orchestrator</option>
                                     <option value="cloudformation">cloudformation</option>
@@ -702,7 +681,7 @@ class Deployment extends React.Component {
 
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
-                                <label className="form-label">Type</label>
+                                <label className="form-label">Type<span style={{ color: "red" }}>*</span></label>
                                 <select className="form-control" ref="changeCloudType" name="type" onChange={this.handleChangeCloudType}>
                                     <option>Select Type</option>
                                     <option value="generic">generic </option>
@@ -713,7 +692,7 @@ class Deployment extends React.Component {
                         </div>
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
-                                <label className="form-label">Asset</label>
+                                <label className="form-label">Asset<span style={{ color: "red" }}>*</span></label>
                                 <select className="form-control" ref="assets" name="assets" onChange={this.handleChange.bind(this, "assets")}>
                                     <option selected disabled>Select Asset</option>
                                     {this.state.assets && this.state.assets.map((item, index) => {
@@ -735,14 +714,14 @@ class Deployment extends React.Component {
                             <>
                                 <div className="col-6 col-lg-4">
                                     <div className="form-group">
-                                        <label className="form-label">Director IP</label>
+                                        <label className="form-label">Director IP<span style={{ color: "red" }}>*</span></label>
                                         <input type="text" name="director_ip" className="form-control" placeholder="Enter Director IP" onChange={this.handleChange.bind(this, "director_ip")} />
                                         <span style={{ color: "red" }}>{this.state.errors.director_ip}</span>
                                     </div>
                                 </div>
                                 <div className="col-6 col-lg-4">
                                     <div className="form-group">
-                                        <label className="form-label">Controller IP</label>
+                                        <label className="form-label">Controller IP<span style={{ color: "red" }}>*</span></label>
                                         <input type="text" name="controller_ip" className="form-control" placeholder="Enter Controller IP" onChange={this.handleChange.bind(this, "controller_ip")} />
                                         <span style={{ color: "red" }}>{this.state.errors.controller_ip}</span>
                                     </div>
@@ -760,7 +739,7 @@ class Deployment extends React.Component {
                         </div>
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
-                                <label className="form-label">Upload file</label>
+                                <label className="form-label">Upload file<span style={{ color: "red" }}>*</span></label>
                                 <div className="myw-upload-browse d-flex align-items-center">
                                     <label className="btn btn-secondary">
                                         <span>Browse</span>

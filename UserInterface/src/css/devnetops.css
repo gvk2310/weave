@@ -355,5 +355,7 @@
   a.back_button:hover {
   text-decoration: underline;
   cursor:pointer;
+}  
+.repository_type {
+  width: 125px;
 }
-  

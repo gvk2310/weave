@@ -121,7 +121,7 @@ class User extends React.Component {
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
         myHeaders.append('GET', 'POST', 'OPTIONS');
 
-        const requestOptions = { 
+        const requestOptions = {
             method: 'GET',
             headers: myHeaders,
         };
@@ -188,7 +188,7 @@ class User extends React.Component {
         console.log(process.env);
         const addUserForm = document.getElementById('addUserForm');
         const formData = new FormData(addUserForm);
-        const raw = JSON.stringify({ "email": formData.get('email'), "name": formData.get('name'),"project": formData.getAll('project')[0], "roles": formData.getAll('role')[0] });
+        const raw = JSON.stringify({ "email": formData.get('email'), "name": formData.get('name'), "project": formData.getAll('project')[0], "roles": formData.getAll('role')[0] });
         console.log(formData);
         console.log(raw);
         /* Add Service */
@@ -417,7 +417,7 @@ class User extends React.Component {
             <br />
             <label className="w-25 px-3" htmlFor="email">Name<span style={{ color: "red" }}>*</span></label>
             <input type="text" name="name"
-                id="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} minLength="4" maxLength="24" />
+                id="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} maxLength="24" />
             <span style={{ color: "red" }}>{this.state.errors.name}</span>
 
             <br />

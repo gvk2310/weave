@@ -491,7 +491,7 @@ class Repository extends React.Component {
         const addRepositoryModal = <form className="modalbody" id='addRepositoryForm'>
             <div>
                 <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
-                <input type="text" name="repo_name" onChange={this.handleChange.bind(this, "repo_name")} className="form-control" placeholder="Enter Name" minLength="4" maxLength="24" />
+                <input type="text" name="repo_name" onChange={this.handleChange.bind(this, "repo_name")} className="form-control" placeholder="Enter Name" maxLength="24" />
                 <span style={{ color: "red" }}>{this.state.errors.repo_name}</span>
                 <br />
                 <label className="form-label">Repository Type<span style={{ color: "red" }}>*</span></label>
@@ -507,7 +507,7 @@ class Repository extends React.Component {
                 <span style={{ color: "red" }}>{this.state.errors.repo_url}</span>
                 <br />
                 <label className="form-label">Username<span style={{ color: "red" }}>*</span></label>
-                <input type="text" name="repo_username" className="form-control" placeholder="Enter Username" onChange={this.handleChange.bind(this, "repo_username")} minLength="4" maxLength="24" />
+                <input type="text" name="repo_username" className="form-control" placeholder="Enter Username" onChange={this.handleChange.bind(this, "repo_username")} maxLength="24" />
                 <span style={{ color: "red" }}>{this.state.errors.repo_username}</span>
                 <br />
                 <label className="form-label">Password<span style={{ color: "red" }}>*</span></label>
@@ -534,7 +534,7 @@ class Repository extends React.Component {
                 <span style={{ color: "red" }}>{this.state.editErrors.edit_repo_url}</span>
                 <br />
                 <label className="form-label">Username<span style={{ color: "red" }}>*</span></label>
-                <input type="text" name="edit_repo_username" className="form-control" placeholder="Enter Username" onChange={this.handleChangeEdit.bind(this, "edit_repo_username")} minLength="4" maxLength="24" />
+                <input type="text" name="edit_repo_username" className="form-control" placeholder="Enter Username" onChange={this.handleChangeEdit.bind(this, "edit_repo_username")} maxLength="24" />
                 <span style={{ color: "red" }}>{this.state.editErrors.edit_repo_username}</span>
                 <br />
                 <label className="form-label">Password<span style={{ color: "red" }}>*</span></label>
@@ -568,7 +568,7 @@ class Repository extends React.Component {
                                     <thead>
                                         <tr>
                                             <th scope="col">Name</th>
-                                            <th scope="col">Repository Type</th>
+                                            <th scope="col" className="repository_type">Repository Type</th>
                                             <th scope="col">URL</th>
                                             <th scope="col">Associated Assets</th>
                                             <th scope="col" className="text-center">Action</th>
