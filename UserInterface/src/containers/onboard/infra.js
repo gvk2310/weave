@@ -409,34 +409,34 @@ class Infra extends React.Component {
                 errors["secret_key"] = "Cannot be empty";
             }
         }
-        if (fields["cloud_type"] == 'Openstack') {
-            // RcFile
-            if (!fields["RcFile"]) {
-                formIsValid = false;
-                errors["RcFile"] = "Cannot be empty";
-            }
-            // URL
-            if (!fields["orchestrator_url"]) {
-                let regexp = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
-                if (fields["orchestrator_url"]) {
-                    var formElements = document.forms['addInfraForm'].elements['orchestrator_url'].value;
-                    if (!regexp.test(formElements)) {
-                        formIsValid = false;
-                        errors["orchestrator_url"] = "Not a valid URL";
-                    }
-                }
-            }
-            // orchestrator_username
-            if (!fields["orchestrator_username"]) {
-                formIsValid = false;
-                errors["orchestrator_username"] = "Cannot be empty";
-            }
-            // orchestrator_password
-            if (!fields["orchestrator_password"]) {
-                formIsValid = false;
-                errors["orchestrator_password"] = "Cannot be empty";
-            }
-        }
+        // if (fields["cloud_type"] == 'Openstack') {
+        //     // RcFile
+        //     if (!fields["RcFile"]) {
+        //         formIsValid = false;
+        //         errors["RcFile"] = "Cannot be empty";
+        //     }
+        //     // URL
+        //     if (!fields["orchestrator_url"]) {
+        //         let regexp = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
+        //         if (fields["orchestrator_url"]) {
+        //             var formElements = document.forms['addInfraForm'].elements['orchestrator_url'].value;
+        //             if (!regexp.test(formElements)) {
+        //                 formIsValid = false;
+        //                 errors["orchestrator_url"] = "Not a valid URL";
+        //             }
+        //         }
+        //     }
+        //     // orchestrator_username
+        //     if (!fields["orchestrator_username"]) {
+        //         formIsValid = false;
+        //         errors["orchestrator_username"] = "Cannot be empty";
+        //     }
+        //     // orchestrator_password
+        //     if (!fields["orchestrator_password"]) {
+        //         formIsValid = false;
+        //         errors["orchestrator_password"] = "Cannot be empty";
+        //     }
+        // }
 
         this.setState({ errors: errors });
         return formIsValid;
@@ -603,7 +603,7 @@ class Infra extends React.Component {
         let addInfraModal = <form className="modalbody" id='addInfraForm' onSubmit={this.contactSubmit.bind(this)}>
             <div>
                 <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
-                <input type="text" className="form-control" name="infra_name" onChange={this.handleChange.bind(this, "infra_name")} placeholder="Enter Name" minLength="4" maxLength="24" />
+                <input type="text" className="form-control" name="infra_name" onChange={this.handleChange.bind(this, "infra_name")} placeholder="Enter Name" maxLength="24" />
                 <span style={{ color: "red" }}>{this.state.errors["infra_name"]}</span>
                 <br />
 
@@ -611,7 +611,7 @@ class Infra extends React.Component {
                 <select ref="cloudType" name="cloud_type" onChange={this.handleChange.bind(this, "cloud_type")} className="form-control">
                     <option selected>Select Cloud</option>
                     <option>AWS</option>
-                    <option>Openstack</option>
+                    {/* <option>Openstack</option> */}
                 </select>
                 <span style={{ color: "red" }}>{this.state.errors["cloud_type"]}</span>
                 <br />
@@ -663,7 +663,7 @@ class Infra extends React.Component {
                         <br />
                     </>
                 }
-                {this.state.conditionCloud == 'Openstack' &&
+                {/* {this.state.conditionCloud == 'Openstack' &&
                     <><label className="w-25 px-3" htmlFor="email">Orchestrator :<span style={{ color: "red" }}>*</span></label>
                         <select ref="orchestrator" name="orchestrator" onChange={this.handleChange.bind(this, "orchestrator")} className="input-group-text my-2 w-50">
                             <option selected disabled>Select Orchestrator</option>
@@ -671,7 +671,7 @@ class Infra extends React.Component {
                             <option>Cloudify</option>
                         </select>
                         <span style={{ color: "red" }}>{this.state.errors["orchestrator"]}</span>
-                        <br /> </>}
+                        <br /> </>} */}
 
             </div>
         </form>;
@@ -681,7 +681,7 @@ class Infra extends React.Component {
         let updateInfraModal = <form className="modalbody" id='updateInfraForm'>
             <div>
                 <label className="form-label" htmlFor="email">Name<span style={{ color: "red" }}>*</span></label>
-                <input type="text" className="form-control" name="edit_infra_name" value={this.state.edit_infra_name} onChange={this.handleChangeEdit.bind(this, "edit_infra_name")} minLength="4" maxLength="24" readOnly />
+                <input type="text" className="form-control" name="edit_infra_name" value={this.state.edit_infra_name} onChange={this.handleChangeEdit.bind(this, "edit_infra_name")} maxLength="24" readOnly />
                 <br />
                 <label className="form-label" htmlFor="email">Cloud <span style={{ color: "red" }}>*</span></label>
                 <select name="edit_infra_cloud_type" value={this.state.edit_infra_cloud_type} className="form-control" disabled>
@@ -698,7 +698,7 @@ class Infra extends React.Component {
                         <span style={{ color: "red" }}>{this.state.editErrors["edit_infra_secret_key"]}</span>
                         <br /></>
                 }
-                {this.state.conditionCloud1 == 'Openstack' &&
+                {/* {this.state.conditionCloud1 == 'Openstack' &&
                     <><label className="w-25 px-3" htmlFor="email">Rcfile </label>
                         <input type="text" className="form-control" multiline
                             name="RcFile" rows="4"
@@ -707,7 +707,7 @@ class Infra extends React.Component {
                         <span style={{ color: "red" }}>{this.state.errors["RcFile"]}</span>
                         <br />
                     </>
-                }
+                } */}
                 <label className="form-label" htmlFor="email">Environment <span style={{ color: "red" }}>*</span></label>
                 <select name="edit_infra_environment" value={this.state.edit_infra_environment} className="form-control" onChange={this.handleChangeEdit.bind(this, "edit_infra_environment")}>
                     <option disabled>Select Environment</option>
@@ -727,7 +727,7 @@ class Infra extends React.Component {
                         <br />
                     </>
                 }
-                {this.state.conditionCloud1 == 'Openstack' &&
+                {/* {this.state.conditionCloud1 == 'Openstack' &&
                     <><label className="form-label" htmlFor="email">Orchestrator<span style={{ color: "red" }}>*</span> </label>
                         <select name="edit_infra_orchestrator" className="form-control">
                             <option selected disabled>Select Orchestrator</option>
@@ -735,16 +735,16 @@ class Infra extends React.Component {
                             <option>Cloudify</option>
                         </select>
 
-                        <br /> </>}
+                        <br /> </>} */}
 
-                {((this.state.conditionOrchestrator1 == 'OSM' || this.state.conditionOrchestrator == 'Cloudify') && this.state.conditionCloud == 'Openstack') &&
+                {/* {((this.state.conditionOrchestrator1 == 'OSM' || this.state.conditionOrchestrator == 'Cloudify') && this.state.conditionCloud == 'Openstack') &&
                     <><label className="w-25 px-3" htmlFor="email">Url :</label>
                         <input type="text" className="form-control" name="orchestrator_url" onChange={this.handleChangeEdit.bind(this, "orchestrator_url")} />
 
                         <span style={{ color: "red" }}>{this.state.errors["orchestrator_url"]}</span>
                         <br />
                         <label className="w-25 px-3" htmlFor="email">User Name :</label>
-                        <input type="text" className="form-control" name="orchestrator_username" onChange={this.handleChangeEdit.bind(this, "orchestrator_username")}  minLength="4" maxLength="24" />
+                        <input type="text" className="form-control" name="orchestrator_username" onChange={this.handleChangeEdit.bind(this, "orchestrator_username")} maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.errors["orchestrator_username"]}</span>
                         <br />
                         <label className="w-25 px-3" htmlFor="email">Password :</label>
@@ -752,7 +752,7 @@ class Infra extends React.Component {
 
                         <span style={{ color: "red" }}>{this.state.errors["orchestrator_password"]}</span>
                         <br /> </>
-                }
+                } */}
 
             </div>
         </form>;

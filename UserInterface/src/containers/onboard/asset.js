@@ -706,14 +706,14 @@ class Asset extends React.Component {
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "asset_name")} minLength="4" maxLength="24" />
+                        <input type="text" name="asset_name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "asset_name")} maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.errors.asset_name}</span>
                     </div>
                 </div>
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Asset Group<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_group" className="form-control" placeholder="Enter Asset Group" onChange={this.handleChange.bind(this, "asset_group")} minLength="20" maxLength="120" />
+                        <input type="text" name="asset_group" className="form-control" placeholder="Enter Asset Group" onChange={this.handleChange.bind(this, "asset_group")} maxLength="120" />
                         <span style={{ color: "red" }}>{this.state.errors.asset_group}</span>
                     </div>
                 </div>
@@ -732,7 +732,7 @@ class Asset extends React.Component {
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Vendor<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_vendor" className="form-control" placeholder="Enter Vendor" onChange={this.handleChange.bind(this, "asset_vendor")} minLength="4" maxLength="24" />
+                        <input type="text" name="asset_vendor" className="form-control" placeholder="Enter Vendor" onChange={this.handleChange.bind(this, "asset_vendor")} maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.errors.asset_vendor}</span>
                     </div>
                 </div>
@@ -787,14 +787,14 @@ class Asset extends React.Component {
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_name" value={this.state.asset_name} className="form-control" placeholder="Enter Name" minLength="4" maxLength="24" readOnly/>
+                        <input type="text" name="asset_name" value={this.state.asset_name} className="form-control" placeholder="Enter Name" maxLength="24" readOnly/>
                         <br />
                     </div>
                 </div>
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Asset Group<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_group" className="form-control" value={this.state.asset_group} placeholder="Enter Asset Group" onChange={this.handleChangeEdit.bind(this, "asset_group")} minLength="20" maxLength="120" />
+                        <input type="text" name="asset_group" className="form-control" value={this.state.asset_group} placeholder="Enter Asset Group" onChange={this.handleChangeEdit.bind(this, "asset_group")} maxLength="120" />
                         <span style={{ color: "red" }}>{this.state.editErrors.asset_group}</span>
                         <br />
 
@@ -811,7 +811,7 @@ class Asset extends React.Component {
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Vendor<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_vendor" value={this.state.asset_vendor} className="form-control" placeholder="Enter Vendor" onChange={this.handleChangeEdit.bind(this, "asset_vendor")} minLength="4" maxLength="24" />
+                        <input type="text" name="asset_vendor" value={this.state.asset_vendor} className="form-control" placeholder="Enter Vendor" onChange={this.handleChangeEdit.bind(this, "asset_vendor")} maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.editErrors.asset_vendor}</span>
                     </div>
                 </div>
@@ -864,7 +864,7 @@ class Asset extends React.Component {
                                             <th scope="col">Repository</th>
                                             <th scope="col">Size</th>
                                             <th scope="col">Version</th>
-                                            <th scope="col" className="text-center">Security</th>
+                                            <th scope="col" className="text-center">Security Scan</th>
                                             <th scope="col">Status</th>
                                             <th scope="col" className="text-center">Action</th>
                                         </tr>
