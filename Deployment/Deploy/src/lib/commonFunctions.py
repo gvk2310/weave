@@ -10,6 +10,7 @@ from ..log import logger
 from functools import wraps
 from flask_restful import request
 from werkzeug.datastructures import FileStorage
+from urllib3.exceptions import InsecureRequestWarning
 
 jenkins_url = os.environ['jenkins_url']
 jenkins_username = os.environ['jenkins_username']
@@ -90,7 +91,9 @@ def assetDownloadDetails(assets):
 #        token = request.headers['Authorization'].split()[-1]
 #        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}",
 #                            headers={f'Authorization': f'Bearer {token}'})
-        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}")
+		requests.packages.urllib3.disable_warnings(
+                                                category=InsecureRequestWarning)
+        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}",verify=False)
         if data.status_code == 200:
             return data.json()
         logger.error("Failed to retrieve asset download detail")
