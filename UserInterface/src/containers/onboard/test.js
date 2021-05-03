@@ -23,7 +23,8 @@ class Test extends React.Component {
             checkpoint: false,
             fields: {},
             errors: {},
-            isError: false
+            isError: false,
+            lableChange: 'Upload to'
         };
     }
 
@@ -312,8 +313,14 @@ class Test extends React.Component {
     }
 
     handleRadio = (event) => {
-        console.log(event.target.value);
+        console.log('value:'+event.target.value);
         this.setState({ radioVal: event.target.value });
+        if (event.target.value == 1) {
+            this.setState({ lableChange: 'Upload to' })
+        }
+        else {
+            this.setState({ lableChange: 'Upload from' })
+        }
     }
 
     handleScriptType = (event) => {
@@ -567,7 +574,7 @@ class Test extends React.Component {
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Upload from<span style={{ color: "red" }}>*</span></label>
+                        <label className="form-label">{this.state.lableChange}<span style={{ color: "red" }}>*</span></label>
                         <select name="test_repository" className="form-control" onChange={this.handleChange.bind(this, "test_repository")}>
                             <option>Select</option>
                             {this.state.repo.length > 0 && this.state.repo.map((item, key) => {
