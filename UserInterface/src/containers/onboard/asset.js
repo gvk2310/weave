@@ -45,12 +45,13 @@ class Asset extends React.Component {
             sizeList: [],
             versionList: [],
             editFields: {},
-            editErrors:{},
+            editErrors: {},
             securityList: [],
             fileStatus: 'No file chosen',
-            asset_id:'',
+            asset_id: '',
             checkpoint: false,
             isError: false,
+            lableChange: 'Upload to'
 
         };
         this.handleRepoType = this.handleRepoType.bind(this);
@@ -226,10 +227,10 @@ class Asset extends React.Component {
                 if (response.status == 200) {
                     this.setState({ listening: true });
                     this.setState({ isError: false, checkpoint: true });
-                   
+
                 } else {
-                   // this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
-                   this.setState({ isError: true, checkpoint: true });
+                    // this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                    this.setState({ isError: true, checkpoint: true });
                 }
                 // console.log(response.json())
                 return response.json();
@@ -240,18 +241,18 @@ class Asset extends React.Component {
                 if (typeof (result) === 'object') {
                     const jsonData = JSON.parse(raw);
                     this.setState({ status: 'Asset Onboarded Successfully' });
-                    this.setState({asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });
+                    this.setState({ asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });
                     this.handleSSE(this.state.asset);
                     console.log(JSON.parse(result).msg);
                 }
                 else { this.setState({ status: JSON.parse(result).message }); }
                 //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
-                setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 console.log('error' + error);
                 //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
-                setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
         document.getElementById("addAssetForm").reset();
         this.setState({ fileStatus: 'No file chosen' });
@@ -298,8 +299,8 @@ class Asset extends React.Component {
                     // this.setState({ msgClass: 'successMessage', asset: [...this.state.asset, JSON.parse(raw)] });
                 }
                 else {
-                   // this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
-                   this.setState({ isError: true, checkpoint: true });
+                    // this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                    this.setState({ isError: true, checkpoint: true });
                 }
                 return response.json();
             })
@@ -346,8 +347,8 @@ class Asset extends React.Component {
                 console.log(response.status, response.statusText);
                 if (response.status == 200) {
                     this.state.asset.splice(this.state.delAssetWithIndex, 1);
-                   // this.setState({ msgClass: 'successMessage', checkpoint: true });
-                   this.setState({ isError: false, checkpoint: true })
+                    // this.setState({ msgClass: 'successMessage', checkpoint: true });
+                    this.setState({ isError: false, checkpoint: true })
                 }
                 else {
                     //this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' , checkpoint: true});
@@ -359,16 +360,16 @@ class Asset extends React.Component {
 
                 console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
-               // setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
-               setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
+                // setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
 
                 console.log('error', error);
                 this.setState({ disabledBtn: false });
                 document.querySelector('#myDeleteConfirmationModal .close').click();
-               // setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
-               setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
+                // setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
     }
 
@@ -394,7 +395,7 @@ class Asset extends React.Component {
         return hash;
     }
 
-    handleEditAsset = (assetName, assetId, assetType, assetGroup, assetVersion,assetVendor) => {
+    handleEditAsset = (assetName, assetId, assetType, assetGroup, assetVersion, assetVendor) => {
         this.handleShowModal('editassetModal');
         this.setState({
             asset_name: assetName,
@@ -545,7 +546,7 @@ class Asset extends React.Component {
     }
 
     handleValidationEdit = () => {
-        let editFields={
+        let editFields = {
             asset_group: this.state.editFields.asset_group ? this.state.editFields.asset_group : this.state.asset_group,
             asset_vendor: this.state.editFields.asset_vendor ? this.state.editFields.asset_vendor : this.state.asset_vendor,
             asset_version: this.state.editFields.asset_version ? this.state.editFields.asset_version : this.state.asset_version
@@ -554,7 +555,7 @@ class Asset extends React.Component {
         let formIsValid = true;
         console.log('editFields inside Validation', editFields);
 
-                // Asset Group name
+        // Asset Group name
         if (!editFields.asset_group) {
             formIsValid = false;
             editErrors.asset_group = "Cannot be empty";
@@ -616,8 +617,15 @@ class Asset extends React.Component {
     }
 
     handleRadio = (event) => {
-        console.log(event.target.value);
+        console.log('value:' + event.target.value);
         this.setState({ radioVal: event.target.value });
+        if (event.target.value == 1) {
+            this.setState({ lableChange: 'Upload to' })
+        }
+        else {
+            this.setState({ lableChange: 'Upload from' })
+        }
+
     }
 
     handleFileUpload = () => {
@@ -694,7 +702,7 @@ class Asset extends React.Component {
                 <div className="col-12 dev-templates">
                     <div className="form-group">
                         <label className="myw-checkbox myw-radio myw-inline">
-                            <input type="radio" name="dev-asset-rd" value="1" onClick={(e) => this.handleRadio(e)} defaultChecked/>
+                            <input type="radio" name="dev-asset-rd" value="1" onClick={(e) => this.handleRadio(e)} defaultChecked />
                             <span>New</span>
                         </label>
                         <label className="myw-checkbox myw-radio myw-inline">
@@ -738,10 +746,9 @@ class Asset extends React.Component {
                 </div>
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Upload to<span style={{ color: "red" }}>*</span></label>
-
+                        <label className="form-label">{this.state.lableChange}<span style={{ color: "red" }}>*</span></label>
                         <select name="asset_repository" className="form-control" onChange={this.handleChange.bind(this, "asset_repository")}>
-                            <option>Select</option>
+                            <option selected>Select Repository</option>
                             {this.state.repo.length > 0 && this.state.repo.map(item => {
                                 return (<option key={item} directory={item.repo_name} data-type={item.repo_type}>{item.repo_name}</option>);
                             })}
@@ -759,6 +766,7 @@ class Asset extends React.Component {
                 </div>
 
                 {this.state.radioVal == 1 && <div className={`col-6 devnet-upload ${this.state.radioVal == '1' ? "" : "d-none"}`}>
+
                     <div className="form-group">
                         <label className="form-label">Upload file<span style={{ color: "red" }}>*</span></label>
                         <div className="myw-upload-browse d-flex align-items-center">
@@ -787,7 +795,7 @@ class Asset extends React.Component {
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_name" value={this.state.asset_name} className="form-control" placeholder="Enter Name" maxLength="24" readOnly/>
+                        <input type="text" name="asset_name" value={this.state.asset_name} className="form-control" placeholder="Enter Name" maxLength="24" readOnly />
                         <br />
                     </div>
                 </div>
@@ -847,12 +855,12 @@ class Asset extends React.Component {
                             </div>
                         </div>
                         <div className="dev-section my-4">
-                        <div style={this.state.checkpoint ? showModalStyle : hideModalStyle}>
-                            {this.state.checkpoint && <div className={`alert myw-toast myw-alert alert-dismissible show ${this.state.isError ? 'alert-failed':'alert-success'}`} role="alert" >
-                                <div>{this.state.status}</div>
-                                <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => { this.handleShowModal('checkpoint') }}></button>
-                            </div>}
-                        </div>
+                            <div style={this.state.checkpoint ? showModalStyle : hideModalStyle}>
+                                {this.state.checkpoint && <div className={`alert myw-toast myw-alert alert-dismissible show ${this.state.isError ? 'alert-failed' : 'alert-success'}`} role="alert" >
+                                    <div>{this.state.status}</div>
+                                    <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => { this.handleShowModal('checkpoint') }}></button>
+                                </div>}
+                            </div>
                             <div className="table-responsive">
                                 <table className="table table-striped dev-anlytics-table">
                                     <thead>
@@ -949,6 +957,6 @@ class Asset extends React.Component {
             </>
         );
     }
-    }
+}
 
 export default Asset;
