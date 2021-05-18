@@ -418,11 +418,15 @@ class Repository extends React.Component {
         }
         // invalid name
         if (typeof fields.repo_name !== "undefined") {
-            if (!fields.repo_name.match(/^[A-Za-z0-9_-]/)) {
+            if (!fields.repo_name.match(/^[A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
-                errors.repo_name = "Only letters";
+                errors.repo_name = "Invalid Input";
             }
-        }
+            if(fields.repo_name.length < 4 ){
+                formIsValid = false;
+                errors.repo_name = "Minimum Length is 4";}
+        
+            }
         // Vendor
         if (!fields.repo_vendor) {
             formIsValid = false;
@@ -478,7 +482,7 @@ class Repository extends React.Component {
                     <td class="text-center repo_alignment">
                         <div class="dev-actions">
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#myUpdateRepositoryModal" onClick={() => this.handleEditRepository(value.repo_name, value.repo_vendor, value.repo_url)}><img src={require("images/edit.svg")} alt="Edit" /></a>
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#myDeleteConfirmationModal" onClick={() => this.handleDeleteBeforeConfirmation(value.repo_name)} ><img src={require("images/delete-icon.svg")} alt="Delete" /></a>
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#myDeleteConfirmationModal" onClick={() => this.handleDeleteBeforeConfirmation(value.repo_name)} ><img src={require("images/delete.svg")} alt="Delete" /></a>
                         </div>
                     </td>
                 </tr>;
@@ -593,7 +597,7 @@ class Repository extends React.Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="editrepositoryModaltitle">Edit Repository</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('editrepositoryModal') }}>
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true">&nbsp;</span>
                                 </button>
                             </div>
                             <div className="modal-body">
@@ -615,7 +619,7 @@ class Repository extends React.Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="addrepositoryModaltitle">Add Repository</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('addrepositoryModal') }}>
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true">&nbsp;</span>
                                 </button>
                             </div>
                             <div className="modal-body">
@@ -637,11 +641,11 @@ class Repository extends React.Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="deleterepositoryModaltitle">Delete Repository</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('deleterepositoryModal') }}>
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true">&nbsp;</span>
                                 </button>
                             </div>
                             <div className="modal-body">
-                                are you sure?
+                             Do you want to delete Repository?
                                 </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('deleterepositoryModal') }}>Cancel</button>

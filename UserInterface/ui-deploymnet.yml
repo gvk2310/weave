@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devnetops-debug
+  labels:
+    app: devnetops-debug
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devnetops-debug
+  template:
+    metadata:
+      labels:
+        app: devnetops-debug
+    spec:
+      containers:
+        - name: devnetops-debug
+          image: devnetops.azurecr.io/devnetops-frontend:devnetops_2804k2
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: 100m
+              memory: 500Mi
+            limits:
+              cpu: 2500m
+              memory: 2500Mi
+          ports:
+            - containerPort: 15006
+              protocol: TCP
+          env:
+            - name: REACT_APP_PLATFORM_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: REACT_APP_PLATFORM_URL
+                  name: cloveplatformui-env
+            - name: MYWD_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: MYWD_KEY
+                  name: cloveplatformui-env
+            - name: MYWD_IV
+              valueFrom:
+                configMapKeyRef:
+                  key: MYWD_IV
+                  name: cloveplatformui-env
+
+      imagePullSecrets:
+       - name: devnetops

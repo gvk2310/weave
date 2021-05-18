@@ -18,14 +18,6 @@ class Status extends React.Component{
                     <div className="d-flex align-items-center">
                         <div className="dev-page-title">Ecosystem Status</div>
                         <div className="ml-auto dev-actions">
-                            {/* <button type="button" class="btn">
-                                    <img src={require("images/search.svg")} alt="Search"/>
-                                    <span>Search</span>
-                                </button>
-                                <button type="button" class="btn">
-                                    <img src={require("images/filter.svg")} alt="Filter"/>
-                                    <span>Filter</span>
-                                </button> */}
                             <button type="button" className="btn btn-secondary"><img src={require("images/add.svg")} alt="Add"/> <span>Add</span></button>
                         </div>
                     </div>

@@ -15,7 +15,7 @@ class Deployment extends React.Component {
             delDeploy: '',
             searchResult: '',
             disabledBtn: false,
-            environment: ['dev', 'test', 'production', 'stage', 'demo'],
+            // environment: ['dev', 'test', 'production', 'stage', 'demo'],
             changeOrchestrator: '',
             changeCloudType: '',
             VNFList: [],
@@ -42,22 +42,25 @@ class Deployment extends React.Component {
             fileStatus: 'No file chosen',
             delDeployWithIndex: '',
             forceDelete: '',
+            checkpoint: false,
+            status: '',
+            isError: false,
+            environment: '',
+            orchestrator: ''
+
         };
         this.selectedId = '';
-    }
-
-    handleMywStatus = (modalId) => {
-
     }
 
     getSpreadsheet = () => {
         console.log('inside get spreadsheet');
         let API_URL = '###REACT_APP_PLATFORM_URL###/deploy' + "/" + 'config';
-        console.log(this.refs.depOrchestrator.value);
-        console.log(this.refs.changeCloudType.value);
-        console.log(this.refs.assets.value);
-        if (this.refs.depOrchestrator && this.refs.changeCloudType && this.refs.assets) {
-            API_URL += "/" + this.refs.depOrchestrator.value + "/" + this.refs.changeCloudType.value + "/" + this.refs.assets.value.split("=").pop();
+        // console.log(this.refs.depOrchestrator.value);
+        console.log(this.refs.changeCloudType.value, 'type');
+        console.log(this.refs.assets.value, 'assets');
+        console.log(this.state.orchestrator, 'orchestrator');
+        if (this.state.orchestrator && this.refs.changeCloudType && this.refs.assets) {
+            API_URL += "/" + this.state.orchestrator + "/" + this.refs.changeCloudType.value + "/" + this.refs.assets.value.split("=").pop();
             console.log(API_URL);
 
             const myHeaders = new Headers();
@@ -69,7 +72,12 @@ class Deployment extends React.Component {
                 .then((response) => {
                     console.log(response);
                     console.log(response.status);
-                    (response.status == 200) ? this.setState({ msgClass: '' }) : alert(response.status + '  ' + response.statusText);
+                    if (response.status == 200) {
+                        this.setState({ isError: false, checkpoint: true });
+                    } else {
+                        this.setState({ isError: true, checkpoint: true });
+                        this.setState({ status: 'Download Failed' });
+                    }
                     return response.blob();
                 })
                 .then(result => {
@@ -78,26 +86,30 @@ class Deployment extends React.Component {
                     a.href = URL.createObjectURL(result);
                     a.setAttribute("download", 'Config');
                     a.click();
+                    this.setState({ status: 'Downloaded Successfully' });
+                    setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
                 })
                 .catch(error => {
                     console.log('error', error);
+                    setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
                 });
         }
         else {
-            alert('You have not made correct selection');
+            this.setState({ status: 'You have not made correct selection' ,isError: true, checkpoint: true});
+            setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
         }
     }
 
     componentDidMount = () => {
-
-        // require('dotenv').config();    
+        // require('dotenv').config(); 
+        this.getNewDeploymentDetails();
         const API_URL = process.env.REACT_APP_DEPLOYMENT;
         const API_URL1 = process.env.REACT_APP_ASSETONBOARDING;
         console.log(process.env);
-        const token = sessionStorage.getItem('tokenStorage');
+        // const token = sessionStorage.getItem('tokenStorage');
 
         const myHeaders = new Headers();
-        //        myHeaders.append("Authorization", `Bearer ${token}`);
+        //myHeaders.append("Authorization", `Bearer ${token}`);
         myHeaders.append('Access-Control-Allow-Origin', '*');
         myHeaders.append('GET', 'POST', 'OPTIONS');
 
@@ -105,35 +117,14 @@ class Deployment extends React.Component {
             method: 'GET',
             headers: myHeaders,
         };
-        fetch("###REACT_APP_PLATFORM_URL###/deploy/", requestOptions)
-            .then(response => {
-                console.log(response);
-                if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
-                return response.json();
-            })
-            .then((findresponse) => {
 
-                if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
-                } else {
-                    this.setState({ deploy: findresponse });
-                    console.log(this.state.deploy);
-                }
-            })
-            .catch(error => {
-
-                console.log('error', error);
-            });
         //Fetch Assets
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/asset`, requestOptions)
             .then(response => {
                 console.log(response);
-                //   if(response.status != 200){this.setState({response: (response.status + "  " + response.statusText)});};
                 return response.json();
             })
             .then((findresponse) => {
-                // console.log("asset",this.state.asset)
-
                 if (findresponse.msg) {
                     console.log(findresponse.msg);
                 } else {
@@ -142,7 +133,6 @@ class Deployment extends React.Component {
                 }
             })
             .catch(error => {
-
                 console.log('error', error);
             });
 
@@ -150,12 +140,9 @@ class Deployment extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then(response => {
                 console.log(response);
-                //   if(response.status != 200){this.setState({response: (response.status + "  " + response.statusText)});};
                 return response.json();
             })
             .then((findresponse) => {
-                // console.log("asset",this.state.asset)
-
                 if (findresponse.msg) {
                     console.log(findresponse.msg);
                 } else {
@@ -164,22 +151,8 @@ class Deployment extends React.Component {
                 }
             })
             .catch(error => {
-
                 console.log('error', error);
             });
-
-        //SSE
-        const es = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/deploy");
-        es.onopen = function (event) {
-            console.log('open message');
-        };
-        es.addEventListener("deploy", e => {
-            console.log('inside event listner');
-            console.log(e.data);
-            console.log(JSON.parse(e.data).message);
-            this.updateDeploymentArray(JSON.parse(e.data));
-
-        });
     }
 
     getNewDeploymentDetails = () => {
@@ -187,10 +160,10 @@ class Deployment extends React.Component {
         const API_URL = process.env.REACT_APP_DEPLOYMENT;
         const API_URL1 = process.env.REACT_APP_ASSETONBOARDING;
         console.log(process.env);
-        const token = sessionStorage.getItem('tokenStorage');
+        // const token = sessionStorage.getItem('tokenStorage');
 
         const myHeaders = new Headers();
-        myHeaders.append("Authorization", `Bearer ${token}`);
+        // myHeaders.append("Authorization", `Bearer ${token}`);
         myHeaders.append('Access-Control-Allow-Origin', '*');
         myHeaders.append('GET', 'POST', 'OPTIONS');
 
@@ -201,11 +174,9 @@ class Deployment extends React.Component {
         fetch("###REACT_APP_PLATFORM_URL###/deploy/", requestOptions)
             .then(response => {
                 console.log(response);
-                // if(response.status != 200){this.setState({response: (response.status + "  " + response.statusText)})};
                 return response.json();
             })
             .then((findresponse) => {
-
                 if (findresponse.msg) {
                     this.setState({ response: findresponse.msg });
                 } else {
@@ -214,76 +185,38 @@ class Deployment extends React.Component {
                 }
             })
             .catch(error => {
-
                 console.log('error', error);
             });
     }
 
     updateDeploymentArray = (data) => {
         console.log(data, 'testing');
+        console.log(this.state.deploy);
         if (this.state.deploy) {
             this.state.deploy.map((value, index) => {
-                if (value.id == data.deployment_id) {
+                if (value.id === data.id) {
                     console.log('Value Matched');
                     this.state.deploy[index].status = data.status;
                     this.state.deploy[index].stage_info = data.stage_info;
+                    console.log( this.state.deploy[index],'matched record')
                 }
             });
-            console.log(this.state.deploy);
             this.setState({ deploy: this.state.deploy });
-            if (this.selectedId == data.deployment_id) { this.setState({ currentDep: data }); }
+            if (this.selectedId === data.id) { this.setState({ currentDep: data }); }
         }
     }
 
     handleGetDeploySSE = () => {
-        //SSE
-        const es = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/deploy");
+        let es = {};
+        es = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/deploy");
         es.onopen = function (event) {
             console.log('open message');
         };
         es.addEventListener("deploy", e => {
             console.log('inside event listner');
             console.log(e.data);
-            console.log(JSON.parse(e.data).message);
             this.updateDeploymentArray(JSON.parse(e.data));
-
         });
-    }
-
-    handleGetDeploy = () => {
-
-        console.log(process.env);
-
-        const myHeaders = new Headers();
-        myHeaders.append('Access-Control-Allow-Origin', '*');
-        myHeaders.append('GET', 'POST', 'OPTIONS');
-
-        const requestOptions = {
-            method: 'GET',
-            headers: myHeaders,
-        };
-        fetch("###REACT_APP_PLATFORM_URL###/deploy/", requestOptions)
-            .then(response => {
-                console.log(response);
-                if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
-                return response.json();
-            })
-            .then((findresponse) => {
-
-                if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
-                } else {
-                    this.setState({ deploy: findresponse });
-                    console.log(this.state.deploy);
-                }
-            })
-            .catch(error => {
-
-                console.log('error', error);
-            });
-
-
-
     }
 
     handleAddDeploy = () => {
@@ -317,26 +250,28 @@ class Deployment extends React.Component {
             .then((response) => {
                 console.log(response);
                 console.log(response.status);
-                //   (response.status == 200) ? this.setState({msgClass:'successMessage',asset: [...this.state.asset, JSON.parse(raw)]}) : alert(response.status + '  ' +response.statusText);
-                (response.status == 200) ? this.handleGetDeploy() : alert(response.status + '  ' + response.statusText);
-                this.displayDeploymentStages();
+                if (response.status == 200) {
+                    this.getNewDeploymentDetails();
+                    this.setState({ isError: false, checkpoint: true });
+                } else {
+                    this.setState({ isError: true, checkpoint: true });
+                }
                 return response.json();
             })
             .then(result => {
-
                 console.log(result);
                 console.log(typeof (result));
-                if (typeof (result) == 'object') {
-                    //   alert(result.msg);
+                if(result.msg){
+                    this.setState({ status: result.msg });
+                } else{
+                    this.setState({ status: 'Deployment Successfully done' });
                 }
-                else {
-                    this.setState({ status: JSON.parse(result).message });
-                    setTimeout(() => { this.setState({ status: '' }); }, 3000);
-                }
+                this.handleGetDeploySSE();
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 console.log('error', error);
-                //  alert('error', error);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
         // document.getElementById("addDeployForm").reset();
         this.setState({ fileStatus: 'No file chosen' });
@@ -345,7 +280,6 @@ class Deployment extends React.Component {
     handleDeployNow = () => {
         const addDeployForm = document.getElementById('addDeploymentForm');
         const formData = new FormData(addDeployForm);
-        console.log(formData);
         // var raw = JSON.stringify(Object.fromEntries(formData));
         const raw = Object.fromEntries(formData);
         console.log(raw);
@@ -377,35 +311,13 @@ class Deployment extends React.Component {
         es.addEventListener("deploy", e => {
             console.log('inside event listner');
             console.log(e.data);
-            //   while((JSON.parse(e.data).status) == "DELETE_IN_PROGRESS")
-            //   { this.state.deleteDeployment = false; };
-            //   console.log(e.data);
             if ((JSON.parse(e.data).status) == "DELETE_IN_PROGRESS")
                 this.handleGetDeploy();
             {
                 this.state.deploy.splice(this.state.delDeployWithIndex, 1);
             };
-
-            //   if((JSON.parse(e.data).status) == "DELETE_COMPLETE")
-            //   {
-            //       this.state.deploy.splice(this.state.delDeployWithIndex, 1);
-            //   };
         });
-    }
-
-    //   handledeleteSSE = () => {        
-    //       var es = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/deploy");
-    //       es.onopen = function(event){
-    //           console.log('open message');
-    //       };  
-    //       es.addEventListener("deploy", e => {
-    //           console.log('inside event listner');
-    //           console.log(e.data);
-    //            if(JSON.parse(e.data).status =="DELETE_COMPLETE"){                  
-    //               this.state.deploy.splice(this.state.delDeployWithIndex, 1);
-    //           };
-    //       });
-    //   } 
+    } 
 
     handleDelete = () => {
         this.handleShowModal('deletedeployModal');
@@ -432,12 +344,6 @@ class Deployment extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/deploy/`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                // document.querySelector('#myDeleteConfirmationModal .close').click();    
-                //   if(response.status==200) {
-                //       this.handledeleteSSE();
-                //       //   this.state.deploy.splice(this.state.delDeployWithIndex, 1);
-                //       this.setState({msgClass:'successMessage'});
-                //   }
                 if (response.status == 200) {
                     const delrow = this.state.deploy[this.state.delDeployWithIndex];
                     delrow.status = 'DELETE_IN_PROGRESS';
@@ -445,26 +351,24 @@ class Deployment extends React.Component {
                     this.handledeleteSSE();
                     this.handleGetDeploy();
                     this.state.deploy.splice(this.state.delDeployWithIndex, 1);
-                    this.setState({ msgClass: 'successMessage' });
+                    this.setState({ isError: false, checkpoint: true });
                 }
                 else {
-                    this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                    this.setState({ isError: true, checkpoint: true, status: 'There was an unknown error' });
                 };
                 return response.text();
             })
             .then(result => {
-
                 console.log(result);
                 const result1 = JSON.parse(result);
                 this.setState({ status: result1.msg });
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
-
                 console.log('error', error);
                 this.setState({ disabledBtn: false });
                 document.querySelector('#myDeleteConfirmationModal .close').click();
-                setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
     }
 
@@ -481,19 +385,25 @@ class Deployment extends React.Component {
         console.log(currDeployment);
         this.selectedId = currDeployment.id;
         console.log(this.selectedId);
-        console.log(currDeployment);
-        // this.setState({ currentDep: currDeployment, currentDepName: currDeployment.name });
-        this.setState({ currentDep: currDeployment, currentDepName: currDeployment.name, currentDepTime : currDeployment["created (utc)"] });
-    }
-
-    getDeploymentData = (data) => {
-        this.getNewDeploymentDetails();
+        this.setState({ currentDep: currDeployment, currentDepName: currDeployment.name, currentDepStatus: currDeployment.status, currentDepTime: currDeployment["created (utc)"] });
     }
 
     handleShowModal = (modalId) => {
-        if (modalId === 'adddeployPage') this.setState({ showAddPage: !this.state.showAddPage });
+        if (modalId === 'adddeployPage') {
+            const clear = this.state.showAddPage;
+            this.setState({ showAddPage: !this.state.showAddPage });
+            if (!clear) {
+                document.getElementById('addDeployForm').reset();
+                this.setState({ fileStatus: 'No file chosen' });
+                this.setState({ fields: {} });
+                const errors = {};
+                this.setState({ errors });
+                this.setState({environment: '', orchestrator: '', currScreen: 1});
+            }
+        }
         if (modalId === 'editdeployModal') this.setState({ showEditModal: !this.state.showEditModal });
         if (modalId === 'deletedeployModal') this.setState({ showDelModal: !this.state.showDelModal });
+        if (modalId === 'checkpoint') this.setState({ checkpoint: !this.state.checkpoint });
     }
 
     handleBackScreen = () => {
@@ -503,22 +413,27 @@ class Deployment extends React.Component {
 
     handleNextScreen = () => {
         console.log(this.state.currScreen);
-        this.setState({ currScreen: ++this.state.currScreen });
+        if (this.state.currScreen === 1 && this.handleValidation1()) {
+            console.log('first screen')
+            this.setState({ currScreen: ++this.state.currScreen });
+        } else if (this.state.currScreen === 2 && this.handleValidationUpload()) {
+            console.log('second screen')
+            this.setState({ currScreen: ++this.state.currScreen });
+        } else {
+            alert("Form has errors");
+        }
     }
     handleFileUpload = () => {
         this.setState({ fileStatus: document.getElementById('config').files[0].name });
+        const errors = {};
+        this.setState({ errors });
     }
 
     contactSubmit1 = (e) => {
         console.log('inside contactSubmit1');
         e.preventDefault();
-        if (this.handleValidation1()) {
-            this.handleShowModal('adddeployPage');
-            this.handleAddDeploy();
-            this.handleNextScreen();
-        } else {
-            alert("Form has errors.");
-        }
+        this.handleShowModal('adddeployPage');
+        this.handleAddDeploy();
     }
 
     handleChange(field, e) {
@@ -527,13 +442,55 @@ class Deployment extends React.Component {
         this.setState({ fields });
         const errors = {};
         this.setState({ errors });
+        let infra_result = [];
+        if (field === 'infra') {
+            infra_result = this.state.infra.filter(item => item.infra_name === e.target.value)
+            console.log(infra_result);
+            if (infra_result.length > 0) {
+                this.setState({ environment: infra_result[0].environment.toLowerCase() });
+                this.setState({ orchestrator: infra_result[0].orchestrator.toLowerCase() });
+                fields['environment'] = infra_result[0].environment.toLowerCase();
+                fields['orchestrator'] = infra_result[0].orchestrator.toLowerCase();
+            } else {
+                this.setState({ environment: '' });
+                this.setState({ orchestrator: '' });
+                fields['environment'] = '';
+                fields['orchestrator'] = '';
+            }
+        }
         if (this.refs.changeCloudType) {
             this.handleChangeCloudType();
         }
     }
 
-    handleValidation1() {
+    handleValidationUpload = () => {
+        console.log('inside handle Validation Upload');
+        const { fields } = this.state;
+        const errors = {};
+        let formIsValid = true;
+        this.setState({ fields });
+
+        if (this.state.changeCloudType === 'versa') {
+            if (!fields.director_ip) {
+                formIsValid = false;
+                errors.director_ip = "Cannot be empty";
+            }
+            if (!fields.controller_ip) {
+                formIsValid = false;
+                errors.controller_ip = "Cannot be empty";
+            }
+        }
+        if (this.state.fileStatus === 'No file chosen') {
+            formIsValid = false;
+            errors.fileStatus = "Cannot be empty";
+        }
+        this.setState({ errors: errors });
+        return formIsValid;
+    }
+
+    handleValidation1 = () => {
         console.log('inside handle validations');
+        console.log(this.state.changeCloudType)
         const { fields } = this.state;
         const errors = {};
         let formIsValid = true;
@@ -545,10 +502,13 @@ class Deployment extends React.Component {
             errors.name = "Cannot be empty";
         }
         if (typeof fields.name !== "undefined") {
-            if (!fields.name.match(/^[a-zA-Z]+$/)) {
+            if (!fields.name.match(/^[A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
-                errors.name = "Only letters";
+                errors.name = "Invalid Input";
             }
+            if(fields.name.length < 4 ){
+                formIsValid = false;
+                errors.name = "Minimum Length is 4";}
         }
         // environment              
         if (!fields.environment) {
@@ -566,7 +526,7 @@ class Deployment extends React.Component {
             errors.orchestrator = "Cannot be empty";
         }
         // type             
-        if (!fields.type) {
+        if (this.state.changeCloudType === '' || this.state.changeCloudType === 'Select Type') {
             formIsValid = false;
             errors.type = "Cannot be empty";
         }
@@ -581,6 +541,7 @@ class Deployment extends React.Component {
 
     render() {
         console.log("fields values", this.state.fields);
+        console.log('deploy', this.state.deploy)
         const dispFormData = '';
         const showModalStyle = {
             display: 'block'
@@ -592,13 +553,12 @@ class Deployment extends React.Component {
         const thirdScreen = Object.keys(this.state.fields).map(val => {
             return (<div className="col-6 col-lg-4">
                 <div className="form-group">
-                    <div className="form-label">{val}</div>
+                    <div className="form-label" style={{ textTransform: 'capitalize' }}>{val}</div>
                     <div>{this.state.fields[val]}</div>
                 </div>
             </div>
             );
         });
-        console.log("abc", thirdScreen);
 
         let deploy = '';
         if (this.state.deploy.length > 0) {
@@ -610,20 +570,18 @@ class Deployment extends React.Component {
                     <td className="DepName">{value.name}</td>
                     <td>{value.environment}</td>
                     <td>{value.infra}</td>
-                    <td className="font_statusdeploy">{value.status}</td>
+                    <td>{value.status}</td>
                     {/* <td align="center" onClick={() => {this.handleShowModal('editdeployModal')}}><img src={require("images/edit.svg")} alt="Edit"/></td> */}
-                    {/* <td align="center" onClick={() => {this.handleDeleteBeforeConfirmation(index, value.id, true);}}><img src={require("images/delete-icon.svg")} alt="Delete"/></td> */}
-                    <td align="center" onClick={() => { this.handleDeleteBeforeConfirmation(index, value.id, true); }}><img src={require("images/delete-icon.svg")} alt="Delete" /></td>
+                    {/* <td align="center" onClick={() => {this.handleDeleteBeforeConfirmation(index, value.id, true);}}><img src={require("images/delete.svg")} alt="Delete"/></td> */}
+                    <td align="center" onClick={() => { this.handleDeleteBeforeConfirmation(index, value.id, true); }}><img src={require("images/delete.svg")} alt="Delete" /></td>
                 </tr>;
             });
         }
         else if (this.state.deploy.length == 0) { deploy = <tr><td className="text-center text-primary" colSpan="8">{this.state.response}</td></tr>; }
         else deploy = <tr><td className="text-center text-primary" colSpan="6">No Data To Display</td></tr>;
 
-        console.log("deploy", deploy);
-
         /*Add Deployment Modal Body*/
-        let addDeploymentMainPage = <form className="modalbody" id="addDeployForm" onSubmit={this.contactSubmit1.bind(this)}>
+        let addDeploymentMainPage = <form className="modalbody" id="addDeployForm">
             <div className="d-flex justify-content-center">
                 <div className="myw-steps myw-dev-step">
                     <a className={`myw-step ${this.state.currScreen > 1 ? "completed" : "active"}`}><span>Enter Details</span></a>
@@ -645,7 +603,7 @@ class Deployment extends React.Component {
                         </div>
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
-                                <label className="form-label">Infrastructure_cloud<span style={{ color: "red" }}>*</span></label>
+                                <label className="form-label">Infrastructure Cloud<span style={{ color: "red" }}>*</span></label>
                                 <select name="infra" className="form-control" onChange={this.handleChange.bind(this, "infra")}>
                                     <option>Select Infra</option>
                                     {this.state.infra.map((item, index) => {
@@ -658,23 +616,14 @@ class Deployment extends React.Component {
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
                                 <label className="form-label">Environment<span style={{ color: "red" }}>*</span></label>
-                                <select className="form-control" name="environment" ref="infraName" onChange={this.handleChange.bind(this, "environment")}>
-                                    <option>Select Environment</option>
-                                    {this.state.environment.map((item, index) => {
-                                        return (<option value={item} key={index} directory={item}>{item}</option>);
-                                    })}
-                                </select>
+                                <input className="form-control" placeholder="Select Environment" name="environment" readOnly value={this.state.environment} />
                                 <span style={{ color: "red" }}>{this.state.errors.environment}</span>
                             </div>
                         </div>
                         <div className="col-6 col-lg-4">
                             <div className="form-group">
                                 <label className="form-label">Orchestrator<span style={{ color: "red" }}>*</span></label>
-                                <select className="form-control" ref="depOrchestrator" name="orchestrator" onChange={this.handleChange.bind(this, "orchestrator")}>
-                                    <option>Select Orchestrator</option>
-                                    <option value="cloudformation">cloudformation</option>
-                                    <option value="OSM">OSM</option>
-                                </select>
+                                <input className="form-control" placeholder="Select Orchestrator" name="orchestrator" readOnly value={this.state.orchestrator} />
                                 <span style={{ color: "red" }}>{this.state.errors.orchestrator}</span>
                             </div>
                         </div>
@@ -683,7 +632,7 @@ class Deployment extends React.Component {
                             <div className="form-group">
                                 <label className="form-label">Type<span style={{ color: "red" }}>*</span></label>
                                 <select className="form-control" ref="changeCloudType" name="type" onChange={this.handleChangeCloudType}>
-                                    <option>Select Type</option>
+                                    <option selected>Select Type</option>
                                     <option value="generic">generic </option>
                                     <option value="versa">versa</option>
                                 </select>
@@ -694,7 +643,7 @@ class Deployment extends React.Component {
                             <div className="form-group">
                                 <label className="form-label">Asset<span style={{ color: "red" }}>*</span></label>
                                 <select className="form-control" ref="assets" name="assets" onChange={this.handleChange.bind(this, "assets")}>
-                                    <option selected disabled>Select Asset</option>
+                                    <option selected>Select Asset</option>
                                     {this.state.assets && this.state.assets.map((item, index) => {
                                         return (<option value={`template=${item.asset_id}`} key={index} directory={item}>{item.asset_name}</option>);
                                     })}
@@ -728,12 +677,6 @@ class Deployment extends React.Component {
                                 </div>
                             </>
                         }
-                        {/* <div className="col-6 col-lg-4">
-                        <div className="form-group">
-                            <label className="form-label">Download Predefined template</label>
-                            <div><button type="button" className="btn btn-secondary"><img src={require("images/excel-icon.svg")} alt="" /><span download="Sample.xlsx" data-placement="top" onClick={this.getSpreadsheet}>Download Template.xls</span><img src={require("images/down.svg")} alt="" /></button></div>
-                        </div>
-                    </div> */}
                         <div className="col-6 col-lg-4 d-flex align-self-center">
                             <a href="javascript:;"><span download="Sample.xlsx" data-placement="top" onClick={this.getSpreadsheet} >Download Predefined template</span><img src={require("images/download-b.svg")} alt="" /></a>
                         </div>
@@ -747,6 +690,7 @@ class Deployment extends React.Component {
                                     </label>
                                     <span className="ml-2 text-secondary">{this.state.fileStatus}</span>
                                 </div>
+                                <span style={{ color: "red" }}>{this.state.errors.fileStatus}</span>
                             </div>
                         </div>
 
@@ -782,23 +726,21 @@ class Deployment extends React.Component {
                         <div className="d-flex align-items-center">
                             <div className="dev-page-title">Deployment</div>
                             <div className="ml-auto dev-actions">
-                                {/* <button type="button" className="btn">
-                              <img src={require("images/search.svg")} alt="Search"/>
-                              <span>Search</span>
-                          </button>
-                          <button type="button" className="btn">
-                              <img src={require("images/filter.svg")} alt="Filter"/>
-                              <span>Filter</span>
-                          </button> */}
                                 <button type="button" className="btn btn-secondary" data-toggle="tab" data-target="#adddeployPage"
                                     aria-controls="adddeployPage" onClick={() => { this.handleShowModal('adddeployPage'); }}><img src={require("images/add.svg")} alt="Add" /> <span>Add</span></button>
                             </div>
                         </div>
                         <div className="dev-section my-4">
+                            <div style={this.state.checkpoint ? showModalStyle : hideModalStyle}>
+                                {this.state.checkpoint && <div className={`alert myw-toast myw-alert alert-dismissible show ${this.state.isError ? 'alert-failed' : 'alert-success'}`} role="alert" >
+                                    <div>{this.state.status}</div>
+                                    <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => { this.handleShowModal('checkpoint') }}></button>
+                                </div>}
+                            </div>
                             <div className="row">
                                 <div className="col-9">
                                     <div className="table-responsive">
-                                        <table className="table table-striped dev-anlytics-table devnet-deploy-table">
+                                        <table className="table table-striped dev-anlytics-table">
                                             <thead>
                                                 <tr>
                                                     <th scope="col">Name</th>
@@ -826,89 +768,19 @@ class Deployment extends React.Component {
                                                 <div className="devnet-deploy-default mt-5">
                                                     Click on any Deployment to see the Deployment Stages.
                                                </div>
-                                                <nav className="devnet-steps d-none">
-                                                    <a href="javascript:;" className="completed">
-                                                        <span>Deploy</span>
-                                                        <p>Done</p>
-                                                    </a>
-                                                    <a href="javascript:;" className="completed">
-                                                        <span>Security Check</span>
-                                                        <p>Checked</p>
-                                                    </a>
-                                                    <a href="javascript:;" className="completed">
-                                                        <span>Device Creation</span>
-                                                        <p>Done</p>
-                                                    </a>
-                                                    <a href="javascript:;" className="completed">
-                                                        <span>Stage Branches</span>
-                                                        <p>Done</p>
-                                                    </a>
-                                                    <a href="javascript:;" className="completed">
-                                                        <span>Test</span>
-                                                        <p>No Errors</p>
-                                                    </a>
-                                                    <a href="javascript:;" className="active">
-                                                        <span>Certify</span>
-                                                        <p>InProgress</p>
-                                                    </a>
-                                                </nav>
                                             </div>
                                         </div>
                                     </div>
                                     }
-                                    {this.state.currentDep && <>
-                                        {/* <p className="DepName dn-capital">{this.state.currentDepName}</p> */}
-                                        {/* <DeploymentStages currentDep={this.state.currentDep} currDepName={this.state.currentDepName} /> */}
-                                        <DeploymentStages currentDep={this.state.currentDep} currDepName={this.state.currentDepName} currDepTime={this.state.currentDepTime}/>
-                                    </>
+                                    {this.state.currentDep && 
+                                        <DeploymentStages currentDep={this.state.currentDep} currDepName={this.state.currentDepName} currDepStatus={this.state.currentDepStatus} currDepTime={this.state.currentDepTime} />
                                     }
                                 </div>
 
 
                             </div>
                         </div>
-                        {/* <nav className="mt-4">
-                            <div className="pagination justify-content-end">
-                                <a href="javascript:;" className="page-link disabled" tabIndex="-1" aria-disabled="true">&lt;</a>
-                                <a href="javascript:;" className="page-link active" aria-current="page">1 <span className="sr-only">(current)</span></a>
-                                <a href="javascript:;" className="page-link">2</a>
-                                <a href="javascript:;" className="page-link">3</a>
-                                <span className="page-link disabled">...</span>
-                                <a href="javascript:;" className="page-link">7</a>
-                                <a href="javascript:;" className="page-link">&gt;</a>
-                                <span className="page-link p-0">
-                                    <select className="form-control form-control-sm">
-                                        <option>10/ Page</option>
-                                    </select>
-                                </span>
-                            </div>
-                        </nav> */}
-                        {/* Add deploy modal */}
-
-
-                        {/*}  <div className="modal devnet-modal" id="adddeployModal" tabIndex="-1" role="dialog" aria-labelledby="adddeployModaltitle" aria-hidden="true" data-backdrop="static" style={this.state.showAddModal?showModalStyle:hideModalStyle}>
-  <div className="modal-backdrop show"></div>
-    <div className="modal-dialog modal-dialog-centered" role="document">
-        <div className="modal-content">
-            <div className="modal-header">
-                <h5 className="modal-title" id="adddeployModaltitle">Add Deployment</h5>
-                <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => {this.handleShowModal('adddeployModal')}}>
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div className="modal-body">
-                {addDeploymentModalPage}
-            </div>
-            <div className="modal-footer">
-                {this.state.currScreen != 1 && <button type="button" className="btn btn-secondary" data-dismiss="modal" data-toggle="modal" data-target="#adddeployModal" onClick={this.handleBackScreen}>Back</button>}
-                {this.state.currScreen != 3 && <button type="button" className="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#devnetConfigureModal" onClick={this.handleNextScreen}>Next</button>}
-                {this.state.currScreen == 3 && <><button type="button" className="btn btn-secondary">Deploy Later</button>
-                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.handleAddDeploy}>Deploy Now</button></>}
-            </div>
-        </div>
-    </div>
-   </div> */}
-
+                  
                         {/* Edit deploy modal */}
                         <div className="modal devnet-modal" id="editdeployModal" tabIndex="-1" role="dialog" aria-labelledby="editdeployModaltitle" aria-hidden="true" data-backdrop="static" style={this.state.showEditModal ? showModalStyle : hideModalStyle}>
                             <div className="modal-backdrop show"></div>
@@ -917,7 +789,7 @@ class Deployment extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="editdeployModaltitle">Edit Deployment</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('editdeployModal') }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
@@ -941,12 +813,12 @@ class Deployment extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="deletedeployModaltitle">Delete Deploy</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('deletedeployModal') }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
-                                        are you sure?
-                            </div>
+                                    Do you want to delete Deployment?
+                                    </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('deletedeployModal') }}>Cancel</button>
                                         <button type="button" className="btn btn-primary" onClick={this.handleDelete}>Submit</button>
@@ -981,7 +853,7 @@ class Deployment extends React.Component {
                         {this.state.currScreen != 1 && <button type="button" className="btn btn-secondary" data-dismiss="modal" data-toggle="modal" data-target="#adddeployPage" onClick={this.handleBackScreen}>Back</button>}
                         {this.state.currScreen != 3 && <button type="button" className="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#devnetConfigureModal" onClick={this.handleNextScreen}>Next</button>}
                         {this.state.currScreen == 3 && <><button type="button" className="btn btn-secondary">Deploy Later</button>
-                            <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.handleAddDeploy}>Deploy</button></>}
+                            <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.contactSubmit1}>Deploy</button></>}
                     </div>
                 </div>
             </>

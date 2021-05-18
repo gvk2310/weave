@@ -72,7 +72,6 @@ class Test extends React.Component {
                 console.log(response.status);
                 console.log(typeof (response));
                 console.log(response);
-                // if(response.status != 200){this.setState({response: (response.status + "  " + response.statusText)});};
                 return response.json();
             })
             .then((findresponse) => {
@@ -119,7 +118,7 @@ class Test extends React.Component {
 
     handleSSE = (testArrCopy) => {
         console.log("testArrCopy", testArrCopy)
-        let eventSource, remValue = {};;
+        let eventSource, remValue = {};
         if (this.state.listening) {
             eventSource = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/tests");
             eventSource.onopen = function (event) {
@@ -229,17 +228,6 @@ class Test extends React.Component {
                     console.log('response in edit project', response);
                     this.handleGetTest();
                     this.setState({ isError: false, checkpoint: true });
-                    // let duplicateIndex = '';
-                    // const checkDuplicate = this.state.test.filter((task, index) => {
-                    //     // if(task.test_name == formData.get('test_name')){
-                    //     if (task.test_id == this.state.testId) {
-                    //         duplicateIndex = index;
-                    //         return true;
-                    //     }
-                    // });
-                    // console.log(checkDuplicate);
-                    // if (checkDuplicate.length > 0) this.state.test.splice(duplicateIndex, 1);
-                    // this.setState({ msgClass: 'successMessage', test: [...this.state.test, JSON.parse(raw)] });
                 }
                 else {
                     this.setState({ isError: true, checkpoint: true });
@@ -285,7 +273,6 @@ class Test extends React.Component {
             .then((response) => {
                 this.setState({ disabledBtn: false });
                 console.log(response.status);
-                // (response.status == 200) ? this.setState({ msgClass: 'successMessage', test: updatedArray, checkpoint: true }) : this.setState({ status: 'There was an unknown error', msgClass: 'errorMessage', checkpoint: true });
                 if(response.status == 200){
                     this.setState({ isError: false, test: updatedArray, checkpoint: true })
                 } else {
@@ -324,8 +311,8 @@ class Test extends React.Component {
     }
 
     handleScriptType = (event) => {
-        console.log(event.target.value);
-        event.target.value == 'Ansible' ? this.setState({ showCommands: true }) : this.setState({ showCommands: false });
+        console.log('onclick ScriptType',+event.target.value);
+        event.target.value == 'ansible' ? this.setState({ showCommands: true }) : this.setState({ showCommands: false });
     }
 
     handleChange(field, e) {
@@ -333,7 +320,6 @@ class Test extends React.Component {
         fields[field] = e.target.value;
         this.setState({ ...fields, fields });
         const errors = {};
-        // this.setState({ errors });
         const checkDuplicate = this.state.test.filter(task => task.test_name == fields.test_name);
         console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
@@ -388,10 +374,13 @@ class Test extends React.Component {
         }
         // invalid name
         if (typeof fields.test_name !== "undefined") {
-            if (!fields.test_name.match(/^[A-Za-z0-9_-]/)) {
+            if (!fields.test_name.match(/^[A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
-                errors.test_name = "Only letters";
+                errors.test_name = "Invalid Input";
             }
+            if(fields.test_name.length < 4 ){
+                formIsValid = false;
+                errors.test_name = "Minimum Length is 4";}
         }
         // test_description
         if (!fields.test_description) {
@@ -404,6 +393,9 @@ class Test extends React.Component {
                 formIsValid = false;
                 errors.test_description = "Only letters";
             }
+            if(fields.test_description.length < 4 ){
+                formIsValid = false;
+                errors.test_description = "Minimum Length is 4";}
         }
         if (!fields.test_category) {
             formIsValid = false;
@@ -416,6 +408,10 @@ class Test extends React.Component {
         if (!fields.test_repository) {
             formIsValid = false;
             errors.test_repository = "Cannot be empty";
+        }
+        if (!fields.test_commands) {
+            formIsValid = false;
+            errors.test_commands = "Cannot be empty";
         }
         if (this.state.radioVal == 1 && this.state.fileStatus === 'No file chosen') {
             formIsValid = false;
@@ -476,6 +472,10 @@ class Test extends React.Component {
                 editForm = false;
                 editErrors.edit_test_description = "Only letters";
             }
+            if(editFields.edit_test_description.length < 4 ){
+                editForm = false;
+                editErrors.edit_test_description = "Minimum Length is 4";}
+                
         }
         this.setState({ editErrors: editErrors });
         return editForm;
@@ -507,7 +507,7 @@ class Test extends React.Component {
                     <td class="text-center">
                         <div class="dev-actions">
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#myUpdateRepositoryModal" onClick={() => this.handleEditTest(value)}><img src={require("images/edit.svg")} alt="Edit" /></a>
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#myDeleteConfirmationModal" onClick={() => this.handleDeleteBeforeConfirmation(value.test_id)} ><img src={require("images/delete-icon.svg")} alt="Delete" /></a>
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#myDeleteConfirmationModal" onClick={() => this.handleDeleteBeforeConfirmation(value.test_id)} ><img src={require("images/delete.svg")} alt="Delete" /></a>
                         </div>
                     </td>
                 </tr>;
@@ -565,7 +565,7 @@ class Test extends React.Component {
                     <div className="form-group">
                         <label className="form-label">Script Type<span style={{ color: "red" }}>*</span></label>
                         <select name="test_scripttype" className="form-control" onChange={this.handleChange.bind(this, "test_scripttype")} onClick={(e) => this.handleScriptType(e)}>
-                            <option>Select Type</option>
+                            <option selected>Select Type</option>
                             <option value="python">python</option>
                             <option value="ansible">ansible</option>
                         </select>
@@ -576,7 +576,7 @@ class Test extends React.Component {
                     <div className="form-group">
                         <label className="form-label">{this.state.lableChange}<span style={{ color: "red" }}>*</span></label>
                         <select name="test_repository" className="form-control" onChange={this.handleChange.bind(this, "test_repository")}>
-                            <option>Select</option>
+                            <option selected>Select Repository</option>
                             {this.state.repo.length > 0 && this.state.repo.map((item, key) => {
                                 return (<option key={key} directory={item.repo_name} data-type={item.repo_type}>{item.repo_name}</option>);
                             })}
@@ -586,8 +586,9 @@ class Test extends React.Component {
                 </div>
                 {this.state.showCommands && <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Commands</label>
-                        <input name="test_commands" type="text" className="form-control" placeholder="Enter Entry Point" />
+                        <label className="form-label">Commands<span style={{ color: "red" }}>*</span></label>
+                        <input name="test_commands" type="text" className="form-control"  onChange={this.handleChange.bind(this, "test_commands")} placeholder="Enter Entry Point" />
+                        <span style={{ color: "red" }}>{this.state.errors.test_commands}</span>
                     </div>
                 </div>}
                 {this.state.radioVal == 1 && <div className="col-6 devnet-upload">
@@ -704,7 +705,7 @@ class Test extends React.Component {
                                 <div className="modal-header">
                                     <h5 className="modal-title" id="edittestModaltitle">Edit Test</h5>
                                     <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('edittestModal') }}>
-                                        <span aria-hidden="true">&times;</span>
+                                        <span aria-hidden="true">&nbsp;</span>
                                     </button>
                                 </div>
                                 <div className="modal-body">
@@ -725,7 +726,7 @@ class Test extends React.Component {
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="addtestModaltitle">Add Test</h5>
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('addtestModal') }}>
-                                        <span aria-hidden="true">&times;</span>
+                                        <span aria-hidden="true">&nbsp;</span>
                                     </button>
                                 </div>
                                 <div class="modal-body">
@@ -747,11 +748,11 @@ class Test extends React.Component {
                                 <div className="modal-header">
                                     <h5 className="modal-title" id="deletetestModaltitle">Delete Test</h5>
                                     <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('deletetestModal') }}>
-                                        <span aria-hidden="true">&times;</span>
+                                        <span aria-hidden="true">&nbsp;</span>
                                     </button>
                                 </div>
                                 <div className="modal-body">
-                                    are you sure?
+                                    Do you want to delete Test?
                                 </div>
                                 <div className="modal-footer">
                                     <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('deletetestModal') }}>Cancel</button>

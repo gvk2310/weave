@@ -26,9 +26,6 @@ class Asset extends React.Component {
             selectedFile: null,
             delAssetWithIndex: '',
             loaded: 0,
-            showAddModal: false,
-            showEditModal: false,
-            showDelModal: false,
             disabledBtn: false,
             repoType: '',
             searchResult: '',
@@ -229,10 +226,8 @@ class Asset extends React.Component {
                     this.setState({ isError: false, checkpoint: true });
 
                 } else {
-                    // this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
                     this.setState({ isError: true, checkpoint: true });
                 }
-                // console.log(response.json())
                 return response.json();
             })
             .then(result => {
@@ -240,19 +235,18 @@ class Asset extends React.Component {
                 console.log(typeof (result));
                 if (typeof (result) === 'object') {
                     const jsonData = JSON.parse(raw);
+                    // this.setState({ status: JSON.parse(result).message });
                     this.setState({ status: 'Asset Onboarded Successfully' });
-                    this.setState({ asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });
+                    this.setState({asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });
                     this.handleSSE(this.state.asset);
                     console.log(JSON.parse(result).msg);
                 }
                 else { this.setState({ status: JSON.parse(result).message }); }
-                //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
-                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
             })
             .catch(error => {
                 console.log('error' + error);
-                //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
-                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
             });
         document.getElementById("addAssetForm").reset();
         this.setState({ fileStatus: 'No file chosen' });
@@ -281,26 +275,10 @@ class Asset extends React.Component {
                 if (response.status == 200) {
                     console.log('response in edit project', response);
                     this.handleGetAsset();
-                    //this.setState({ alertmessage: 'success' });
-                    this.setState({ isError: false, checkpoint: true });
-                    // var duplicateIndex = '';
-                    // const checkDuplicate = this.state.asset.filter((task, index) => {
-                    //     if (task.asset_id == this.state.assetId) {
-                    //         duplicateIndex = index;
-                    //         return true;
-                    //     }
-                    // });
-                    // console.log(checkDuplicate);
-                    // if (checkDuplicate.length > 0) {
-                    //     var currAsset = this.state.asset[duplicateIndex];
-                    //     currAsset.asset_group = '';
-                    // }
-                    // if (checkDuplicate.length > 0) this.state.asset.splice(duplicateIndex, 1);
-                    // this.setState({ msgClass: 'successMessage', asset: [...this.state.asset, JSON.parse(raw)] });
+                    this.setState({ isError: false, checkpoint: true });      
                 }
                 else {
-                    // this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
-                    this.setState({ isError: true, checkpoint: true });
+                   this.setState({ isError: true, checkpoint: true });
                 }
                 return response.json();
             })
@@ -311,12 +289,10 @@ class Asset extends React.Component {
                     this.setState({ status: result.msg });
                 }
                 else { this.setState({ status: JSON.parse(result).msg }); }
-                //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
                 setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 console.log('error', error);
-                //setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
                 setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
         document.getElementById("addAssetForm").reset();
@@ -343,15 +319,12 @@ class Asset extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/asset`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                // document.querySelector('#myDeleteConfirmationModal .close').click();
                 console.log(response.status, response.statusText);
                 if (response.status == 200) {
                     this.state.asset.splice(this.state.delAssetWithIndex, 1);
-                    // this.setState({ msgClass: 'successMessage', checkpoint: true });
-                    this.setState({ isError: false, checkpoint: true })
+                   this.setState({ isError: false, checkpoint: true })
                 }
                 else {
-                    //this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' , checkpoint: true});
                     this.setState({ status: 'There was an unknown error', isError: true, checkpoint: true })
                 };
                 return response.text();
@@ -360,16 +333,14 @@ class Asset extends React.Component {
 
                 console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
-                // setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
-                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
+               setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             })
             .catch(error => {
 
                 console.log('error', error);
                 this.setState({ disabledBtn: false });
                 document.querySelector('#myDeleteConfirmationModal .close').click();
-                // setTimeout(() => { this.setState({ status: '', msgClass: '' }); }, 3000);
-                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
+               setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             });
     }
 
@@ -395,7 +366,7 @@ class Asset extends React.Component {
         return hash;
     }
 
-    handleEditAsset = (assetName, assetId, assetType, assetGroup, assetVersion, assetVendor) => {
+    handleEditAsset = (assetName, assetId, assetType, assetGroup, assetVersion,assetVendor) => {
         this.handleShowModal('editassetModal');
         this.setState({
             asset_name: assetName,
@@ -417,7 +388,6 @@ class Asset extends React.Component {
         fields[field] = e.target.value;
         this.setState({ ...fields, fields });
         const errors = {};
-        // this.setState({ errors: errors });
 
         const checkDuplicate = this.state.asset.filter(task => task.asset_name == fields.asset_name);
         console.log(checkDuplicate);
@@ -449,9 +419,13 @@ class Asset extends React.Component {
 
         // invalid name
         if (typeof fields.asset_group !== "undefined") {
-            if (!fields.asset_group.match(/^[A-Za-z0-9_-]/)) {
+            if (!fields.asset_group.match(/^[A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
-                errors.asset_group = "Only letters";
+                errors.asset_group = "Invalid Input";
+            }
+            if(fields.asset_group.length < 4 ){
+            formIsValid = false;
+            errors.asset_group = "Minimum Length is 4";
             }
         }
         // asset_name
@@ -459,12 +433,15 @@ class Asset extends React.Component {
             formIsValid = false;
             errors.asset_name = "Cannot be empty";
         }
-
         // invalid asset name
         if (typeof fields.asset_name !== "undefined") {
-            if (!fields.asset_name.match(/^[A-Za-z0-9_-]/)) {
+            if (!fields.asset_name.match(/^[A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
-                errors.asset_name = "Only letters";
+                errors.asset_name = "Invalid Input";
+            }
+            if(fields.asset_name.length < 4 ){
+            formIsValid = false;
+            errors.asset_name = "Minimum Length is 4";
             }
         }
         // asset_type
@@ -480,10 +457,13 @@ class Asset extends React.Component {
 
         // invalid vendor name
         if (typeof fields.asset_vendor !== "undefined") {
-            if (!fields.asset_vendor.match(/^[A-Za-z0-9_-]/)) {
+            if (!fields.asset_vendor.match(/^[A-Za-z0-9_-]/)) { 
                 formIsValid = false;
                 errors.asset_vendor = "Only letters";
             }
+            if(fields.asset_vendor.length < 4 ){
+                formIsValid = false;
+                errors.asset_vendor = "Minimum Length is 4";}
         }
         // asset_repository
         if (!fields.asset_repository) {
@@ -499,7 +479,7 @@ class Asset extends React.Component {
         if (typeof fields.asset_version !== "undefined") {
             if (!fields.asset_version.match(/^\d+(\.\d{1,2})?$/)) {
                 formIsValid = false;
-                errors.asset_version = "Only Float";
+                errors.asset_version = "Only Float value";
             }
         }
         if (this.state.radioVal == 1 && this.state.fileStatus === 'No file chosen') {
@@ -518,21 +498,7 @@ class Asset extends React.Component {
                 errors.asset_path = "Not a valid URL";
             }
         }
-        // if (this.state.repoType == 'local') {
-        //     // asset_file
-        //     if (!fields.asset_file) {
-        //         formIsValid = false;
-        //         errors.asset_file = "Cannot be empty";
-        //     }
-        // }
-        // if (this.state.repoType == 'remote') {
-        //     console.log('inside remote');
-        //     // asset_path
-        //     if (!fields.asset_path) {
-        //         formIsValid = false;
-        //         errors.asset_path = "Cannot be empty";
-        //     }
-        // }
+
         this.setState({ errors: errors });
         return formIsValid;
     }
@@ -567,21 +533,11 @@ class Asset extends React.Component {
                 formIsValid = false;
                 editErrors.asset_group = "Only letters";
             }
-        }
-
-        // asset_vendor
-        if (!editFields.asset_vendor) {
-            formIsValid = false;
-            editErrors.asset_vendor = "Cannot be empty";
-        }
-
-        // invalid vendor name
-        if (typeof editFields.asset_vendor !== "undefined") {
-            if (!editFields.asset_vendor.match(/^[A-Za-z0-9_-]/)) {
+            if(editFields.asset_group.length < 4 ){
                 formIsValid = false;
-                editErrors.asset_vendor = "Only letters";
-            }
+                editErrors.asset_group = "Minimum Length is 4";}
         }
+
         //asset_version 
         if (!editFields.asset_version) {
             formIsValid = false;
@@ -687,7 +643,7 @@ class Asset extends React.Component {
                         <td class="text-center">
                             <div class="dev-actions">
                                 <a href="javascript:void(0)" data-toggle="modal" data-target="#myUpdateAssetModal" onClick={() => this.handleEditAsset(value.asset_name, value.asset_id, value.asset_type, value.asset_group, value.asset_version, value.asset_vendor)}><img src={require("images/edit.svg")} alt="Edit" /></a>
-                                <a href="javascript:void(0)" data-target="#myDeleteConfirmationModal" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.asset_id)} ><img src={require("images/delete-icon.svg")} alt="Delete" /></a>
+                                <a href="javascript:void(0)" data-target="#myDeleteConfirmationModal" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.asset_id)} ><img src={require("images/delete.svg")} alt="Delete" /></a>
                             </div>
                         </td>
                     </tr>);
@@ -721,7 +677,7 @@ class Asset extends React.Component {
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Asset Group<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_group" className="form-control" placeholder="Enter Asset Group" onChange={this.handleChange.bind(this, "asset_group")} maxLength="120" />
+                        <input type="text" name="asset_group" className="form-control" placeholder="Enter Asset Group" onChange={this.handleChange.bind(this, "asset_group")} maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.errors.asset_group}</span>
                     </div>
                 </div>
@@ -802,10 +758,9 @@ class Asset extends React.Component {
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Asset Group<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_group" className="form-control" value={this.state.asset_group} placeholder="Enter Asset Group" onChange={this.handleChangeEdit.bind(this, "asset_group")} maxLength="120" />
+                        <input type="text" name="asset_group" className="form-control" value={this.state.asset_group} placeholder="Enter Asset Group" onChange={this.handleChangeEdit.bind(this, "asset_group")} maxLength="24" />
                         <span style={{ color: "red" }}>{this.state.editErrors.asset_group}</span>
                         <br />
-
                     </div>
                 </div>
                 <div className="col-6">
@@ -819,7 +774,7 @@ class Asset extends React.Component {
                 <div className="col-6">
                     <div className="form-group">
                         <label className="form-label">Vendor<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_vendor" value={this.state.asset_vendor} className="form-control" placeholder="Enter Vendor" onChange={this.handleChangeEdit.bind(this, "asset_vendor")} maxLength="24" />
+                        <input type="text" name="asset_vendor" value={this.state.asset_vendor} className="form-control" placeholder="Enter Vendor" onChange={this.handleChangeEdit.bind(this, "asset_vendor")} maxLength="24"  readOnly />
                         <span style={{ color: "red" }}>{this.state.editErrors.asset_vendor}</span>
                     </div>
                 </div>
@@ -892,7 +847,7 @@ class Asset extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="addassetModaltitle">Add Asset</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('addassetModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
@@ -913,7 +868,7 @@ class Asset extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="updateassetModaltitle">Edit Asset</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('editassetModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
@@ -935,11 +890,11 @@ class Asset extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="deleteassetModaltitle">Delete Confirmation</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('deleteassetModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
-                                        Are you sure?
+                                        Do you want to delete Asset?
                                                 </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('deleteassetModal'); }}>Cancel</button>
@@ -957,6 +912,6 @@ class Asset extends React.Component {
             </>
         );
     }
-}
+    }
 
 export default Asset;
