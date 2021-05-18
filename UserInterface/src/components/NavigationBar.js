@@ -80,7 +80,7 @@ const NavigationBar = (props) => {
     let decUsername = decryptionAlgorithm(cookies['cookies'].username);
     let decUserRole = decryptionAlgorithm(userRole);
     userRole = decUserRole.toString('ascii');
-    
+    console.log('decUsername', decUsername);
     console.log(userRole)
     console.log(checkRole)
     console.log("checkName", checkName);

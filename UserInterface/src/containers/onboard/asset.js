@@ -68,7 +68,7 @@ class Asset extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/asset`, requestOptions)
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
                 return response.json();
             })
@@ -88,7 +88,7 @@ class Asset extends React.Component {
         // Fetch Repo
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then(response => {
-                console.log(response.status);
+                // console.log(response.status);
                 console.log(typeof (response));
                 return response.json();
             })
@@ -112,7 +112,7 @@ class Asset extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/asset`, requestOptions)
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
                 return response.json();
             })
@@ -201,7 +201,7 @@ class Asset extends React.Component {
         console.log(fileInput);
         const formData = new FormData(addAssetForm1);
         var raw = JSON.stringify(Object.fromEntries(formData));
-        console.log("raw", raw);
+        // console.log("raw", raw);
         if (this.state.radioVal == 1) {
             formData.append("asset_file", fileInput.files[0], fileInput.files[0].name);
         }
@@ -219,7 +219,7 @@ class Asset extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/asset`, requestOptions)
             .then((response) => {
-                console.log(response);
+                // console.log(response);
                 console.log(response.status);
                 if (response.status == 200) {
                     this.setState({ listening: true });
@@ -260,7 +260,7 @@ class Asset extends React.Component {
         formData.append('asset_id', this.state.asset_id);
         var raw = JSON.stringify({ "asset_id": formData.get('asset_id'), "asset_group": formData.get('asset_group'), "asset_version": formData.get('asset_version') });
         console.log(Object.fromEntries(formData));
-        console.log(raw);
+        // console.log(raw);
 
         /*Update Asset */
         var myHeaders = new Headers();

@@ -67,7 +67,7 @@ class Project extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/project/projects`, requestOptions)
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
                 return response.json();
             })
@@ -94,7 +94,7 @@ class Project extends React.Component {
         console.log('form data', formData.get('project_name'));
         console.log('form data', formData.get('project_details'));
         var raw = JSON.stringify({ "project_name": formData.get('project_name'), "project_details": formData.get('project_details') });
-        console.log(raw);
+        // console.log(raw);
 
         const myHeaders = new Headers();
 
@@ -107,7 +107,7 @@ class Project extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/project/projects`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.setState({ isError: false, checkpoint: true });
                     this.handleGetProject();
@@ -137,7 +137,7 @@ class Project extends React.Component {
         console.log('form data', formData.get('project_details'));
         console.log('form data', formData.get('project_id'));
         var raw = JSON.stringify({ "project_name": formData.get('edit_project_name'), "project_details": formData.get('edit_project_details'), "project_id": formData.get('project_id') });
-        console.log(raw);
+        // console.log(raw);
 
         /* Edit User */
         let myHeaders = new Headers();
@@ -149,7 +149,7 @@ class Project extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/project/projects`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     console.log('response in edit project', response);
                     this.setState({ isError: false, checkpoint: true });
@@ -201,7 +201,7 @@ class Project extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/project/projects`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.state.projectArr.splice(this.state.delProjectWithIndex, 1);
                     this.setState({ isError: false, checkpoint: true });
@@ -327,7 +327,7 @@ class Project extends React.Component {
     }
 
     render() {
-        console.log('render projectArr', this.state.projectArr);
+        // console.log('render projectArr', this.state.projectArr);
         const showModalStyle = {
             display: 'block'
         };

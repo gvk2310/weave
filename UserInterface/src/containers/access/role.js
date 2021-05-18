@@ -110,7 +110,7 @@ class Role extends React.Component {
         const formData = new FormData(addRolesForm);
         console.log(Object.fromEntries(formData))
         const raw = JSON.stringify({ "role": formData.get('role'), "services": formData.getAll('write') });
-        console.log('raw' , raw)
+        // console.log('raw' , raw)
 
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -151,7 +151,7 @@ class Role extends React.Component {
         const formData = new FormData(document.getElementById('editServicesForm'));
         console.log(formData);
         var raw = JSON.stringify({ "role": formData.get('role'), "services": formData.getAll('write') });
-        console.log(raw)
+        // console.log(raw)
         /*Add Service*/
         const myHeaders = new Headers();
 
@@ -204,7 +204,7 @@ class Role extends React.Component {
         this.handleShowModal('deleteroleModal');
         this.setState({ disabledBtn: true });
         const raw = { role: this.state.delService };
-        console.log(JSON.stringify(raw));
+        // console.log(JSON.stringify(raw));
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
         console.log(process.env);
 
@@ -221,7 +221,7 @@ class Role extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/access/roles`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.state.roles.splice(this.state.delServiceWithIndex, 1);
                     this.setState({ isError: false ,checkpoint: true});
@@ -294,7 +294,7 @@ class Role extends React.Component {
     }
 
     render() {
-        console.log("Roles", this.state.roles)
+        // console.log("Roles", this.state.roles)
         console.log(this.state.services);
         //Style for modal
         const showModalStyle = {

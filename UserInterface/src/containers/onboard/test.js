@@ -99,7 +99,7 @@ class Test extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/tests`, requestOptions)
             .then(response => {
                 console.log(typeof (response));
-                console.log(response);
+                // console.log(response);
                 if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
                 return response.json();
             })
@@ -172,8 +172,8 @@ class Test extends React.Component {
 
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/tests`, requestOptions)
             .then((response) => {
-                console.log(response);
-                console.log(response.status);
+                // console.log(response);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.setState({ listening: true });
                     this.setState({ isError: false, checkpoint: true });
@@ -211,7 +211,7 @@ class Test extends React.Component {
         const formData = new FormData(updateTestForm);
         formData.append('test_id', this.state.test_id);
         const raw = JSON.stringify({ "test_id": formData.get('test_id'), "test_category": formData.get('edit_test_category'), "test_description": formData.get('edit_test_description') });
-        console.log(raw);
+        // console.log(raw);
         /* UpdateÂ Test */
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -255,7 +255,7 @@ class Test extends React.Component {
             test_id: this.state.delTestName,
             delete_from_repo: false
         };
-        console.log(raw);
+        // console.log(raw);
         const updatedArray = this.state.test.filter(task => task.test_id !== this.state.delTestName);
         console.log("updatedArray", updatedArray);
         const API_URL = process.env.REACT_APP_ONBOARDING;
@@ -478,7 +478,7 @@ class Test extends React.Component {
     }
 
     render() {
-        console.log("test inside render", this.state.test)
+        // console.log("test inside render", this.state.test)
         //Style for modal
         let showModalStyle = {
             display: 'block'

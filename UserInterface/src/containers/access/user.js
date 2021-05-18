@@ -77,7 +77,7 @@ class User extends React.Component {
         const editUserForm = document.getElementById('editUserForm');
         const formData = new FormData(editUserForm);
         var raw = JSON.stringify({ "project": formData.get('projectArr'), "email": formData.get('email'), "roles": formData.get('roles') });
-        console.log(raw);
+        // console.log(raw);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         const requestOptions = {
@@ -89,7 +89,7 @@ class User extends React.Component {
         this.setState({ displayLoader: true });
         fetch(`###REACT_APP_PLATFORM_URL###/access/users`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.handleGetUser();
                     this.setState({ isError: false, checkpoint: true });                
@@ -190,7 +190,7 @@ class User extends React.Component {
         const formData = new FormData(addUserForm);
         const raw = JSON.stringify({ "email": formData.get('email'), "name": formData.get('name'), "project": formData.getAll('project')[0], "roles": formData.getAll('role')[0] });
         console.log(formData);
-        console.log(raw);
+        // console.log(raw);
         /* Add Service */
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -232,7 +232,7 @@ class User extends React.Component {
         this.handleShowModal('deleteuserModal')
         this.setState({ disabledBtn: true });
         const raw = { email: this.state.delUser };
-        console.log(JSON.stringify(raw));
+        // console.log(JSON.stringify(raw));
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
         console.log(process.env);
         const myHeaders = new Headers();
@@ -248,7 +248,7 @@ class User extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/access/users`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.state.userArr.splice(this.state.delUserWithIndex, 1);
                     this.setState({ isError: false, checkpoint: true });
@@ -356,7 +356,7 @@ class User extends React.Component {
     }
 
     render() {
-        console.log("this.state.userArr", this.state.userArr)
+        // console.log("this.state.userArr", this.state.userArr)
         // Style for modal
         const showModalStyle = {
             display: 'block'

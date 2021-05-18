@@ -70,8 +70,8 @@ class Deployment extends React.Component {
             };
             fetch(`${API_URL}`, requestOptions)
                 .then((response) => {
-                    console.log(response);
-                    console.log(response.status);
+                    // console.log(response);
+                    // console.log(response.status);
                     if (response.status == 200) {
                         this.setState({ isError: false, checkpoint: true });
                     } else {
@@ -121,7 +121,7 @@ class Deployment extends React.Component {
         //Fetch Assets
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/asset`, requestOptions)
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 return response.json();
             })
             .then((findresponse) => {
@@ -139,7 +139,7 @@ class Deployment extends React.Component {
         //Fetch Infra
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 return response.json();
             })
             .then((findresponse) => {
@@ -173,7 +173,7 @@ class Deployment extends React.Component {
         };
         fetch("###REACT_APP_PLATFORM_URL###/deploy/", requestOptions)
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 return response.json();
             })
             .then((findresponse) => {
@@ -235,7 +235,7 @@ class Deployment extends React.Component {
         const raw = JSON.stringify(Object.fromEntries(formData));
         console.log(Object.fromEntries(formData));
         console.log(formData);
-        console.log(raw);
+        // console.log(raw);
 
         /*Add Deploy*/
         const myHeaders = new Headers();
@@ -248,7 +248,7 @@ class Deployment extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/deploy/`, requestOptions)
             .then((response) => {
-                console.log(response);
+                // console.log(response);
                 console.log(response.status);
                 if (response.status == 200) {
                     this.getNewDeploymentDetails();
@@ -282,7 +282,7 @@ class Deployment extends React.Component {
         const formData = new FormData(addDeployForm);
         // var raw = JSON.stringify(Object.fromEntries(formData));
         const raw = Object.fromEntries(formData);
-        console.log(raw);
+        // console.log(raw);
         console.log(formData.getAll('VNF'));
     }
 
@@ -327,7 +327,7 @@ class Deployment extends React.Component {
             id: this.state.delDeploy,
             force_delete: this.state.forceDelete
         };
-        console.log(JSON.stringify(raw));
+        // console.log(JSON.stringify(raw));
         console.log(process.env);
         const token = sessionStorage.getItem('tokenStorage');
         const myHeaders = new Headers();
@@ -502,7 +502,7 @@ class Deployment extends React.Component {
             errors.name = "Cannot be empty";
         }
         if (typeof fields.name !== "undefined") {
-            if (!fields.name.match(/^[A-Za-z0-9_-]*$/)) {
+            if (!fields.name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.name = "Invalid Input";
             }
@@ -540,8 +540,8 @@ class Deployment extends React.Component {
     }
 
     render() {
-        console.log("fields values", this.state.fields);
-        console.log('deploy', this.state.deploy)
+        // console.log("fields values", this.state.fields);
+        // console.log('deploy', this.state.deploy)
         const dispFormData = '';
         const showModalStyle = {
             display: 'block'
