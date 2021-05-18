@@ -332,7 +332,7 @@ class User extends React.Component {
             errors.name = "Cannot be empty";
         }
         if (typeof fields.name !== "undefined") {
-            if (!fields.name.match(/^[A-Za-z0-9_-]*$/)) {
+            if (!fields.name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.name = "Invalid Input";
             }

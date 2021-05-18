@@ -277,7 +277,7 @@ class Project extends React.Component {
             errors.project_name = "Cannot be empty";
         }
         if (typeof fields.project_name !== "undefined") {
-            if (!fields.project_name.match(/^[A-Za-z0-9_-]*$/)) {
+            if (!fields.project_name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.project_name = "Invalid Input";
             }

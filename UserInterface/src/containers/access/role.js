@@ -278,7 +278,7 @@ class Role extends React.Component {
         }
 
         if (typeof fields.role !== "undefined") {
-            if (!fields.role. match(/^[A-Za-z0-9_-]*$/)) {
+            if (!fields.role. match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.role = "Invalid Input";
             }

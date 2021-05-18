@@ -435,7 +435,7 @@ class Asset extends React.Component {
         }
         // invalid asset name
         if (typeof fields.asset_name !== "undefined") {
-            if (!fields.asset_name.match(/^[A-Za-z0-9_-]*$/)) {
+            if (!fields.asset_name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.asset_name = "Invalid Input";
             }
@@ -638,7 +638,7 @@ class Asset extends React.Component {
                         <td>{value.asset_repository}</td>
                         <td>{value.asset_size}</td>
                         <td>{value.asset_version}</td>
-                        <td align="center"><div className={(value.scan_result ? (value.scan_result == 'Safe' ? "dev-net-status done" : "dev-net-status fail") : "dev-net-status progress")}>&nbsp;</div></td>
+                        <td align="center"><div className={(value.scan_result ? (value.scan_result == 'Safe' ? "dev-net-status done" : "dev-net-status fail") : "dev-net-status wip")}>&nbsp;</div></td>
                         <td>{value.onboard_status}</td>
                         <td class="text-center">
                             <div class="dev-actions">

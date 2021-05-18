@@ -1128,7 +1128,7 @@ a.dev-dash-hd-chart {  font-size: 1rem; color: #000088; }
 .dev-net-status { width: 0.625rem; height: 0.625rem; border-radius: 50%; background-color: transparent; }
 .dev-net-status.done {  background-color: #8FD399; }
 .dev-net-status.fail {  background-color:#DD5E56; }
-.dev-net-status.wip {  background-color: #D7A267; }
+.dev-net-status.wip {  background-color: #D7A267; } 
 .myw-upload-browse label{ position: relative; min-width: 5rem; overflow: hidden; margin: 0; font-weight: 400; }
 .myw-upload-browse label input{ position: absolute; left: 0; top: 0; right: 0; bottom: 0; opacity: 0; max-width: 100%; z-index: -1; }
 

@@ -51,7 +51,7 @@ class Repository extends React.Component {
 
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then(response => {
-                console.log(typeof (response), response);
+                // console.log(typeof (response), response);
                 if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
                 return response.json();
             })
@@ -111,7 +111,7 @@ class Repository extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then((response) => {
-                console.log(response);
+                // console.log(response);
                 console.log(response.status);
                 if (response.status == 200) {
                     let duplicateIndex = '';
@@ -121,7 +121,7 @@ class Repository extends React.Component {
                             return true;
                         }
                     });
-                    console.log(checkDuplicate);
+                    // console.log(checkDuplicate);
                     if (checkDuplicate.length > 0) this.state.repo.splice(duplicateIndex, 1);
                     this.handleGetRepository();
                     this.setState({ isError: false, checkpoint: true });
@@ -166,8 +166,8 @@ class Repository extends React.Component {
             "repo_name": formData.get('edit_repo_name'), "repo_vendor": formData.get('edit_repo_vendor'), "repo_url": formData.get('edit_repo_url'),
             "repo_username": formData.get('edit_repo_username'), "repo_password": formData.get('edit_repo_password'), "action": formData.get('action'), 'assets_info': []
         });
-        console.log(raw1);
-        console.log(raw);
+        // console.log(raw1);
+        // console.log(raw);
         /* Update Repository */
         const myHeaders = new Headers();
         //       myHeaders.append("Authorization", `Bearer ${token}`);
@@ -181,7 +181,7 @@ class Repository extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     let duplicateIndex = '';
                     const checkDuplicate = this.state.repo.filter((task, index) => {
@@ -190,7 +190,7 @@ class Repository extends React.Component {
                             return true;
                         }
                     });
-                    console.log(checkDuplicate);
+                    // console.log(checkDuplicate);
                     if (checkDuplicate.length > 0) this.state.repo.splice(duplicateIndex, 1);
                     this.handleGetRepository();
                     // this.setState({ msgClass: 'successMessage', repo: [...this.state.repo, JSON.parse(raw1)] });
@@ -228,7 +228,7 @@ class Repository extends React.Component {
                 repo_name: this.state.delRepoName,
                 delete_assets: event.target.value
             };
-            console.log(raw);
+            // console.log(raw);
             const updatedArray = this.state.repo.filter(task => task.repo_name !== this.state.delRepoName);
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -239,7 +239,7 @@ class Repository extends React.Component {
             };
             fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then((response) => {
-                console.log(response)
+                // console.log(response)
                 // this.setState({ disabledBtn: false });
                 console.log(response.status);
                  // (response.status == 200) ? this.setState({ repo: updatedArray, checkpoint: true }) : this.setState({ status: 'There was an unknown error', msgClass: 'errorMessage', checkpoint: true });
@@ -418,7 +418,7 @@ class Repository extends React.Component {
         }
         // invalid name
         if (typeof fields.repo_name !== "undefined") {
-            if (!fields.repo_name.match(/^[A-Za-z0-9_-]*$/)) {
+            if (!fields.repo_name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.repo_name = "Invalid Input";
             }
@@ -471,7 +471,7 @@ class Repository extends React.Component {
 
         // /*Display Repository Details in the Table*/
         let repository = '';
-        console.log(this.state.repo)
+        // console.log(this.state.repo)
         if (this.state.repo.length > 0) {
             repository = this.state.repo.map((value, index) => {
                 return <tr className="" key={index} >

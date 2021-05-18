@@ -374,7 +374,7 @@ class Test extends React.Component {
         }
         // invalid name
         if (typeof fields.test_name !== "undefined") {
-            if (!fields.test_name.match(/^[A-Za-z0-9_-]*$/)) {
+            if (!fields.test_name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.test_name = "Invalid Input";
             }
@@ -408,10 +408,6 @@ class Test extends React.Component {
         if (!fields.test_repository) {
             formIsValid = false;
             errors.test_repository = "Cannot be empty";
-        }
-        if (!fields.test_commands) {
-            formIsValid = false;
-            errors.test_commands = "Cannot be empty";
         }
         if (this.state.radioVal == 1 && this.state.fileStatus === 'No file chosen') {
             formIsValid = false;
@@ -502,7 +498,7 @@ class Test extends React.Component {
                     <td>{value.test_category}</td>
                     <td>{value.test_scripttype}</td>
                     <td>{value.test_description}</td>
-                    <td align="center"><div className={(value.scan_result ? (value.scan_result == 'Safe' ? "dev-net-status done" : "dev-net-status fail") : "dev-net-status progress")}>&nbsp;</div></td>
+                    <td align="center"><div className={(value.scan_result ? (value.scan_result == 'Safe' ? "dev-net-status done" : "dev-net-status fail") : "dev-net-status wip")}>&nbsp;</div></td>
                     <td>{value.onboard_status}</td>
                     <td class="text-center">
                         <div class="dev-actions">

@@ -112,7 +112,7 @@ class Infra extends React.Component {
             .then(response => {
                 console.log(response.status);
                 console.log(typeof (response));
-                console.log(response);
+                // console.log(response);
                 if (response.status != 200) { this.setState({ response: (`${response.status}  ${response.statusText}`) }); };
                 return response.json();
             })
@@ -140,8 +140,8 @@ class Infra extends React.Component {
         formData.append('action', 'create');
         var raw = JSON.stringify({ "infra_name": formData.get('infra_name'), "cloud_type": formData.get('cloud_type'), "environment": formData.get('environment'), "orchestrator": formData.get('orchestrator'), "access_key": formData.get('access_key'), "secret_key": formData.get('secret_key'), "action": formData.get('action') });
         console.log(formData);
-        console.log(raw);
-        console.log([...this.state.infra, JSON.parse(raw)]);
+        // console.log(raw);
+        // console.log([...this.state.infra, JSON.parse(raw)]);
 
         /*Add Infra*/
         var myHeaders = new Headers();
@@ -155,7 +155,7 @@ class Infra extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then((response) => {
-                console.log(response);
+                // console.log(response);
                 console.log(response.status);
                 if (response.status == 200) {
                     this.handleGetInfra();
@@ -201,8 +201,8 @@ class Infra extends React.Component {
         formData.append('action', 'modify');
         var raw = JSON.stringify({ "infra_name": formData.get('edit_infra_name'), "cloud_type": formData.get('edit_infra_cloud_type'), "environment": formData.get('edit_infra_environment'), "orchestrator": formData.get('edit_infra_orchestrator'), "access_key": formData.get('edit_infra_access_key'), "secret_key": formData.get('edit_infra_secret_key'), "action": formData.get('action') });
         console.log(formData);
-        console.log(raw);
-        console.log([...this.state.infra, JSON.parse(raw)]);
+        // console.log(raw);
+        // console.log([...this.state.infra, JSON.parse(raw)]);
 
         /*Update Infra*/
         let myHeaders = new Headers();
@@ -216,7 +216,7 @@ class Infra extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then((response) => {
-                console.log(response);
+                // console.log(response);
                 console.log(response.status);
                 if (response.status == 200) {
                     console.log('editin infra 200k');
@@ -264,7 +264,7 @@ class Infra extends React.Component {
         let raw = {
             infra_name: this.state.delInfraName,
         };
-        console.log(raw);
+        // console.log(raw);
         const updatedArray = this.state.infra.filter(task => task.infra_name !== this.state.delInfraName);
         console.log("updated Array", updatedArray);
         //  require('dotenv').config();    
@@ -283,7 +283,7 @@ class Infra extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then((response) => {
-                console.log(response)
+                // console.log(response)
                 this.setState({ disabledBtn: false });
                 console.log(response.status);
                 (response.status == 200) ? this.setState({ infra: updatedArray, isError: false, checkpoint: true }) : this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error', isError: true, checkpoint: true });
@@ -361,7 +361,7 @@ class Infra extends React.Component {
 
         // invalid name
         if (typeof fields.infra_name !== "undefined") {
-            if (!fields.infra_name.match(/^[A-Za-z0-9_-]*$/)) {
+            if (!fields.infra_name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.infra_name = "Invalid Input";
             }
@@ -480,7 +480,7 @@ class Infra extends React.Component {
         /*Display Infra Details in the Table*/
         let infra = '';
         let resultingInfra = [];
-        console.log(this.state.infra);
+        // console.log(this.state.infra);
         if (this.state.infra.length >= 1) {
             infra = this.state.infra.map((value, index) => {
                 return <tr className="" key={index}>
