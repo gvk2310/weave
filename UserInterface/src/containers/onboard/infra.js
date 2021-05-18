@@ -110,7 +110,7 @@ class Infra extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then(response => {
-                console.log(response.status);
+                // console.log(response.status);
                 console.log(typeof (response));
                 // console.log(response);
                 if (response.status != 200) { this.setState({ response: (`${response.status}  ${response.statusText}`) }); };
@@ -139,7 +139,7 @@ class Infra extends React.Component {
         let formData = new FormData(addInfraForm1);
         formData.append('action', 'create');
         var raw = JSON.stringify({ "infra_name": formData.get('infra_name'), "cloud_type": formData.get('cloud_type'), "environment": formData.get('environment'), "orchestrator": formData.get('orchestrator'), "access_key": formData.get('access_key'), "secret_key": formData.get('secret_key'), "action": formData.get('action') });
-        console.log(formData);
+        // console.log(formData);
         // console.log(raw);
         // console.log([...this.state.infra, JSON.parse(raw)]);
 
@@ -156,7 +156,7 @@ class Infra extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then((response) => {
                 // console.log(response);
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.handleGetInfra();
                     var duplicateIndex = '';
@@ -200,7 +200,7 @@ class Infra extends React.Component {
         formData.append('edit_infra_orchestrator', this.state.edit_infra_orchestrator);
         formData.append('action', 'modify');
         var raw = JSON.stringify({ "infra_name": formData.get('edit_infra_name'), "cloud_type": formData.get('edit_infra_cloud_type'), "environment": formData.get('edit_infra_environment'), "orchestrator": formData.get('edit_infra_orchestrator'), "access_key": formData.get('edit_infra_access_key'), "secret_key": formData.get('edit_infra_secret_key'), "action": formData.get('action') });
-        console.log(formData);
+        // console.log(formData);
         // console.log(raw);
         // console.log([...this.state.infra, JSON.parse(raw)]);
 
@@ -217,7 +217,7 @@ class Infra extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then((response) => {
                 // console.log(response);
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     console.log('editin infra 200k');
                     this.handleGetInfra();
@@ -266,7 +266,7 @@ class Infra extends React.Component {
         };
         // console.log(raw);
         const updatedArray = this.state.infra.filter(task => task.infra_name !== this.state.delInfraName);
-        console.log("updated Array", updatedArray);
+        // console.log("updated Array", updatedArray);
         //  require('dotenv').config();    
         // let API_URL = process.env.REACT_APP_ONBOARDING;
         // console.log(process.env);
@@ -285,7 +285,7 @@ class Infra extends React.Component {
             .then((response) => {
                 // console.log(response)
                 this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                 (response.status == 200) ? this.setState({ infra: updatedArray, isError: false, checkpoint: true }) : this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error', isError: true, checkpoint: true });
                 return response.text();
             })
@@ -410,7 +410,7 @@ class Infra extends React.Component {
         }
         const editErrors = {};
         let editForm = true;
-        console.log('editFields inside Validation', editFields);
+        // console.log('editFields inside Validation', editFields);
         if (!editFields.edit_infra_environment) {
             editForm = false;
             editErrors.edit_infra_environment = "Cannot be empty";
@@ -449,7 +449,7 @@ class Infra extends React.Component {
         this.setState({ ...fields, fields });
         const errors = {};
         const checkDuplicate = this.state.infra.filter(task => task.infra_name == fields["infra_name"]);
-        console.log(checkDuplicate);
+        // console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
             errors["infra_name"] = "Infra name already exists, Do you want to update?";
             this.setState({ errors: errors });

@@ -207,7 +207,7 @@ class Asset extends React.Component {
         }
         console.log("new Array", Object.fromEntries(formData));
         console.log("file data", formData.getAll('asset_file'));
-        console.log(formData);
+        // console.log(formData);
 
         /*Add Asset*/
         var myHeaders = new Headers();
@@ -220,7 +220,7 @@ class Asset extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/asset`, requestOptions)
             .then((response) => {
                 // console.log(response);
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.setState({ listening: true });
                     this.setState({ isError: false, checkpoint: true });
@@ -273,7 +273,7 @@ class Asset extends React.Component {
             .then((response) => {
                 console.log(response.status);
                 if (response.status == 200) {
-                    console.log('response in edit project', response);
+                    console.log('response in edit asset', response);
                     this.handleGetAsset();
                     this.setState({ isError: false, checkpoint: true });      
                 }

@@ -112,7 +112,7 @@ class Repository extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then((response) => {
                 // console.log(response);
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     let duplicateIndex = '';
                     const checkDuplicate = this.state.repo.filter((task, index) => {
@@ -241,7 +241,7 @@ class Repository extends React.Component {
             .then((response) => {
                 // console.log(response)
                 // this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                  // (response.status == 200) ? this.setState({ repo: updatedArray, checkpoint: true }) : this.setState({ status: 'There was an unknown error', msgClass: 'errorMessage', checkpoint: true });
                  if(response.status == 200) {
                     this.setState({ repo: updatedArray, checkpoint: true , isError: false});
@@ -328,7 +328,7 @@ class Repository extends React.Component {
         this.setState({ ...fields, fields });
         const errors = {};
         const checkDuplicate = this.state.repo.filter(task => task.repo_name == fields.repo_name);
-        console.log(checkDuplicate);
+        // console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
             errors.repo_name = "Repo name already exists, Do you want to update?";
             this.setState({ errors: errors });
@@ -377,7 +377,7 @@ class Repository extends React.Component {
             edit_repo_username: this.state.editFields.edit_repo_username ? this.state.editFields.edit_repo_username : this.state.edit_repo_username,
             edit_repo_password: this.state.editFields.edit_repo_password ? this.state.editFields.edit_repo_password : this.state.edit_repo_password
         }
-        console.log(editFields, 'editFields1 obj')
+        // console.log(editFields, 'editFields1 obj')
         const editErrors = {};
         let editForm = true;
         if (!editFields.edit_repo_url) {
