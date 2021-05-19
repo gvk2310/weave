@@ -46,7 +46,7 @@ spec:
         - name: vault_token
           value: devnetops
         - name: redis_url
-          value: redis-ls.ethan.svc.cluster.local:6378
+          value: redis-ls.ethan.svc.cluster.local:6379
         ports:
         - containerPort: 8080
 ---
