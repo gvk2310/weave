@@ -23,7 +23,7 @@ spec:
         imagePullPolicy: Always
         env:
         - name: redis_url
-          value: redis-ls.ethan.svc.cluster.local:6378
+          value: redis-ls.ethan.svc.cluster.local:6379
 #        resources:
 #          request:
 #            memory: "2Gi"
