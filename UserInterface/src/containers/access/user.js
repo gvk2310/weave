@@ -63,7 +63,7 @@ class User extends React.Component {
     }
 
     handleEditUser = (value, index) => {
-        console.log(value);
+        // console.log(value);
         this.handleShowModal('edituserModal');
         this.setState({
             editContent: value,
@@ -72,12 +72,12 @@ class User extends React.Component {
     }
 
     handleEditData = (event) => {
-        console.log(event);
+        // console.log(event);
         this.handleShowModal('edituserModal');
         const editUserForm = document.getElementById('editUserForm');
         const formData = new FormData(editUserForm);
         var raw = JSON.stringify({ "project": formData.get('projectArr'), "email": formData.get('email'), "roles": formData.get('roles') });
-        console.log(raw);
+        // console.log(raw);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         const requestOptions = {
@@ -89,7 +89,7 @@ class User extends React.Component {
         this.setState({ displayLoader: true });
         fetch(`###REACT_APP_PLATFORM_URL###/access/users`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.handleGetUser();
                     this.setState({ isError: false, checkpoint: true });                
@@ -115,7 +115,7 @@ class User extends React.Component {
     componentDidMount = () => {
         this.handleGetUser();
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
@@ -153,7 +153,7 @@ class User extends React.Component {
 
     handleGetUser = () => {
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
@@ -172,7 +172,7 @@ class User extends React.Component {
                     this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ userArr: findresponse });
-                    console.log(findresponse);
+                    // console.log(findresponse);
                 }
             })
             .catch(error => {
@@ -185,12 +185,12 @@ class User extends React.Component {
     handleAddUser = () => {
         this.handleShowModal('adduserModal');
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const addUserForm = document.getElementById('addUserForm');
         const formData = new FormData(addUserForm);
         const raw = JSON.stringify({ "email": formData.get('email'), "name": formData.get('name'), "project": formData.getAll('project')[0], "roles": formData.getAll('role')[0] });
-        console.log(formData);
-        console.log(raw);
+        // console.log(formData);
+        // console.log(raw);
         /* Add Service */
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -204,8 +204,7 @@ class User extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/access/users`, requestOptions)
             .then((response) => {
-                console.log(response.status);
-                // (response.status == 200) ? this.setState({ isError: false, checkpoint: true, userArr: [...this.state.userArr, JSON.parse(raw)] }) : this.setState({ isError: true, checkpoint: true, status: 'There was an unknown error' });
+                // console.log(response.status);
                 if(response.status == 200){
                     this.setState({ isError: false, checkpoint: true });
                     this.handleGetUser();
@@ -233,9 +232,9 @@ class User extends React.Component {
         this.handleShowModal('deleteuserModal')
         this.setState({ disabledBtn: true });
         const raw = { email: this.state.delUser };
-        console.log(JSON.stringify(raw));
+        // console.log(JSON.stringify(raw));
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -249,11 +248,10 @@ class User extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/access/users`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.state.userArr.splice(this.state.delUserWithIndex, 1);
                     this.setState({ isError: false, checkpoint: true });
-                    // this.setState({ msgClass: 'successMessage' });
                 }
                 else {
                     this.setState({ isError: true, status: 'There was an unknown error', checkpoint: true });
@@ -280,14 +278,14 @@ class User extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         this.handleShowModal('edituserModal');
         this.handleEditData();
     }
 
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         if (this.handleValidation()) {
             this.handleShowModal('adduserModal');
@@ -307,7 +305,7 @@ class User extends React.Component {
     }
 
     handleValidation() {
-        console.log('inside handle validations');
+        // console.log('inside handle validations');
         const fields = this.state.fields;
         const errors = {};
         let formIsValid = true;
@@ -333,6 +331,15 @@ class User extends React.Component {
             formIsValid = false;
             errors.name = "Cannot be empty";
         }
+        if (typeof fields.name !== "undefined") {
+            if (!fields.name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
+                formIsValid = false;
+                errors.name = "Invalid Input";
+            }
+            if(fields.name.length < 4 ){
+                formIsValid = false;
+                errors.name = "Minimum Length is 4";}
+        }
         // Role
         if (!fields.role) {
             formIsValid = false;
@@ -344,12 +351,12 @@ class User extends React.Component {
             errors.project = "Cannot be empty";
         }
         this.setState({ errors });
-        console.log('formIsValid', formIsValid)
+        // console.log('formIsValid', formIsValid)
         return formIsValid;
     }
 
     render() {
-        console.log("this.state.userArr", this.state.userArr)
+        // console.log("this.state.userArr", this.state.userArr)
         // Style for modal
         const showModalStyle = {
             display: 'block'
@@ -371,10 +378,12 @@ class User extends React.Component {
                     <td>{value.email}</td>
                     <td>{value.project}</td>
                     <td>{value.roles}</td>
+                    <td className="text-center">
                     <div class="dev-actions">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#myEditModal" onClick={() => this.handleEditUser(value, index)}><img src={require("images/edit.svg")} alt="Edit" /></a>
-                        <a href="javascript:void(0)" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.email)} ><img src={require("images/delete-icon.svg")} alt="Delete" /></a>
+                        <a href="javascript:void(0)" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.email)} ><img src={require("images/delete.svg")} alt="Delete" /></a>
                     </div>
+                    </td>
                 </tr>;
             });
         }
@@ -393,7 +402,6 @@ class User extends React.Component {
                 {this.state.projectArr && this.state.projectArr.map((item, key) => {   // here I call other options
                     return (<option key={key} selected={this.state.editContent.project === item.project_name ? true : false} directory={item}>{item.project_name}</option>);
                 })}
-                {/* <span style={{ color: "red" }}>{this.state.errors.project}</span> */}
             </select>
 
             <br />
@@ -403,25 +411,24 @@ class User extends React.Component {
                 {this.state.roles && this.state.roles.map((item, key) => {   // here I call other options
                     return (<option key={key} selected={this.state.editContent.roles === item.role ? true : false} directory={item}>{item.role}</option>);
                 })}
-                {/* <span style={{ color: "red" }}>{this.state.errors.role}</span> */}
             </select>
         </form>;
 
         // Add User Form
         const modalAddContent = <form className="modalbody" id='addUserForm'>
-            <label className="w-25 px-3" htmlFor="email">Email<span style={{ color: "red" }}>*</span></label>
+            <label className="form-label" htmlFor="email">Email<span style={{ color: "red" }}>*</span></label>
             <input type="email" name="email"
                 id="email" className="form-control" placeholder="Enter Email" onChange={this.handleChange.bind(this, "email")}  />
             <span style={{ color: "red" }}>{this.state.errors.email}</span>
 
             <br />
-            <label className="w-25 px-3" htmlFor="email">Name<span style={{ color: "red" }}>*</span></label>
+            <label className="form-label" htmlFor="email">Name<span style={{ color: "red" }}>*</span></label>
             <input type="text" name="name"
                 id="name" className="form-control" placeholder="Enter Name" onChange={this.handleChange.bind(this, "name")} maxLength="24" />
             <span style={{ color: "red" }}>{this.state.errors.name}</span>
 
             <br />
-            <label className="w-25 px-3" htmlFor="email">Projects<span style={{ color: "red" }}>*</span></label>
+            <label className="form-label" htmlFor="email">Projects<span style={{ color: "red" }}>*</span></label>
             <select name="project" id="project" className="form-control" onChange={this.handleChange.bind(this, "project")} >
                 <option>Select Project</option>
                 {this.state.projectArr && this.state.projectArr.map((item, key) => {   // here I call other options
@@ -431,7 +438,7 @@ class User extends React.Component {
             <span style={{ color: "red" }}>{this.state.errors.project}</span>
 
             <br />
-            <label className="w-25 px-3" htmlFor="email">Roles<span style={{ color: "red" }}>*</span></label>
+            <label className="form-label" htmlFor="email">Roles<span style={{ color: "red" }}>*</span></label>
             <select name="role" id="role" className="form-control" onChange={this.handleChange.bind(this, "role")} >
                 <option>Select Role</option>
                 {this.state.roles && this.state.roles.map((item, key) => {   // here I call other options
@@ -484,7 +491,7 @@ class User extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="adduserModaltitle">Add User</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('adduserModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
@@ -507,7 +514,7 @@ class User extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="edituserModaltitle">Edit User</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('edituserModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
@@ -530,11 +537,11 @@ class User extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="deleteuserModaltitle">Delete User</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('deleteuserModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
-                                        Are you sure?
+                                    Do you want to delete User?
                                           </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={(event) => this.handleDelete(event)}>Submit</button>

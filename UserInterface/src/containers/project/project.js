@@ -29,7 +29,7 @@ class Project extends React.Component {
     }
 
     componentDidMount = () => {
-        console.log('didmount');
+        // console.log('didmount');
         this.handleGetProject();
     }
 
@@ -55,7 +55,7 @@ class Project extends React.Component {
         if (modalId === 'checkpoint') this.setState({ checkpoint: !this.state.checkpoint });
     }
     handleGetProject = () => {
-        console.log('getproject');
+        // console.log('getproject');
         const myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', '*');
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
@@ -67,7 +67,7 @@ class Project extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/project/projects`, requestOptions)
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
                 return response.json();
             })
@@ -84,17 +84,17 @@ class Project extends React.Component {
     }
 
     handleAddproject = () => {
-        console.log('in addproject post');
+        // console.log('in addproject post');
         this.handleShowModal('addprojectModal');
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const projectForm1 = document.getElementById('addProjectForm');
         const formData = new FormData(projectForm1);
-        console.log(formData);
-        console.log('form data', formData.get('project_name'));
-        console.log('form data', formData.get('project_details'));
+        // console.log(formData);
+        // console.log('form data', formData.get('project_name'));
+        // console.log('form data', formData.get('project_details'));
         var raw = JSON.stringify({ "project_name": formData.get('project_name'), "project_details": formData.get('project_details') });
-        console.log(raw);
+        // console.log(raw);
 
         const myHeaders = new Headers();
 
@@ -107,7 +107,7 @@ class Project extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/project/projects`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.setState({ isError: false, checkpoint: true });
                     this.handleGetProject();
@@ -119,11 +119,11 @@ class Project extends React.Component {
             })
             .then(result => {
                 this.setState({ status: JSON.parse(result).message });
-                setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 console.log('error', error);
-                setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
         document.getElementById('addProjectForm').reset();
     }
@@ -133,11 +133,11 @@ class Project extends React.Component {
         const editProjectForm1 = document.getElementById('editProjectForm');
         const formData = new FormData(editProjectForm1);
         formData.append('project_id', this.state.project_id);
-        console.log('form data', formData.get('project_name'));
-        console.log('form data', formData.get('project_details'));
-        console.log('form data', formData.get('project_id'));
+        // console.log('form data', formData.get('project_name'));
+        // console.log('form data', formData.get('project_details'));
+        // console.log('form data', formData.get('project_id'));
         var raw = JSON.stringify({ "project_name": formData.get('edit_project_name'), "project_details": formData.get('edit_project_details'), "project_id": formData.get('project_id') });
-        console.log(raw);
+        // console.log(raw);
 
         /* Edit User */
         let myHeaders = new Headers();
@@ -149,9 +149,9 @@ class Project extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/project/projects`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
-                    console.log('response in edit project', response);
+                    // console.log('response in edit project', response);
                     this.setState({ isError: false, checkpoint: true });
                     this.handleGetProject();
                 }
@@ -184,9 +184,9 @@ class Project extends React.Component {
         this.handleShowModal('deleteprojectModal');
         this.setState({ disabledBtn: true });
         const raw = { project_name: this.state.delProject };
-        console.log(JSON.stringify(raw));
+        // console.log(JSON.stringify(raw));
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -201,10 +201,10 @@ class Project extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/project/projects`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.state.projectArr.splice(this.state.delProjectWithIndex, 1);
-                    this.setState({  isError: false, checkpoint: true });
+                    this.setState({ isError: false, checkpoint: true });
                 }
                 else {
                     this.setState({ isError: true, status: 'There was an unknown error', checkpoint: true });
@@ -214,13 +214,13 @@ class Project extends React.Component {
             .then(result => {
                 this.setState({ displayLoader: false });
                 this.setState({ status: JSON.parse(result).message });
-                setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 this.setState({ displayLoader: false });
                 console.log('error', error);
                 document.querySelector('#myDeleteConfirmationModal .close').click();
-                setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
     }
 
@@ -244,7 +244,7 @@ class Project extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         if (this.handleValidation()) {
             this.handleShowModal('addprojectModal');
@@ -255,7 +255,7 @@ class Project extends React.Component {
         }
     }
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         if (this.handleValidationEdit()) {
             this.handleShowModal('editprojectModal');
@@ -266,7 +266,7 @@ class Project extends React.Component {
     }
 
     handleValidation = () => {
-        console.log('inside handle validations');
+        // console.log('inside handle validations');
         const { fields } = this.state;
         const errors = {};
         let formIsValid = true;
@@ -277,10 +277,13 @@ class Project extends React.Component {
             errors.project_name = "Cannot be empty";
         }
         if (typeof fields.project_name !== "undefined") {
-            if (!fields.project_name.match(/^[A-Za-z0-9_-]/)) {
+            if (!fields.project_name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.project_name = "Invalid Input";
             }
+            if(fields.project_name.length < 4 ){
+                formIsValid = false;
+                errors.project_name = "Minimum Length is 4";}
         }
         if (!fields.project_details) {
             formIsValid = false;
@@ -291,6 +294,9 @@ class Project extends React.Component {
                 formIsValid = false;
                 errors.project_details = "Invalid Input";
             }
+            if(fields.project_details.length < 4 ){
+                formIsValid = false;
+                errors.project_details = "Minimum Length is 4";}
         }
         this.setState({ errors: errors });
         return formIsValid;
@@ -300,7 +306,7 @@ class Project extends React.Component {
         let editFields = {
             edit_project_details: this.state.editFields.edit_project_details ? this.state.editFields.edit_project_details : this.state.edit_project_details
         }
-        console.log(editFields, 'editFields obj')
+        // console.log(editFields, 'editFields obj')
         const editErrors = {};
         let editForm = true;
         if (editFields && !editFields.edit_project_details) {
@@ -312,13 +318,16 @@ class Project extends React.Component {
                 editForm = false;
                 editErrors.edit_project_details = "Invalid Input";
             }
+            if(editFields.edit_project_details < 4 ){
+                editForm = false;
+                editErrors.edit_project_details = "Minimum Length is 4";}
         }
         this.setState({ editErrors: editErrors });
         return editForm;
     }
 
     render() {
-        console.log('render projectArr', this.state.projectArr);
+        // console.log('render projectArr', this.state.projectArr);
         const showModalStyle = {
             display: 'block'
         };
@@ -336,10 +345,10 @@ class Project extends React.Component {
                         <td class="text-center">
                             <div class="dev-actions">
                                 <a href="javascript:void(0)" data-toggle="modal" data-target="#editProjectForm" onClick={() => this.handleEditProject(value.project_name, value.project_details, value.project_id)}><img src={require("images/edit.svg")} alt="Edit" /></a>
-                                <a href="javascript:void(0)" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.project_name)} ><img src={require("images/delete-icon.svg")} alt="Delete" /></a>
+                                <a href="javascript:void(0)" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.project_name)}><img src={require("images/delete.svg")} alt="Delete" /></a>
                             </div>
                         </td>
-                    </tr>);
+                    </tr>); 
             });
         }
         else if (this.state.projectArr.length == 0) { projectbody = <tr><td class="text-center text-primary" colSpan="3">{this.state.response}</td></tr>; }
@@ -350,14 +359,14 @@ class Project extends React.Component {
             <div className="form-group">
                 <label className="form-label">Project Name<span style={{ color: "red" }}>*</span></label>
                 <input type="text" name="project_name"
-                    className="form-control" placeholder="Enter Project Name" onChange={this.handleChange.bind(this, "project_name")} minLength="4" maxLength="24" />
+                    className="form-control" placeholder="Enter Project Name" onChange={this.handleChange.bind(this, "project_name")} maxLength="24" />
                 <span style={{ color: "red" }}>{this.state.errors.project_name}</span>
             </div>
             <br />
             <div className="form-group">
                 <label className="form-label">Description<span style={{ color: "red" }}>*</span></label>
                 <input type="text" name="project_details"
-                    className="form-control" placeholder="Enter Description" onChange={this.handleChange.bind(this, "project_details")} minLength="20" maxLength="120" />
+                    className="form-control" placeholder="Enter Description" onChange={this.handleChange.bind(this, "project_details")} maxLength="120" />
                 <span style={{ color: "red" }}>{this.state.errors.project_details}</span>
             </div>
         </form>;
@@ -373,7 +382,7 @@ class Project extends React.Component {
             <div className="form-group">
                 <label className="form-label">Description<span style={{ color: "red" }}>*</span></label>
                 <input type="text" name="edit_project_details" value={this.state.edit_project_details}
-                    className="form-control" placeholder="Enter Description" onChange={this.handleChangeEdit.bind(this, "edit_project_details")} minLength="20" maxLength="120" />
+                    className="form-control" placeholder="Enter Description" onChange={this.handleChangeEdit.bind(this, "edit_project_details")} maxLength="120" />
                 <span style={{ color: "red" }}>{this.state.editErrors.edit_project_details}</span>
             </div>
         </form>;
@@ -391,7 +400,7 @@ class Project extends React.Component {
                         </div>
                         <div className="dev-section my-4">
                             <div style={this.state.checkpoint ? showModalStyle : hideModalStyle}>
-                                {this.state.checkpoint && <div className={`alert myw-toast myw-alert alert-dismissible show ${this.state.isError ? 'alert-failed':'alert-success'}`} role="alert" >
+                                {this.state.checkpoint && <div className={`alert myw-toast myw-alert alert-dismissible show ${this.state.isError ? 'alert-failed' : 'alert-success'}`} role="alert" >
                                     <div>{this.state.status}</div>
                                     <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => { this.handleShowModal('checkpoint') }}></button>
                                 </div>}
@@ -419,7 +428,7 @@ class Project extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="addprojectModaltitle">Add Project</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('addprojectModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
@@ -441,7 +450,7 @@ class Project extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="editprojectModaltitle">Edit Project</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('editprojectModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
@@ -463,11 +472,11 @@ class Project extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="deleteprojectModaltitle">Delete Project</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('deleteprojectModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
-                                        Are you sure?
+                                    Do you want to delete Project?
                                     </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('deleteprojectModal'); }}>Cancel</button>

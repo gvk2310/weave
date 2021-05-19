@@ -21,7 +21,7 @@ class Services extends React.Component{
     componentDidMount = () => {     
         
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         /* Display List of Services */
         var myHeaders = new Headers();
         myHeaders.append('Origin', 'http://localhost:3000/');
@@ -37,12 +37,12 @@ class Services extends React.Component{
         };
         fetch(`###REACT_APP_PLATFORM_URL###/access/services`, requestOptions)
             .then(function(response){
-                console.log(response);
+                // console.log(response);
                 return response.json();
             })
             .then(result => {
                 // if(document.getElementById('loader')){document.getElementById('loader').style.display = "none";}
-                console.log(result);
+                // console.log(result);
                 if(result.msg){
                     this.setState({response:result.msg});
                 }else{
@@ -58,7 +58,7 @@ class Services extends React.Component{
     render(){       
         /*Display Service Status in the Table*/
         let service = '';
-        console.log(this.state.services);
+        // console.log(this.state.services);
         if(this.state.services.length>0) 
         {
             service = this.state.services.map((value,index) => {

@@ -51,7 +51,7 @@ class Repository extends React.Component {
 
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then(response => {
-                console.log(typeof (response), response);
+                // console.log(typeof (response), response);
                 if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
                 return response.json();
             })
@@ -60,7 +60,7 @@ class Repository extends React.Component {
                     this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ repo: findresponse });
-                    console.log(repo)
+                    // console.log(repo)
                 }
             })
             .catch(error => {
@@ -111,8 +111,8 @@ class Repository extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then((response) => {
-                console.log(response);
-                console.log(response.status);
+                // console.log(response);
+                // console.log(response.status);
                 if (response.status == 200) {
                     let duplicateIndex = '';
                     const checkDuplicate = this.state.repo.filter((task, index) => {
@@ -121,7 +121,7 @@ class Repository extends React.Component {
                             return true;
                         }
                     });
-                    console.log(checkDuplicate);
+                    // console.log(checkDuplicate);
                     if (checkDuplicate.length > 0) this.state.repo.splice(duplicateIndex, 1);
                     this.handleGetRepository();
                     this.setState({ isError: false, checkpoint: true });
@@ -134,7 +134,7 @@ class Repository extends React.Component {
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (result.msg) { this.setState({ status: result.msg }); }
                 setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             })
@@ -148,10 +148,10 @@ class Repository extends React.Component {
 
     handleUpdateRepository = () => {
         this.handleShowModal('editrepositoryModal')
-        console.log('inside update repo');
+        // console.log('inside update repo');
         // require('dotenv').config();    
         // const API_URL = REACT_APP_ONBOARDING;
-        console.log(process.env);
+        // console.log(process.env);
         // const token = sessionStorage.getItem('tokenStorage');
 
         const updateRepositoryForm = document.getElementById('updateRepositoryForm');
@@ -166,8 +166,8 @@ class Repository extends React.Component {
             "repo_name": formData.get('edit_repo_name'), "repo_vendor": formData.get('edit_repo_vendor'), "repo_url": formData.get('edit_repo_url'),
             "repo_username": formData.get('edit_repo_username'), "repo_password": formData.get('edit_repo_password'), "action": formData.get('action'), 'assets_info': []
         });
-        console.log(raw1);
-        console.log(raw);
+        // console.log(raw1);
+        // console.log(raw);
         /* Update Repository */
         const myHeaders = new Headers();
         //       myHeaders.append("Authorization", `Bearer ${token}`);
@@ -181,7 +181,7 @@ class Repository extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     let duplicateIndex = '';
                     const checkDuplicate = this.state.repo.filter((task, index) => {
@@ -190,7 +190,7 @@ class Repository extends React.Component {
                             return true;
                         }
                     });
-                    console.log(checkDuplicate);
+                    // console.log(checkDuplicate);
                     if (checkDuplicate.length > 0) this.state.repo.splice(duplicateIndex, 1);
                     this.handleGetRepository();
                     // this.setState({ msgClass: 'successMessage', repo: [...this.state.repo, JSON.parse(raw1)] });
@@ -203,7 +203,7 @@ class Repository extends React.Component {
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (result.msg) { this.setState({ status: result.msg }); }
                 setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
             })
@@ -217,9 +217,9 @@ class Repository extends React.Component {
     handleDelete = (event) => {
         this.handleShowModal('deleterepositoryModal');
         // this.setState({ disabledBtn: true });
-        console.log(this.state.delRepoName);
+        // console.log(this.state.delRepoName);
         const deleteData = this.state.repo.filter(task => task.repo_name === this.state.delRepoName);
-        console.log(deleteData,'deleteData')
+        // console.log(deleteData,'deleteData')
         if(deleteData[0].assets_info.length > 0){
             this.setState({ status: 'Repository has associated assets so cannot be deleted', isError: true, checkpoint: true })
             setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
@@ -228,7 +228,7 @@ class Repository extends React.Component {
                 repo_name: this.state.delRepoName,
                 delete_assets: event.target.value
             };
-            console.log(raw);
+            // console.log(raw);
             const updatedArray = this.state.repo.filter(task => task.repo_name !== this.state.delRepoName);
             const myHeaders = new Headers();
             myHeaders.append("Content-Type", "application/json");
@@ -239,9 +239,9 @@ class Repository extends React.Component {
             };
             fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then((response) => {
-                console.log(response)
+                // console.log(response)
                 // this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                  // (response.status == 200) ? this.setState({ repo: updatedArray, checkpoint: true }) : this.setState({ status: 'There was an unknown error', msgClass: 'errorMessage', checkpoint: true });
                  if(response.status == 200) {
                     this.setState({ repo: updatedArray, checkpoint: true , isError: false});
@@ -253,7 +253,7 @@ class Repository extends React.Component {
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
                 setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
@@ -273,11 +273,11 @@ class Repository extends React.Component {
     }
 
     displayAssetList = (currRepo) => {
-        console.log(currRepo.assets_info);
-        console.log(currRepo.assets_info.length);
+        // console.log(currRepo.assets_info);
+        // console.log(currRepo.assets_info.length);
         let currentAssetName = '';
         if (currRepo.assets_info.length > 0) {
-            console.log('inside if');
+            // console.log('inside if');
             currentAssetName = currRepo.assets_info.map((value1, index1) => {
                 return (<>
                     <div className="statusTable row">
@@ -297,7 +297,7 @@ class Repository extends React.Component {
             });
         }
         else {
-            console.log('inside else');
+            // console.log('inside else');
             currentAssetName =
                 <>
                     <div className="statusTable row">
@@ -308,7 +308,7 @@ class Repository extends React.Component {
                     </div>
                 </>;
         }
-        console.log(currentAssetName);
+        // console.log(currentAssetName);
         this.setState({ currentRepo: currRepo.repo_name, currentAssetName: currentAssetName });
     }
 
@@ -328,7 +328,7 @@ class Repository extends React.Component {
         this.setState({ ...fields, fields });
         const errors = {};
         const checkDuplicate = this.state.repo.filter(task => task.repo_name == fields.repo_name);
-        console.log(checkDuplicate);
+        // console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
             errors.repo_name = "Repo name already exists, Do you want to update?";
             this.setState({ errors: errors });
@@ -340,10 +340,10 @@ class Repository extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         if (this.handleValidation()) {
-            console.log('validation successful')
+            // console.log('validation successful')
             this.handleShowModal('addrepositoryModal')
             this.handleAddRepository();
         } else {
@@ -352,10 +352,10 @@ class Repository extends React.Component {
     }
 
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         if (this.handleValidationEdit()) {
-            console.log('validation successful')
+            // console.log('validation successful')
             this.handleShowModal('editrepositoryModal')
             this.handleUpdateRepository();
         } else {
@@ -377,7 +377,7 @@ class Repository extends React.Component {
             edit_repo_username: this.state.editFields.edit_repo_username ? this.state.editFields.edit_repo_username : this.state.edit_repo_username,
             edit_repo_password: this.state.editFields.edit_repo_password ? this.state.editFields.edit_repo_password : this.state.edit_repo_password
         }
-        console.log(editFields, 'editFields1 obj')
+        // console.log(editFields, 'editFields1 obj')
         const editErrors = {};
         let editForm = true;
         if (!editFields.edit_repo_url) {
@@ -410,7 +410,7 @@ class Repository extends React.Component {
         const fields = this.state.fields;
         const errors = {};
         let formIsValid = true;
-        console.log('fields inside Validation', fields)
+        // console.log('fields inside Validation', fields)
         // Name
         if (!fields.repo_name) {
             formIsValid = false;
@@ -418,11 +418,15 @@ class Repository extends React.Component {
         }
         // invalid name
         if (typeof fields.repo_name !== "undefined") {
-            if (!fields.repo_name.match(/^[A-Za-z0-9_-]/)) {
+            if (!fields.repo_name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
-                errors.repo_name = "Only letters";
+                errors.repo_name = "Invalid Input";
             }
-        }
+            if(fields.repo_name.length < 4 ){
+                formIsValid = false;
+                errors.repo_name = "Minimum Length is 4";}
+        
+            }
         // Vendor
         if (!fields.repo_vendor) {
             formIsValid = false;
@@ -467,7 +471,7 @@ class Repository extends React.Component {
 
         // /*Display Repository Details in the Table*/
         let repository = '';
-        console.log(this.state.repo)
+        // console.log(this.state.repo)
         if (this.state.repo.length > 0) {
             repository = this.state.repo.map((value, index) => {
                 return <tr className="" key={index} >
@@ -478,7 +482,7 @@ class Repository extends React.Component {
                     <td class="text-center repo_alignment">
                         <div class="dev-actions">
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#myUpdateRepositoryModal" onClick={() => this.handleEditRepository(value.repo_name, value.repo_vendor, value.repo_url)}><img src={require("images/edit.svg")} alt="Edit" /></a>
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#myDeleteConfirmationModal" onClick={() => this.handleDeleteBeforeConfirmation(value.repo_name)} ><img src={require("images/delete-icon.svg")} alt="Delete" /></a>
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#myDeleteConfirmationModal" onClick={() => this.handleDeleteBeforeConfirmation(value.repo_name)} ><img src={require("images/delete.svg")} alt="Delete" /></a>
                         </div>
                     </td>
                 </tr>;
@@ -593,7 +597,7 @@ class Repository extends React.Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="editrepositoryModaltitle">Edit Repository</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('editrepositoryModal') }}>
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true">&nbsp;</span>
                                 </button>
                             </div>
                             <div className="modal-body">
@@ -615,7 +619,7 @@ class Repository extends React.Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="addrepositoryModaltitle">Add Repository</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('addrepositoryModal') }}>
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true">&nbsp;</span>
                                 </button>
                             </div>
                             <div className="modal-body">
@@ -637,11 +641,11 @@ class Repository extends React.Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="deleterepositoryModaltitle">Delete Repository</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('deleterepositoryModal') }}>
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true">&nbsp;</span>
                                 </button>
                             </div>
                             <div className="modal-body">
-                                are you sure?
+                             Do you want to delete Repository?
                                 </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('deleterepositoryModal') }}>Cancel</button>

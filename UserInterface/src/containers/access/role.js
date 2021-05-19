@@ -8,29 +8,26 @@ class Role extends React.Component {
         super(props);
         this.state = {
             checkPoint: false,
+            isError: false,
             showInOption: 'Select something',
-            newRole: '',
             roles: [],
-            role: '',
             services: [],
             isHiddenSearchBox: true,
             displayLoader: true,
-            openPage: '',
             response: '',
             showAddModal: false,
             showEditModal: false,
             showDelModal: false,
             editservice: '',
             currentRole: '',
-            currentService: [],
             fields: {},
             errors: {},
             status: ''
-
         };
     }
 
     componentDidMount = () => {
+        this.handleGetRole();
 
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
         var myHeaders = new Headers();
@@ -38,27 +35,6 @@ class Role extends React.Component {
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
         myHeaders.append('GET', 'POST', 'OPTIONS');
-
-        // Fetch the roles from APi
-        var requestOptions = {
-            method: 'GET',
-            headers: myHeaders,
-
-        };
-        fetch(`###REACT_APP_PLATFORM_URL###/access/roles`, requestOptions)
-            .then(response => response.json())
-            .then((findresponse) => {
-                //  
-                if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
-                } else {
-                    this.setState({ roles: findresponse });
-                }
-            })
-            .catch(error => {
-
-                console.log('error', error);
-            });
 
         // Fetch The Services from API
         var requestOptions = {
@@ -69,11 +45,11 @@ class Role extends React.Component {
 
         fetch(`###REACT_APP_PLATFORM_URL###/access/services`, requestOptions)
             .then(function (response) {
-                console.log(response.status);
+                // console.log(response.status);
                 return response.json();
             })
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 this.setState({ services: result });
             })
             .catch(error => console.log('error', error));
@@ -95,11 +71,10 @@ class Role extends React.Component {
     }
 
     handleDictionary = (event) => {
-        console.log(event.target.value);
+        // console.log(event.target.value);
     }
 
     handleGetRole = () => {
-
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
         var myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
@@ -126,65 +101,19 @@ class Role extends React.Component {
             });
     }
 
-    //Delete Service
-    handleDeleteService = () => {
-
-        const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
-
-        const formData = new FormData(document.getElementById('deleteServicesForm'));
-        var raw = JSON.stringify({ "role": formData.get('role') });
-
-        const updatedArray = this.state.services.filter(task => task.role !== this.state.delRepoName);
-
-        const myHeaders = new Headers();
-
-        myHeaders.append("Content-Type", "application/json");
-        var requestOptions = {
-            method: 'PUT',
-            headers: myHeaders,
-            body: raw,
-        };
-        if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
-        fetch(`###REACT_APP_PLATFORM_URL###/access/roles`, requestOptions)
-            .then((response) => {
-                console.log(response.status);
-                if (response.status == 200) {
-                    this.setState({ msgClass: 'successMessage' });
-                    this.setState({ alertmessage: 'success', status: 'Roles are updated', checkpoint: true});
-                    this.handleGetRole();
-                }
-                else {
-                    this.setState({ msgClass: 'errorMessage', checkpoint: true });
-                }
-                return response.text();
-            })
-            .then(result => {
-                this.setState({ status: JSON.parse(result).message });
-                setTimeout(() => { this.setState({  msgClass: '' }); }, 3000);
-            })
-            .catch(error => {
-
-                console.log('error', error);
-                setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
-            });
-    }
-
     // Add Role
     handleAddRole = () => {
-
         this.handleShowModal('addroleModal');
-
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const addRolesForm = document.getElementById('addRolesForm');
         const formData = new FormData(addRolesForm);
+        // console.log(Object.fromEntries(formData))
+        const raw = JSON.stringify({ "role": formData.get('role'), "services": formData.getAll('write') });
+        // console.log('raw' , raw)
+
         var myHeaders = new Headers();
-
         myHeaders.append("Content-Type", "application/json");
-
-        var raw = JSON.stringify({ "role": formData.get('role'), "services": formData.getAll('write') });
-
         var requestOptions = {
             method: 'POST',
             headers: myHeaders,
@@ -193,43 +122,36 @@ class Role extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/access/roles`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
-                    this.setState({ alertmessage: 'success', checkpoint: true });
-                    this.setState({ msgClass: 'successMessage' });
+                    this.setState({ isError: false, checkpoint: true });
                     this.handleGetRole();
                 }
                 else {
-                    this.setState({ msgClass: 'errorMessage', checkpoint: true });
+                    this.setState({ isError: true, checkpoint: true });
                 }
                 return response.text();
             })
             .then(result => {
-
                 if (JSON.parse(result).message) { this.setState({ status: JSON.parse(result).message }); }
-                setTimeout(() => { this.setState({  msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
-
                 console.log('error', error);
-                setTimeout(() => { this.setState({msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
             document.getElementById('addRolesForm').reset();
     }
 
-    handleAddService = () => {
-
+    handleUpdateService = () => {
         this.handleShowModal('editroleModal');
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
-
+        // console.log(process.env);
 
         const formData = new FormData(document.getElementById('editServicesForm'));
-        const formElements = document.forms.editServicesForm.elements.role.value;
-        console.log(formElements);
-        console.log(formData);
+        // console.log(formData);
         var raw = JSON.stringify({ "role": formData.get('role'), "services": formData.getAll('write') });
-        console.log(raw)
+        // console.log(raw)
         /*Add Service*/
         const myHeaders = new Headers();
 
@@ -243,31 +165,29 @@ class Role extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/access/roles?action=1`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
-                    this.setState({ msgClass: 'successMessage' });
+                    this.setState({ isError: false, checkPoint: true });
                     this.handleGetRole();
                 }
                 else {
-                    this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error' });
+                    this.setState({ isError: true, checkPoint: true });
                 }
                 return response.text();
             })
             .then(result => {
-
                 this.setState({ status: JSON.parse(result).message });
-                setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkPoint: false }); }, 3000);
             })
             .catch(error => {
-
-                setTimeout(() => { this.setState({  msgClass: '' }); }, 3000);
                 console.log('error', error);
+                setTimeout(() => { this.setState({ checkPoint: false }); }, 3000);
             });
     }
 
     handleEditRole = (value, index) => {
         this.handleShowModal('editroleModal')
-        console.log(value.role);
+        // console.log(value.role);
         this.setState({
             editName: value.role,
             edit: true,
@@ -284,9 +204,9 @@ class Role extends React.Component {
         this.handleShowModal('deleteroleModal');
         this.setState({ disabledBtn: true });
         const raw = { role: this.state.delService };
-        console.log(JSON.stringify(raw));
+        // console.log(JSON.stringify(raw));
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
 
         var myHeaders = new Headers();
 
@@ -301,32 +221,30 @@ class Role extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/access/roles`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.state.roles.splice(this.state.delServiceWithIndex, 1);
-                    this.setState({ msgClass: 'successMessage', alertmessage: 'success' ,checkpoint: true});
+                    this.setState({ isError: false ,checkpoint: true});
                 }
                 else {
-                    this.setState({ msgClass: 'errorMessage', checkpoint: true });
+                    this.setState({ isError: true, checkpoint: true });
                 }
                 return response.text();
             })
             .then(result => {
-
                 this.setState({ status: JSON.parse(result).message });
-                setTimeout(() => { this.setState({  msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             })
             .catch(error => {
-
                 console.log('error', error);
                 this.setState({ disabledBtn: false });
                 document.querySelector('#myDeleteConfirmationModal .close').click();
-                setTimeout(() => { this.setState({  msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             });
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         if (this.handleValidation()) {
             this.handleShowModal('addroleModal');
@@ -347,7 +265,7 @@ class Role extends React.Component {
     }
 
     handleValidation() {
-        console.log('inside handle validations');
+        // console.log('inside handle validations');
         const { fields } = this.state;
         const errors = {};
         let formIsValid = true;
@@ -360,19 +278,24 @@ class Role extends React.Component {
         }
 
         if (typeof fields.role !== "undefined") {
-            if (!fields.role.match(/^[A-Za-z0-9_-]/)) {
+            if (!fields.role. match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
                 errors.role = "Invalid Input";
             }
+            if(fields.role.length < 4 ){
+                formIsValid = false;
+                errors.role = "Minimum Length is 4";
+            }
         }
+        // console.log(fields.write, 'write')
 
         this.setState({ errors });
         return formIsValid;
     }
 
     render() {
-        console.log("Roles", this.state.roles)
-        console.log(this.state.services);
+        // console.log("Roles", this.state.roles)
+        // console.log(this.state.services);
         //Style for modal
         const showModalStyle = {
             display: 'block'
@@ -383,20 +306,18 @@ class Role extends React.Component {
 
         const addRoleModal = <form className="modalbody" id='addRolesForm'>
             <div className="form-group">
-                <label className="form-label">Role Name<span style={{ color: "red" }}>*</span></label>
-                <input type="text" className="form-control" name="role" id="roleId" placeholder="Enter Role Name" onChange={this.handleChange.bind(this, "role")} minLength="4" maxLength="24" />
+                <label className="form-label">Name<span style={{ color: "red" }}>*</span></label>
+                <input type="text" className="form-control" name="role" id="roleId" placeholder="Enter Role Name" onChange={this.handleChange.bind(this, "role")} maxLength="24" />
                 <span style={{ color: "red" }}>{this.state.errors.role}</span>
             </div>
             <div className="form-group">
                 <label className="form-label">Services<span style={{ color: "red" }}>*</span></label>
                 <select className="form-control" name="write" id="roleWriteService" multiple>
                     {/* <option>Select Services</option> */}
-                    {this.state.services && this.state.services.map((item, key) => {   // here I call other options
-                        return (<option key={key} directory={item}>{item.name}</option>);
-
+                    {this.state.services && this.state.services.map((item, index) => {   // here I call other options
+                        return (<option key={index} directory={item} value={item.name}>{item.name}</option>);
                     })}
                     <span style={{ color: "red" }}>{this.state.errors.write}</span>
-
                 </select>
             </div>
         </form>;
@@ -405,7 +326,7 @@ class Role extends React.Component {
         const editServiceModal = <form className="modalbody" id='editServicesForm'>
             <div className="form-group">
                 <label className="form-label">Role Name<span style={{ color: "red" }}>*</span></label>
-                <input name="role" type="text" className="form-control" value={this.state.editName} minLength="4" maxLength="24" readOnly/>
+                <input name="role" type="text" className="form-control" value={this.state.editName} maxLength="24" readOnly/>
             </div>
             <div>
                 <label className="form-label">Service<span style={{ color: "red" }}>*</span></label>
@@ -420,25 +341,23 @@ class Role extends React.Component {
 
         /* Display Roles in Table */
         let role = '';
-        console.log('roles array ', this.state.roles);
-        console.log(this.state.roles.length);
         if (this.state.roles.length > 0) {
             role = this.state.roles.map((value, index) => {
                 return <tr key={index} className="tight">
-                    {value.role && <td className="frstCol">{value.role}</td>}
+                    <td className="frstCol">{value.role}</td>
                     <td style={{ 'line-height': '22px' }} className="">
                         {[...value.access.access_on.join(", ")]}
                     </td>
+                    <td className="text-center">
                     <div class="dev-actions">
                         <a href="javascript:void(0)" data-toggle="modal" data-toggle="modal" data-target="#editroleModal" onClick={() => this.handleEditRole(value, index)}><img src={require("images/edit.svg")} alt="Edit" /></a>
-                        <a href="javascript:void(0)" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.role)}><img src={require("images/delete-icon.svg")} alt="Delete" /></a>
+                        <a href="javascript:void(0)" data-toggle="modal" onClick={() => this.handleDeleteBeforeConfirmation(index, value.role)}><img src={require("images/delete.svg")} alt="Delete" /></a>
                     </div>
+                    </td>
                 </tr>;
             });
         }
         else role = <tr><td className="text-center text-primary" colSpan="3">{this.state.response}</td></tr>;
-        console.log(this.state.currentService);
-
 
         return (
             <>
@@ -453,7 +372,7 @@ class Role extends React.Component {
                         </div>
                         <div className="dev-section my-4">
                             <div style={this.state.checkpoint ? showModalStyle : hideModalStyle} >
-                                {this.state.checkpoint && <div className="alert myw-toast myw-alert alert-success alert-dismissible show" role="alert" >
+                                {this.state.checkpoint && <div className={`alert myw-toast myw-alert alert-dismissible show ${this.state.isError ? 'alert-failed':'alert-success'}`} role="alert" >
                                     <div>{this.state.status}</div>
                                     <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={() => { this.handleShowModal('checkpoint') }}></button>
                                 </div>}
@@ -462,7 +381,7 @@ class Role extends React.Component {
                                 <table className="table table-striped dev-anlytics-table">
                                     <thead>
                                         <tr>
-                                            <th scope="col" width="20%">Roles</th>
+                                            <th scope="col" width="20%">Role Name</th>
                                             <th scope="col">Services</th>
                                             <th scope="col" className="text-center" width="7%">Action</th>
                                         </tr>
@@ -471,7 +390,6 @@ class Role extends React.Component {
                                         {role}
                                     </tbody>
                                 </table>
-
                             </div>
                         </div>
                         {/* <!-- modal - Add Role --> */}
@@ -482,7 +400,7 @@ class Role extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="addroleModaltitle">Add Role</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('addroleModal'); }} >
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
@@ -491,7 +409,6 @@ class Role extends React.Component {
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('addroleModal'); }}>Cancel</button>
                                         <button type="button" className="btn btn-primary" onClick={(e) => this.contactSubmit(e)}>Submit</button>
-                                        {/*  onClick={(e) => this.funcnName(e)} */}
                                     </div>
                                 </div>
                             </div>
@@ -504,22 +421,18 @@ class Role extends React.Component {
                                 <div className="modal-content">
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="editroleModaltitle">Edit Role</h5>
-                                        {/* <td><span  data-toggle="modal" data-target="#editroleModal" onClick={() => {this.handleShowModal('editroleModal');}}><img src={require("images/edit.svg")} alt="Edit"/></span></td> */}
                                         <button type="button" className="close" data-target="#editroleModal" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('editroleModal'); }} >
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
-
                                         <div className="form-group">
                                             {editServiceModal}
-                                            {/* <label className="form-label">Description</label> */}
-                                            {/* <input type="text" className="form-control" placeholder="Enter role description here" /> */}
                                         </div>
                                     </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('editroleModal'); }}>Cancel</button>
-                                        <button type="button" className="btn btn-primary" onClick={() => this.handleAddService()} >Edit Role</button>
+                                        <button type="button" className="btn btn-primary" onClick={() => this.handleUpdateService()} >Submit</button>
                                     </div>
                                 </div>
                             </div>
@@ -534,12 +447,12 @@ class Role extends React.Component {
                                     <div className="modal-header">
                                         <h5 className="modal-title" id="deleteroleModaltitle">Delete Role</h5>
                                         <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('deleteroleModal'); }}>
-                                            <span aria-hidden="true">&times;</span>
+                                            <span aria-hidden="true">&nbsp;</span>
                                         </button>
                                     </div>
                                     <div className="modal-body">
-                                        Are you sure?
-                                                </div>
+                                    Do you want to delete Role?
+                                    </div>
                                     <div className="modal-footer">
                                         <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('deleteroleModal'); }}>Cancel</button>
                                         <button type="button" className="btn btn-primary" onClick={() => this.handleDelete()}>Delete</button>
@@ -550,7 +463,6 @@ class Role extends React.Component {
                         {/* <!-- /modal -  Delete Role --> */}
                     </div>
                 </div>
-                {/* <!-- /content --></div> */}
             </>
         );
     }

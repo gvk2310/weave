@@ -94,7 +94,7 @@ class Infra extends React.Component {
 
     handleGetInfra = () => {
         let API_URL = process.env.REACT_APP_ONBOARDING;
-        console.log(process.env);
+        // console.log(process.env);
         let token = sessionStorage.getItem('tokenStorage');
 
         let myHeaders = new Headers();
@@ -110,9 +110,9 @@ class Infra extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then(response => {
-                console.log(response.status);
-                console.log(typeof (response));
-                console.log(response);
+                // console.log(response.status);
+                // console.log(typeof (response));
+                // console.log(response);
                 if (response.status != 200) { this.setState({ response: (`${response.status}  ${response.statusText}`) }); };
                 return response.json();
             })
@@ -139,9 +139,9 @@ class Infra extends React.Component {
         let formData = new FormData(addInfraForm1);
         formData.append('action', 'create');
         var raw = JSON.stringify({ "infra_name": formData.get('infra_name'), "cloud_type": formData.get('cloud_type'), "environment": formData.get('environment'), "orchestrator": formData.get('orchestrator'), "access_key": formData.get('access_key'), "secret_key": formData.get('secret_key'), "action": formData.get('action') });
-        console.log(formData);
-        console.log(raw);
-        console.log([...this.state.infra, JSON.parse(raw)]);
+        // console.log(formData);
+        // console.log(raw);
+        // console.log([...this.state.infra, JSON.parse(raw)]);
 
         /*Add Infra*/
         var myHeaders = new Headers();
@@ -155,8 +155,8 @@ class Infra extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then((response) => {
-                console.log(response);
-                console.log(response.status);
+                // console.log(response);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.handleGetInfra();
                     var duplicateIndex = '';
@@ -199,11 +199,10 @@ class Infra extends React.Component {
         formData.append('edit_infra_cloud_type', this.state.edit_infra_cloud_type);
         formData.append('edit_infra_orchestrator', this.state.edit_infra_orchestrator);
         formData.append('action', 'modify');
-        // var raw = JSON.stringify(Object.fromEntries(formData));
         var raw = JSON.stringify({ "infra_name": formData.get('edit_infra_name'), "cloud_type": formData.get('edit_infra_cloud_type'), "environment": formData.get('edit_infra_environment'), "orchestrator": formData.get('edit_infra_orchestrator'), "access_key": formData.get('edit_infra_access_key'), "secret_key": formData.get('edit_infra_secret_key'), "action": formData.get('action') });
-        console.log(formData);
-        console.log(raw);
-        console.log([...this.state.infra, JSON.parse(raw)]);
+        // console.log(formData);
+        // console.log(raw);
+        // console.log([...this.state.infra, JSON.parse(raw)]);
 
         /*Update Infra*/
         let myHeaders = new Headers();
@@ -217,20 +216,11 @@ class Infra extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then((response) => {
-                console.log(response);
-                console.log(response.status);
+                // console.log(response);
+                // console.log(response.status);
                 if (response.status == 200) {
-                    console.log('editin infra 200k');
+                    // console.log('editin infra 200k');
                     this.handleGetInfra();
-                    // var duplicateIndex = '';
-                    // const checkDuplicate = this.state.infra.filter((task, index) => {
-                    //     if (task.infra_name == formData.get('infra_name')) {
-                    //         duplicateIndex = index;
-                    //         return true;
-                    //     }
-                    // });
-                    // if (checkDuplicate !== '') this.state.infra.splice(duplicateIndex, 1);
-                    // this.setState({ msgClass: 'successMessage', infra: [...this.state.infra, JSON.parse(raw)], checkpoint:true });
                     this.setState({ msgClass: 'successMessage', isError: false, checkpoint: true });
                 }
                 else {
@@ -270,14 +260,13 @@ class Infra extends React.Component {
     hadleDelete = (event) => {
         this.handleShowModal('deleteinfraModal')
         this.setState({ disabledBtn: true });
-        console.log(this.state.delInfraName);
-        // let raw = '{"infra_name" : "' + this.state.delInfraName + '"}';
+        // console.log(this.state.delInfraName);
         let raw = {
             infra_name: this.state.delInfraName,
         };
-        console.log(raw);
+        // console.log(raw);
         const updatedArray = this.state.infra.filter(task => task.infra_name !== this.state.delInfraName);
-        console.log("updated Array", updatedArray);
+        // console.log("updated Array", updatedArray);
         //  require('dotenv').config();    
         // let API_URL = process.env.REACT_APP_ONBOARDING;
         // console.log(process.env);
@@ -290,21 +279,19 @@ class Infra extends React.Component {
             method: 'DELETE',
             headers: myHeaders,
             body: JSON.stringify(raw),
-            // redirect: 'follow'
         };
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then((response) => {
-                console.log(response)
+                // console.log(response)
                 this.setState({ disabledBtn: false });
-                // document.querySelector('#myDeleteConfirmationModal .close').click();
-                console.log(response.status);
+                // console.log(response.status);
                 (response.status == 200) ? this.setState({ infra: updatedArray, isError: false, checkpoint: true }) : this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error', isError: true, checkpoint: true });
                 return response.text();
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
                 setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
             })
@@ -323,10 +310,9 @@ class Infra extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         if (this.handleValidation()) {
-            // document.querySelector('#myAddInfraModal .close').click();
             this.handleShowModal('addinfraModal')
             this.handleAddInfra();
         } else {
@@ -335,11 +321,10 @@ class Infra extends React.Component {
     }
 
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         if (this.handleValidationEdit()) {
-            // document.querySelector('#myAddInfraModal .close').click();
-            console.log('validation successful');
+            // console.log('validation successful');
             this.handleShowModal('editinfraModal')
             this.handleUpdateInfra();
         } else {
@@ -376,10 +361,13 @@ class Infra extends React.Component {
 
         // invalid name
         if (typeof fields.infra_name !== "undefined") {
-            if (!fields.infra_name.match(/^[a-zA-Z]+$/)) {
+            if (!fields.infra_name.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
-                errors.infra_name = "Only letters";
+                errors.infra_name = "Invalid Input";
             }
+            if(fields.infra_name.length < 4 ){
+                formIsValid = false;
+                errors.infra_name = "Minimum Length is 4";}
         }
         // cloud_type
         if (!fields["cloud_type"]) {
@@ -409,44 +397,12 @@ class Infra extends React.Component {
                 errors["secret_key"] = "Cannot be empty";
             }
         }
-        // if (fields["cloud_type"] == 'Openstack') {
-        //     // RcFile
-        //     if (!fields["RcFile"]) {
-        //         formIsValid = false;
-        //         errors["RcFile"] = "Cannot be empty";
-        //     }
-        //     // URL
-        //     if (!fields["orchestrator_url"]) {
-        //         let regexp = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
-        //         if (fields["orchestrator_url"]) {
-        //             var formElements = document.forms['addInfraForm'].elements['orchestrator_url'].value;
-        //             if (!regexp.test(formElements)) {
-        //                 formIsValid = false;
-        //                 errors["orchestrator_url"] = "Not a valid URL";
-        //             }
-        //         }
-        //     }
-        //     // orchestrator_username
-        //     if (!fields["orchestrator_username"]) {
-        //         formIsValid = false;
-        //         errors["orchestrator_username"] = "Cannot be empty";
-        //     }
-        //     // orchestrator_password
-        //     if (!fields["orchestrator_password"]) {
-        //         formIsValid = false;
-        //         errors["orchestrator_password"] = "Cannot be empty";
-        //     }
-        // }
 
         this.setState({ errors: errors });
         return formIsValid;
     }
 
     handleValidationEdit() {
-        // let fields = this.state.fields;
-        // let errors = {};
-        // let formIsValid = true;
-
         let editFields = {
             edit_infra_environment: this.state.editFields.edit_infra_environment ? this.state.editFields.edit_infra_environment : this.state.edit_infra_environment,
             edit_infra_access_key: this.state.editFields.edit_infra_access_key ? this.state.editFields.edit_infra_access_key : this.state.edit_infra_access_key,
@@ -454,36 +410,11 @@ class Infra extends React.Component {
         }
         const editErrors = {};
         let editForm = true;
-        console.log('editFields inside Validation', editFields);
-
-        // // Name
-        // if (!fields["infra_name"]) {
-        //     formIsValid = false;
-        //     errors["infra_name"] = "Cannot be empty";
-        // }
-
-        // // invalid name
-        // if (typeof fields.infra_name !== "undefined") {
-        //     if (!fields.infra_name.match(/^[a-zA-Z]+$/)) {
-        //         formIsValid = false;
-        //         errors.infra_name = "Only letters";
-        //     }
-        // }
-        // // cloud_type
-        // if (!fields["cloud_type"]) {
-        //     formIsValid = false;
-        //     errors["cloud_type"] = "Cannot be empty";
-        // }
-        //  environment
+        // console.log('editFields inside Validation', editFields);
         if (!editFields.edit_infra_environment) {
             editForm = false;
             editErrors.edit_infra_environment = "Cannot be empty";
         }
-        // // orchestrator
-        // if (!fields["orchestrator"]) {
-        //     formIsValid = false;
-        //     errors["orchestrator"] = "Cannot be empty";
-        // }
         // Access Key
         if (!editFields.edit_infra_access_key) {
             editForm = false;
@@ -507,34 +438,6 @@ class Infra extends React.Component {
                 editErrors.edit_infra_secret_key = "Cannot be empty";
             }
         }
-        // if (fields["cloud_type"] == 'Openstack') {
-        //     // RcFile
-        //     if (!fields["RcFile"]) {
-        //         formIsValid = false;
-        //         errors["RcFile"] = "Cannot be empty";
-        //     }
-        //     // URL
-        //     if (!fields["orchestrator_url"]) {
-        //         let regexp = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
-        //         if (fields["orchestrator_url"]) {
-        //             var formElements = document.forms['addInfraForm'].elements['orchestrator_url'].value;
-        //             if (!regexp.test(formElements)) {
-        //                 formIsValid = false;
-        //                 errors["orchestrator_url"] = "Not a valid URL";
-        //             }
-        //         }
-        //     }
-        //     // orchestrator_username
-        //     if (!fields["orchestrator_username"]) {
-        //         formIsValid = false;
-        //         errors["orchestrator_username"] = "Cannot be empty";
-        //     }
-        //     // orchestrator_password
-        //     if (!fields["orchestrator_password"]) {
-        //         formIsValid = false;
-        //         errors["orchestrator_password"] = "Cannot be empty";
-        //     }
-        // }
 
         this.setState({ editErrors: editErrors });
         return editForm;
@@ -545,9 +448,8 @@ class Infra extends React.Component {
         fields[field] = e.target.value;
         this.setState({ ...fields, fields });
         const errors = {};
-        // this.setState({ errors });
         const checkDuplicate = this.state.infra.filter(task => task.infra_name == fields["infra_name"]);
-        console.log(checkDuplicate);
+        // console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
             errors["infra_name"] = "Infra name already exists, Do you want to update?";
             this.setState({ errors: errors });
@@ -578,7 +480,7 @@ class Infra extends React.Component {
         /*Display Infra Details in the Table*/
         let infra = '';
         let resultingInfra = [];
-        console.log(this.state.infra);
+        // console.log(this.state.infra);
         if (this.state.infra.length >= 1) {
             infra = this.state.infra.map((value, index) => {
                 return <tr className="" key={index}>
@@ -589,7 +491,7 @@ class Infra extends React.Component {
                     <td class="text-center">
                         <div class="dev-actions">
                             <a href="javascript:void(0)" data-toggle="modal" data-target="#myUpdateInfraModal" onClick={() => this.handleEditInfra(value)}><img src={require("images/edit.svg")} alt="Edit" /></a>
-                            <a href="javascript:void(0)" data-toggle="modal" data-target="#myDeleteConfirmationModal" onClick={() => this.hadleDeleteBeforeConfirmation(value.infra_name)} ><img src={require("images/delete-icon.svg")} alt="Delete" /></a>
+                            <a href="javascript:void(0)" data-toggle="modal" data-target="#myDeleteConfirmationModal" onClick={() => this.hadleDeleteBeforeConfirmation(value.infra_name)} ><img src={require("images/delete.svg")} alt="Delete" /></a>
                         </div>
                     </td>
                 </tr>
@@ -807,7 +709,7 @@ class Infra extends React.Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="addinfraModaltitle">Add Infrastructure</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('addinfraModal') }}>
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true">&nbsp;</span>
                                 </button>
                             </div>
                             <div className="modal-body">
@@ -829,7 +731,7 @@ class Infra extends React.Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="editinfraModaltitle">Edit Infrastructure</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('editinfraModal') }}>
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true">&nbsp;</span>
                                 </button>
                             </div>
                             <div className="modal-body">
@@ -851,11 +753,11 @@ class Infra extends React.Component {
                             <div className="modal-header">
                                 <h5 className="modal-title" id="deleteinfraModaltitle">Delete Infrastructure</h5>
                                 <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => { this.handleShowModal('deleteinfraModal') }}>
-                                    <span aria-hidden="true">&times;</span>
+                                    <span aria-hidden="true">&nbsp;</span>
                                 </button>
                             </div>
                             <div className="modal-body">
-                                Are you sure ?
+                                Do you want to delete Infrastructure?
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={() => { this.handleShowModal('deleteinfraModal') }}>Cancel</button>
