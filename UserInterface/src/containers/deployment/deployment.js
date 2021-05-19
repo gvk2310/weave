@@ -53,15 +53,15 @@ class Deployment extends React.Component {
     }
 
     getSpreadsheet = () => {
-        console.log('inside get spreadsheet');
+        // console.log('inside get spreadsheet');
         let API_URL = '###REACT_APP_PLATFORM_URL###/deploy' + "/" + 'config';
         // console.log(this.refs.depOrchestrator.value);
-        console.log(this.refs.changeCloudType.value, 'type');
-        console.log(this.refs.assets.value, 'assets');
-        console.log(this.state.orchestrator, 'orchestrator');
+        // console.log(this.refs.changeCloudType.value, 'type');
+        // console.log(this.refs.assets.value, 'assets');
+        // console.log(this.state.orchestrator, 'orchestrator');
         if (this.state.orchestrator && this.refs.changeCloudType && this.refs.assets) {
             API_URL += "/" + this.state.orchestrator + "/" + this.refs.changeCloudType.value + "/" + this.refs.assets.value.split("=").pop();
-            console.log(API_URL);
+            // console.log(API_URL);
 
             const myHeaders = new Headers();
             const requestOptions = {
@@ -81,7 +81,7 @@ class Deployment extends React.Component {
                     return response.blob();
                 })
                 .then(result => {
-                    console.log(result);
+                    // console.log(result);
                     const a = document.createElement("a");
                     a.href = URL.createObjectURL(result);
                     a.setAttribute("download", 'Config');
@@ -105,7 +105,7 @@ class Deployment extends React.Component {
         this.getNewDeploymentDetails();
         const API_URL = process.env.REACT_APP_DEPLOYMENT;
         const API_URL1 = process.env.REACT_APP_ASSETONBOARDING;
-        console.log(process.env);
+        // console.log(process.env);
         // const token = sessionStorage.getItem('tokenStorage');
 
         const myHeaders = new Headers();
@@ -126,9 +126,9 @@ class Deployment extends React.Component {
             })
             .then((findresponse) => {
                 if (findresponse.msg) {
-                    console.log(findresponse.msg);
+                    // console.log(findresponse.msg);
                 } else {
-                    console.log("assets", findresponse);
+                    // console.log("assets", findresponse);
                     this.setState({ assets: findresponse });
                 }
             })
@@ -144,9 +144,9 @@ class Deployment extends React.Component {
             })
             .then((findresponse) => {
                 if (findresponse.msg) {
-                    console.log(findresponse.msg);
+                    // console.log(findresponse.msg);
                 } else {
-                    console.log("infra", findresponse);
+                    // console.log("infra", findresponse);
                     this.setState({ infra: findresponse });
                 }
             })
@@ -159,7 +159,7 @@ class Deployment extends React.Component {
         // require('dotenv').config();    
         const API_URL = process.env.REACT_APP_DEPLOYMENT;
         const API_URL1 = process.env.REACT_APP_ASSETONBOARDING;
-        console.log(process.env);
+        // console.log(process.env);
         // const token = sessionStorage.getItem('tokenStorage');
 
         const myHeaders = new Headers();
@@ -181,7 +181,7 @@ class Deployment extends React.Component {
                     this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ deploy: findresponse });
-                    console.log(this.state.deploy);
+                    // console.log(this.state.deploy);
                 }
             })
             .catch(error => {
@@ -190,15 +190,15 @@ class Deployment extends React.Component {
     }
 
     updateDeploymentArray = (data) => {
-        console.log(data, 'testing');
-        console.log(this.state.deploy);
+        // console.log(data, 'testing');
+        // console.log(this.state.deploy);
         if (this.state.deploy) {
             this.state.deploy.map((value, index) => {
                 if (value.id === data.id) {
-                    console.log('Value Matched');
+                    // console.log('Value Matched');
                     this.state.deploy[index].status = data.status;
                     this.state.deploy[index].stage_info = data.stage_info;
-                    console.log( this.state.deploy[index],'matched record')
+                    // console.log( this.state.deploy[index],'matched record')
                 }
             });
             this.setState({ deploy: this.state.deploy });
@@ -210,11 +210,11 @@ class Deployment extends React.Component {
         let es = {};
         es = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/deploy");
         es.onopen = function (event) {
-            console.log('open message');
+            // console.log('open message');
         };
         es.addEventListener("deploy", e => {
-            console.log('inside event listner');
-            console.log(e.data);
+            // console.log('inside event listner');
+            // console.log(e.data);
             this.updateDeploymentArray(JSON.parse(e.data));
         });
     }
@@ -229,12 +229,12 @@ class Deployment extends React.Component {
         const addDeployForm1 = document.getElementById('addDeployForm');
         const formData = new FormData(addDeployForm1);
         const fileInput = document.getElementById('config');
-        console.log(fileInput);
+        // console.log(fileInput);
         formData.append("config", fileInput.files[0], fileInput.files[0].name);
-        console.log(Object.fromEntries(formData));
+        // console.log(Object.fromEntries(formData));
         const raw = JSON.stringify(Object.fromEntries(formData));
-        console.log(Object.fromEntries(formData));
-        console.log(formData);
+        // console.log(Object.fromEntries(formData));
+        // console.log(formData);
         // console.log(raw);
 
         /*Add Deploy*/
@@ -249,7 +249,7 @@ class Deployment extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/deploy/`, requestOptions)
             .then((response) => {
                 // console.log(response);
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.getNewDeploymentDetails();
                     this.setState({ isError: false, checkpoint: true });
@@ -259,8 +259,8 @@ class Deployment extends React.Component {
                 return response.json();
             })
             .then(result => {
-                console.log(result);
-                console.log(typeof (result));
+                // console.log(result);
+                // console.log(typeof (result));
                 if(result.msg){
                     this.setState({ status: result.msg });
                 } else{
@@ -270,7 +270,7 @@ class Deployment extends React.Component {
                 setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
-                console.log('error', error);
+                // console.log('error', error);
                 setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
         // document.getElementById("addDeployForm").reset();
@@ -283,7 +283,7 @@ class Deployment extends React.Component {
         // var raw = JSON.stringify(Object.fromEntries(formData));
         const raw = Object.fromEntries(formData);
         // console.log(raw);
-        console.log(formData.getAll('VNF'));
+        // console.log(formData.getAll('VNF'));
     }
 
     handleDeployLater = () => {
@@ -299,18 +299,18 @@ class Deployment extends React.Component {
     }
 
     handleChangeCloudType = () => {
-        console.log(this.refs.changeCloudType.value);
+        // console.log(this.refs.changeCloudType.value);
         this.setState({ changeCloudType: this.refs.changeCloudType.value });
     }
 
     handledeleteSSE = () => {
         const es = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/deploy");
         es.onopen = function (event) {
-            console.log('open message');
+            // console.log('open message');
         };
         es.addEventListener("deploy", e => {
-            console.log('inside event listner');
-            console.log(e.data);
+            // console.log('inside event listner');
+            // console.log(e.data);
             if ((JSON.parse(e.data).status) == "DELETE_IN_PROGRESS")
                 this.handleGetDeploy();
             {
@@ -321,14 +321,14 @@ class Deployment extends React.Component {
 
     handleDelete = () => {
         this.handleShowModal('deletedeployModal');
-        console.log(this.state.delDeploy);
+        // console.log(this.state.delDeploy);
         this.setState({ disabledBtn: true });
         const raw = {
             id: this.state.delDeploy,
             force_delete: this.state.forceDelete
         };
         // console.log(JSON.stringify(raw));
-        console.log(process.env);
+        // console.log(process.env);
         const token = sessionStorage.getItem('tokenStorage');
         const myHeaders = new Headers();
         //   myHeaders.append("Authorization", `Bearer ${token}`);
@@ -359,7 +359,7 @@ class Deployment extends React.Component {
                 return response.text();
             })
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 const result1 = JSON.parse(result);
                 this.setState({ status: result1.msg });
                 setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
@@ -382,9 +382,9 @@ class Deployment extends React.Component {
     }
 
     displayDeploymentStages = (currDeployment) => {
-        console.log(currDeployment);
+        // console.log(currDeployment);
         this.selectedId = currDeployment.id;
-        console.log(this.selectedId);
+        // console.log(this.selectedId);
         this.setState({ currentDep: currDeployment, currentDepName: currDeployment.name, currentDepStatus: currDeployment.status, currentDepTime: currDeployment["created (utc)"] });
     }
 
@@ -407,17 +407,17 @@ class Deployment extends React.Component {
     }
 
     handleBackScreen = () => {
-        console.log(this.state.currScreen);
+        // console.log(this.state.currScreen);
         this.setState({ currScreen: --this.state.currScreen });
     }
 
     handleNextScreen = () => {
-        console.log(this.state.currScreen);
+        // console.log(this.state.currScreen);
         if (this.state.currScreen === 1 && this.handleValidation1()) {
-            console.log('first screen')
+            // console.log('first screen')
             this.setState({ currScreen: ++this.state.currScreen });
         } else if (this.state.currScreen === 2 && this.handleValidationUpload()) {
-            console.log('second screen')
+            // console.log('second screen')
             this.setState({ currScreen: ++this.state.currScreen });
         } else {
             alert("Form has errors");
@@ -430,7 +430,7 @@ class Deployment extends React.Component {
     }
 
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         this.handleShowModal('adddeployPage');
         this.handleAddDeploy();
@@ -445,7 +445,7 @@ class Deployment extends React.Component {
         let infra_result = [];
         if (field === 'infra') {
             infra_result = this.state.infra.filter(item => item.infra_name === e.target.value)
-            console.log(infra_result);
+            // console.log(infra_result);
             if (infra_result.length > 0) {
                 this.setState({ environment: infra_result[0].environment.toLowerCase() });
                 this.setState({ orchestrator: infra_result[0].orchestrator.toLowerCase() });
@@ -464,7 +464,7 @@ class Deployment extends React.Component {
     }
 
     handleValidationUpload = () => {
-        console.log('inside handle Validation Upload');
+        // console.log('inside handle Validation Upload');
         const { fields } = this.state;
         const errors = {};
         let formIsValid = true;
@@ -489,8 +489,8 @@ class Deployment extends React.Component {
     }
 
     handleValidation1 = () => {
-        console.log('inside handle validations');
-        console.log(this.state.changeCloudType)
+        // console.log('inside handle validations');
+        // console.log(this.state.changeCloudType)
         const { fields } = this.state;
         const errors = {};
         let formIsValid = true;
@@ -564,7 +564,7 @@ class Deployment extends React.Component {
         if (this.state.deploy.length > 0) {
             deploy = this.state.deploy.map((value, index) => {
                 if (index == 1) {
-                    console.log(value.logs);
+                    // console.log(value.logs);
                 }
                 return <tr className="deploymentRows" key={index} onClick={() => this.displayDeploymentStages(value)}>
                     <td className="DepName">{value.name}</td>

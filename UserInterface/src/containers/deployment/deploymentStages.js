@@ -23,9 +23,9 @@ class DeploymentStages extends React.Component {
         }
 
         if (currDeployment.stage_info) {
-            console.log("currDeploy", currDeployment.stage_info)
+            // console.log("currDeploy", currDeployment.stage_info)
             deployStage = Object.keys(currDeployment.stage_info).map((value, index) => {
-                console.log('keys', currDeployment.stage_info)
+                // console.log('keys', currDeployment.stage_info)
 
                 return (
                     <a key={index} className={(currDeployment.stage_info[value].status ? (currDeployment.stage_info[value].status == 'Completed' ? "completed" : "failed") : "inprog")}>

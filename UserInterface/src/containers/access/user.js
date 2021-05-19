@@ -63,7 +63,7 @@ class User extends React.Component {
     }
 
     handleEditUser = (value, index) => {
-        console.log(value);
+        // console.log(value);
         this.handleShowModal('edituserModal');
         this.setState({
             editContent: value,
@@ -72,7 +72,7 @@ class User extends React.Component {
     }
 
     handleEditData = (event) => {
-        console.log(event);
+        // console.log(event);
         this.handleShowModal('edituserModal');
         const editUserForm = document.getElementById('editUserForm');
         const formData = new FormData(editUserForm);
@@ -115,7 +115,7 @@ class User extends React.Component {
     componentDidMount = () => {
         this.handleGetUser();
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
@@ -153,7 +153,7 @@ class User extends React.Component {
 
     handleGetUser = () => {
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
@@ -172,7 +172,7 @@ class User extends React.Component {
                     this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ userArr: findresponse });
-                    console.log(findresponse);
+                    // console.log(findresponse);
                 }
             })
             .catch(error => {
@@ -185,11 +185,11 @@ class User extends React.Component {
     handleAddUser = () => {
         this.handleShowModal('adduserModal');
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const addUserForm = document.getElementById('addUserForm');
         const formData = new FormData(addUserForm);
         const raw = JSON.stringify({ "email": formData.get('email'), "name": formData.get('name'), "project": formData.getAll('project')[0], "roles": formData.getAll('role')[0] });
-        console.log(formData);
+        // console.log(formData);
         // console.log(raw);
         /* Add Service */
         const myHeaders = new Headers();
@@ -204,7 +204,7 @@ class User extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/access/users`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if(response.status == 200){
                     this.setState({ isError: false, checkpoint: true });
                     this.handleGetUser();
@@ -234,7 +234,7 @@ class User extends React.Component {
         const raw = { email: this.state.delUser };
         // console.log(JSON.stringify(raw));
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -278,14 +278,14 @@ class User extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         this.handleShowModal('edituserModal');
         this.handleEditData();
     }
 
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         if (this.handleValidation()) {
             this.handleShowModal('adduserModal');
@@ -305,7 +305,7 @@ class User extends React.Component {
     }
 
     handleValidation() {
-        console.log('inside handle validations');
+        // console.log('inside handle validations');
         const fields = this.state.fields;
         const errors = {};
         let formIsValid = true;
@@ -351,7 +351,7 @@ class User extends React.Component {
             errors.project = "Cannot be empty";
         }
         this.setState({ errors });
-        console.log('formIsValid', formIsValid)
+        // console.log('formIsValid', formIsValid)
         return formIsValid;
     }
 

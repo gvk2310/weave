@@ -60,7 +60,7 @@ class Repository extends React.Component {
                     this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ repo: findresponse });
-                    console.log(repo)
+                    // console.log(repo)
                 }
             })
             .catch(error => {
@@ -134,7 +134,7 @@ class Repository extends React.Component {
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (result.msg) { this.setState({ status: result.msg }); }
                 setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             })
@@ -148,10 +148,10 @@ class Repository extends React.Component {
 
     handleUpdateRepository = () => {
         this.handleShowModal('editrepositoryModal')
-        console.log('inside update repo');
+        // console.log('inside update repo');
         // require('dotenv').config();    
         // const API_URL = REACT_APP_ONBOARDING;
-        console.log(process.env);
+        // console.log(process.env);
         // const token = sessionStorage.getItem('tokenStorage');
 
         const updateRepositoryForm = document.getElementById('updateRepositoryForm');
@@ -203,7 +203,7 @@ class Repository extends React.Component {
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (result.msg) { this.setState({ status: result.msg }); }
                 setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
             })
@@ -217,9 +217,9 @@ class Repository extends React.Component {
     handleDelete = (event) => {
         this.handleShowModal('deleterepositoryModal');
         // this.setState({ disabledBtn: true });
-        console.log(this.state.delRepoName);
+        // console.log(this.state.delRepoName);
         const deleteData = this.state.repo.filter(task => task.repo_name === this.state.delRepoName);
-        console.log(deleteData,'deleteData')
+        // console.log(deleteData,'deleteData')
         if(deleteData[0].assets_info.length > 0){
             this.setState({ status: 'Repository has associated assets so cannot be deleted', isError: true, checkpoint: true })
             setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
@@ -253,7 +253,7 @@ class Repository extends React.Component {
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
                 setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
@@ -273,11 +273,11 @@ class Repository extends React.Component {
     }
 
     displayAssetList = (currRepo) => {
-        console.log(currRepo.assets_info);
-        console.log(currRepo.assets_info.length);
+        // console.log(currRepo.assets_info);
+        // console.log(currRepo.assets_info.length);
         let currentAssetName = '';
         if (currRepo.assets_info.length > 0) {
-            console.log('inside if');
+            // console.log('inside if');
             currentAssetName = currRepo.assets_info.map((value1, index1) => {
                 return (<>
                     <div className="statusTable row">
@@ -297,7 +297,7 @@ class Repository extends React.Component {
             });
         }
         else {
-            console.log('inside else');
+            // console.log('inside else');
             currentAssetName =
                 <>
                     <div className="statusTable row">
@@ -308,7 +308,7 @@ class Repository extends React.Component {
                     </div>
                 </>;
         }
-        console.log(currentAssetName);
+        // console.log(currentAssetName);
         this.setState({ currentRepo: currRepo.repo_name, currentAssetName: currentAssetName });
     }
 
@@ -340,10 +340,10 @@ class Repository extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         if (this.handleValidation()) {
-            console.log('validation successful')
+            // console.log('validation successful')
             this.handleShowModal('addrepositoryModal')
             this.handleAddRepository();
         } else {
@@ -352,10 +352,10 @@ class Repository extends React.Component {
     }
 
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         if (this.handleValidationEdit()) {
-            console.log('validation successful')
+            // console.log('validation successful')
             this.handleShowModal('editrepositoryModal')
             this.handleUpdateRepository();
         } else {
@@ -410,7 +410,7 @@ class Repository extends React.Component {
         const fields = this.state.fields;
         const errors = {};
         let formIsValid = true;
-        console.log('fields inside Validation', fields)
+        // console.log('fields inside Validation', fields)
         // Name
         if (!fields.repo_name) {
             formIsValid = false;

@@ -89,18 +89,18 @@ class Asset extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then(response => {
                 // console.log(response.status);
-                console.log(typeof (response));
+                // console.log(typeof (response));
                 return response.json();
             })
             .then((findresponse) => {
-                console.log(findresponse);
+                // console.log(findresponse);
                 this.setState({ repo: findresponse });
             })
             .catch(error => console.log('error', error));
     }
 
     handleGetAsset = () => {
-        console.log('in getasset');
+        // console.log('in getasset');
         const myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', '*');
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
@@ -133,21 +133,21 @@ class Asset extends React.Component {
         var option = e.options[e.selectedIndex];
         var repoType = option.getAttribute("data-type");
         this.setState({ repoType: repoType });
-        console.log(repoType);
+        // console.log(repoType);
     }
 
     handleSSE = (assetArrCopy) => {
-        console.log(assetArrCopy);
+        // console.log(assetArrCopy);
         //New 
         let eventSource, remValue = {};
         if (this.state.listening) {
             eventSource = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/asset");
             eventSource.onopen = function (event) {
-                console.log('open message');
+                // console.log('open message');
             };
             eventSource.addEventListener("asset", event => {
                 const usage = JSON.parse(event.data);
-                console.log(usage);
+                // console.log(usage);
                 if (usage.asset_id) {
                     if (assetArrCopy.length) {
                         const remAsset = this.state.asset.filter(task => {
@@ -157,8 +157,8 @@ class Asset extends React.Component {
                                 remValue = task;
                             }
                         });
-                        console.log(remAsset);
-                        console.log("assetArrCopy", remValue);
+                        // console.log(remAsset);
+                        // console.log("assetArrCopy", remValue);
                         this.setState({ listening: false, asset: [...remAsset, { ...remValue, ...usage }] });
                     }
                 }
@@ -198,15 +198,15 @@ class Asset extends React.Component {
         this.handleShowModal('addassetModal');
         const addAssetForm1 = document.getElementById('addAssetForm');
         const fileInput = document.getElementById('asset_file');
-        console.log(fileInput);
+        // console.log(fileInput);
         const formData = new FormData(addAssetForm1);
         var raw = JSON.stringify(Object.fromEntries(formData));
         // console.log("raw", raw);
         if (this.state.radioVal == 1) {
             formData.append("asset_file", fileInput.files[0], fileInput.files[0].name);
         }
-        console.log("new Array", Object.fromEntries(formData));
-        console.log("file data", formData.getAll('asset_file'));
+        // console.log("new Array", Object.fromEntries(formData));
+        // console.log("file data", formData.getAll('asset_file'));
         // console.log(formData);
 
         /*Add Asset*/
@@ -231,15 +231,15 @@ class Asset extends React.Component {
                 return response.json();
             })
             .then(result => {
-                console.log(result);
-                console.log(typeof (result));
+                // console.log(result);
+                // console.log(typeof (result));
                 if (typeof (result) === 'object') {
                     const jsonData = JSON.parse(raw);
                     // this.setState({ status: JSON.parse(result).message });
                     this.setState({ status: 'Asset Onboarded Successfully' });
                     this.setState({asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });
                     this.handleSSE(this.state.asset);
-                    console.log(JSON.parse(result).msg);
+                    // console.log(JSON.parse(result).msg);
                 }
                 else { this.setState({ status: JSON.parse(result).message }); }
                 setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
@@ -259,7 +259,7 @@ class Asset extends React.Component {
         const formData = new FormData(updateAssetForm1);
         formData.append('asset_id', this.state.asset_id);
         var raw = JSON.stringify({ "asset_id": formData.get('asset_id'), "asset_group": formData.get('asset_group'), "asset_version": formData.get('asset_version') });
-        console.log(Object.fromEntries(formData));
+        // console.log(Object.fromEntries(formData));
         // console.log(raw);
 
         /*Update Asset */
@@ -271,9 +271,9 @@ class Asset extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/asset`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
-                    console.log('response in edit asset', response);
+                    // console.log('response in edit asset', response);
                     this.handleGetAsset();
                     this.setState({ isError: false, checkpoint: true });      
                 }
@@ -283,8 +283,8 @@ class Asset extends React.Component {
                 return response.json();
             })
             .then(result => {
-                console.log(typeof (result));
-                console.log(result);
+                // console.log(typeof (result));
+                // console.log(result);
                 if (typeof (result) === 'object') {
                     this.setState({ status: result.msg });
                 }
@@ -300,13 +300,13 @@ class Asset extends React.Component {
 
     handleDelete = (event) => {
         this.handleShowModal('deleteassetModal');
-        console.log(this.state.delAsset);
+        // console.log(this.state.delAsset);
         this.setState({ disabledBtn: true });
         const raw = {
             asset_id: this.state.delAsset,
             delete_from_repo: false
         };
-        console.log(JSON.stringify(raw));
+        // console.log(JSON.stringify(raw));
 
 
         var myHeaders = new Headers();
@@ -319,7 +319,7 @@ class Asset extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/asset`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                console.log(response.status, response.statusText);
+                // console.log(response.status, response.statusText);
                 if (response.status == 200) {
                     this.state.asset.splice(this.state.delAssetWithIndex, 1);
                    this.setState({ isError: false, checkpoint: true })
@@ -331,7 +331,7 @@ class Asset extends React.Component {
             })
             .then(result => {
 
-                console.log(result);
+                // console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
                setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             })
@@ -390,7 +390,7 @@ class Asset extends React.Component {
         const errors = {};
 
         const checkDuplicate = this.state.asset.filter(task => task.asset_name == fields.asset_name);
-        console.log(checkDuplicate);
+        // console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
             errors.asset_name = "asset name already exists, Do you want to update?";
             this.setState({ errors: errors });
@@ -519,7 +519,7 @@ class Asset extends React.Component {
         }
         const editErrors = {};
         let formIsValid = true;
-        console.log('editFields inside Validation', editFields);
+        // console.log('editFields inside Validation', editFields);
 
         // Asset Group name
         if (!editFields.asset_group) {
@@ -573,7 +573,7 @@ class Asset extends React.Component {
     }
 
     handleRadio = (event) => {
-        console.log('value:' + event.target.value);
+        // console.log('value:' + event.target.value);
         this.setState({ radioVal: event.target.value });
         if (event.target.value == 1) {
             this.setState({ lableChange: 'Upload to' })
@@ -591,8 +591,8 @@ class Asset extends React.Component {
     }
 
     render() {
-        console.log('repo' + this.state.repo);
-        console.log('asset', this.state.asset);
+        // console.log('repo' + this.state.repo);
+        // console.log('asset', this.state.asset);
         // Style for modal
         const showModalStyle = {
             display: 'block'

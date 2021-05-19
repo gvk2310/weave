@@ -58,7 +58,7 @@ class Test extends React.Component {
 
     handleGetRepository = () => {
         const API_URL = process.env.REACT_APP_ONBOARDING;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
@@ -69,9 +69,9 @@ class Test extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/repo`, requestOptions)
             .then(response => {
-                console.log(response.status);
-                console.log(typeof (response));
-                console.log(response);
+                // console.log(response.status);
+                // console.log(typeof (response));
+                // console.log(response);
                 return response.json();
             })
             .then((findresponse) => {
@@ -79,7 +79,7 @@ class Test extends React.Component {
                     this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ repo: findresponse });
-                    console.log(repo);
+                    // console.log(repo);
                 }
             })
             .catch(error => {
@@ -98,7 +98,7 @@ class Test extends React.Component {
         };
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/tests`, requestOptions)
             .then(response => {
-                console.log(typeof (response));
+                // console.log(typeof (response));
                 // console.log(response);
                 if (response.status != 200) { this.setState({ response: (response.status + "  " + response.statusText) }); };
                 return response.json();
@@ -108,7 +108,7 @@ class Test extends React.Component {
                     this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ test: findresponse });
-                    console.log(this.state.test);
+                    // console.log(this.state.test);
                 }
             })
             .catch(error => {
@@ -117,17 +117,17 @@ class Test extends React.Component {
     }
 
     handleSSE = (testArrCopy) => {
-        console.log("testArrCopy", testArrCopy)
+        // console.log("testArrCopy", testArrCopy)
         let eventSource, remValue = {};
         if (this.state.listening) {
             eventSource = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/tests");
             eventSource.onopen = function (event) {
-                console.log('open message')
+                // console.log('open message')
             }
             eventSource.addEventListener("tests", event => {
-                console.log("event", event)
+                // console.log("event", event)
                 const usage = JSON.parse(event.data);
-                console.log("usage", usage)
+                // console.log("usage", usage)
                 if (usage.test_id) {
                     if (testArrCopy.length) {
                         let remtest = this.state.test.filter(task => {
@@ -137,8 +137,8 @@ class Test extends React.Component {
                                 remValue = task
                             }
                         })
-                        console.log(remtest)
-                        console.log("testArrCopy", remValue)
+                        // console.log(remtest)
+                        // console.log("testArrCopy", remValue)
                         this.setState({ listening: false, test: [...remtest, { ...remValue, ...usage }] })
                     }
                 }
@@ -157,8 +157,8 @@ class Test extends React.Component {
         const fileInput = document.getElementById('test_file');
         let formData = new FormData(addTestForm1);
         var raw = JSON.stringify(Object.fromEntries(formData));
-        console.log([...this.state.test, JSON.parse(raw)])
-        console.log(fileInput.files[0])
+        // console.log([...this.state.test, JSON.parse(raw)])
+        // console.log(fileInput.files[0])
         if (this.state.radioVal == 1) {
             formData.append("test_file", fileInput.files[0], fileInput.files[0].name);
         }
@@ -183,15 +183,15 @@ class Test extends React.Component {
                 return response.json();
             })
             .then(result => {
-                console.log(result);
-                console.log(typeof (result));
+                // console.log(result);
+                // console.log(typeof (result));
                 if (typeof (result) === 'object') {
                     const jsonData = JSON.parse(raw);
                     this.setState({ status: 'Test Onboarded Successfully' });
                     this.setState({ test: [...this.state.test, { ...jsonData, test_id: result.test_id }] });
                     // this.handleGetTest();
                     this.handleSSE(this.state.test);
-                    console.log(JSON.parse(result).msg);
+                    // console.log(JSON.parse(result).msg);
                 }
                 else { this.setState({ status: JSON.parse(result).msg }); }
                 setTimeout(() => { this.setState({ checkpoint: false}); }, 3000);
@@ -223,9 +223,9 @@ class Test extends React.Component {
 
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/tests`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
-                    console.log('response in edit project', response);
+                    // console.log('response in edit project', response);
                     this.handleGetTest();
                     this.setState({ isError: false, checkpoint: true });
                 }
@@ -236,7 +236,7 @@ class Test extends React.Component {
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (result.msg) { this.setState({ status: result.msg }); }
                 setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
@@ -250,16 +250,16 @@ class Test extends React.Component {
     handleDelete = (event) => {
         this.handleShowModal('deletetestModal');
         this.setState({ disabledBtn: true });
-        console.log(this.state.delTestName);
+        // console.log(this.state.delTestName);
         const raw = {
             test_id: this.state.delTestName,
             delete_from_repo: false
         };
         // console.log(raw);
         const updatedArray = this.state.test.filter(task => task.test_id !== this.state.delTestName);
-        console.log("updatedArray", updatedArray);
+        // console.log("updatedArray", updatedArray);
         const API_URL = process.env.REACT_APP_ONBOARDING;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -272,7 +272,7 @@ class Test extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/tests`, requestOptions)
             .then((response) => {
                 this.setState({ disabledBtn: false });
-                console.log(response.status);
+                // console.log(response.status);
                 if(response.status == 200){
                     this.setState({ isError: false, test: updatedArray, checkpoint: true })
                 } else {
@@ -282,7 +282,7 @@ class Test extends React.Component {
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
                 setTimeout(() => { this.setState({  checkpoint: false }); }, 3000);
             })
@@ -300,7 +300,7 @@ class Test extends React.Component {
     }
 
     handleRadio = (event) => {
-        console.log('value:'+event.target.value);
+        // console.log('value:'+event.target.value);
         this.setState({ radioVal: event.target.value });
         if (event.target.value == 1) {
             this.setState({ lableChange: 'Upload to' })
@@ -311,7 +311,7 @@ class Test extends React.Component {
     }
 
     handleScriptType = (event) => {
-        console.log('onclick ScriptType',+event.target.value);
+        // console.log('onclick ScriptType',+event.target.value);
         event.target.value == 'ansible' ? this.setState({ showCommands: true }) : this.setState({ showCommands: false });
     }
 
@@ -321,7 +321,7 @@ class Test extends React.Component {
         this.setState({ ...fields, fields });
         const errors = {};
         const checkDuplicate = this.state.test.filter(task => task.test_name == fields.test_name);
-        console.log(checkDuplicate);
+        // console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
             errors.test_name = "Test name already exists, Do you want to update?";
             this.setState({ errors: errors });
@@ -349,10 +349,10 @@ class Test extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         if (this.handleValidation()) {
-            console.log('validation successful');
+            // console.log('validation successful');
             this.handleShowModal('addtestModal');
             this.handleAddTest();
         } else {
@@ -361,12 +361,12 @@ class Test extends React.Component {
     }
 
     handleValidation = () => {
-        console.log('inside handle validations');
+        // console.log('inside handle validations');
         const { fields } = this.state;
         const errors = {};
         let formIsValid = true;
         this.setState({ fields });
-        console.log(fields, this.state.fields, 'fileds in Validation')
+        // console.log(fields, this.state.fields, 'fileds in Validation')
         // Name
         if (!fields.test_name) {
             formIsValid = false;
@@ -438,10 +438,10 @@ class Test extends React.Component {
     }
 
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         if (this.handleValidationEdit()) {
-            console.log('validation successful');
+            // console.log('validation successful');
             this.handleShowModal('edittestModal');
             this.handleUpdateTest();
         } else {
@@ -456,7 +456,7 @@ class Test extends React.Component {
         }
         const editErrors = {};
         let editForm = true;
-        console.log('editFields inside Validation', editFields);
+        // console.log('editFields inside Validation', editFields);
         // test_description
         if (!editFields.edit_test_description) {
             editForm = false;

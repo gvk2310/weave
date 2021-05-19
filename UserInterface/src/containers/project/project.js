@@ -29,7 +29,7 @@ class Project extends React.Component {
     }
 
     componentDidMount = () => {
-        console.log('didmount');
+        // console.log('didmount');
         this.handleGetProject();
     }
 
@@ -55,7 +55,7 @@ class Project extends React.Component {
         if (modalId === 'checkpoint') this.setState({ checkpoint: !this.state.checkpoint });
     }
     handleGetProject = () => {
-        console.log('getproject');
+        // console.log('getproject');
         const myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', '*');
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
@@ -84,15 +84,15 @@ class Project extends React.Component {
     }
 
     handleAddproject = () => {
-        console.log('in addproject post');
+        // console.log('in addproject post');
         this.handleShowModal('addprojectModal');
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const projectForm1 = document.getElementById('addProjectForm');
         const formData = new FormData(projectForm1);
-        console.log(formData);
-        console.log('form data', formData.get('project_name'));
-        console.log('form data', formData.get('project_details'));
+        // console.log(formData);
+        // console.log('form data', formData.get('project_name'));
+        // console.log('form data', formData.get('project_details'));
         var raw = JSON.stringify({ "project_name": formData.get('project_name'), "project_details": formData.get('project_details') });
         // console.log(raw);
 
@@ -133,9 +133,9 @@ class Project extends React.Component {
         const editProjectForm1 = document.getElementById('editProjectForm');
         const formData = new FormData(editProjectForm1);
         formData.append('project_id', this.state.project_id);
-        console.log('form data', formData.get('project_name'));
-        console.log('form data', formData.get('project_details'));
-        console.log('form data', formData.get('project_id'));
+        // console.log('form data', formData.get('project_name'));
+        // console.log('form data', formData.get('project_details'));
+        // console.log('form data', formData.get('project_id'));
         var raw = JSON.stringify({ "project_name": formData.get('edit_project_name'), "project_details": formData.get('edit_project_details'), "project_id": formData.get('project_id') });
         // console.log(raw);
 
@@ -151,7 +151,7 @@ class Project extends React.Component {
             .then((response) => {
                 // console.log(response.status);
                 if (response.status == 200) {
-                    console.log('response in edit project', response);
+                    // console.log('response in edit project', response);
                     this.setState({ isError: false, checkpoint: true });
                     this.handleGetProject();
                 }
@@ -184,9 +184,9 @@ class Project extends React.Component {
         this.handleShowModal('deleteprojectModal');
         this.setState({ disabledBtn: true });
         const raw = { project_name: this.state.delProject };
-        console.log(JSON.stringify(raw));
+        // console.log(JSON.stringify(raw));
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
 
@@ -244,7 +244,7 @@ class Project extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         if (this.handleValidation()) {
             this.handleShowModal('addprojectModal');
@@ -255,7 +255,7 @@ class Project extends React.Component {
         }
     }
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         if (this.handleValidationEdit()) {
             this.handleShowModal('editprojectModal');
@@ -266,7 +266,7 @@ class Project extends React.Component {
     }
 
     handleValidation = () => {
-        console.log('inside handle validations');
+        // console.log('inside handle validations');
         const { fields } = this.state;
         const errors = {};
         let formIsValid = true;
@@ -306,7 +306,7 @@ class Project extends React.Component {
         let editFields = {
             edit_project_details: this.state.editFields.edit_project_details ? this.state.editFields.edit_project_details : this.state.edit_project_details
         }
-        console.log(editFields, 'editFields obj')
+        // console.log(editFields, 'editFields obj')
         const editErrors = {};
         let editForm = true;
         if (editFields && !editFields.edit_project_details) {

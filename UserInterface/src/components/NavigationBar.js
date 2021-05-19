@@ -75,15 +75,15 @@ const NavigationBar = (props) => {
             setaccessAcc(false);
         }
     }
-    let Rolebuff = new Buffer(cookies.get("userrole"), 'base64');
+    let Rolebuff = new Buffer(cookies.get("userrole"));
     userRole = Rolebuff.toString('ascii');
     let decUsername = decryptionAlgorithm(cookies['cookies'].username);
     let decUserRole = decryptionAlgorithm(userRole);
     userRole = decUserRole.toString('ascii');
-    console.log('decUsername', decUsername);
-    console.log(userRole)
-    console.log(checkRole)
-    console.log("checkName", checkName);
+    // console.log('decUsername', decUsername);
+    // console.log(userRole)
+    // console.log(checkRole)
+    // console.log("checkName", checkName);
 
     
     return (

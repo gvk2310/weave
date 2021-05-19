@@ -45,11 +45,11 @@ class Role extends React.Component {
 
         fetch(`###REACT_APP_PLATFORM_URL###/access/services`, requestOptions)
             .then(function (response) {
-                console.log(response.status);
+                // console.log(response.status);
                 return response.json();
             })
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 this.setState({ services: result });
             })
             .catch(error => console.log('error', error));
@@ -71,7 +71,7 @@ class Role extends React.Component {
     }
 
     handleDictionary = (event) => {
-        console.log(event.target.value);
+        // console.log(event.target.value);
     }
 
     handleGetRole = () => {
@@ -108,7 +108,7 @@ class Role extends React.Component {
         // console.log(process.env);
         const addRolesForm = document.getElementById('addRolesForm');
         const formData = new FormData(addRolesForm);
-        console.log(Object.fromEntries(formData))
+        // console.log(Object.fromEntries(formData))
         const raw = JSON.stringify({ "role": formData.get('role'), "services": formData.getAll('write') });
         // console.log('raw' , raw)
 
@@ -122,7 +122,7 @@ class Role extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/access/roles`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.setState({ isError: false, checkpoint: true });
                     this.handleGetRole();
@@ -146,10 +146,10 @@ class Role extends React.Component {
     handleUpdateService = () => {
         this.handleShowModal('editroleModal');
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
 
         const formData = new FormData(document.getElementById('editServicesForm'));
-        console.log(formData);
+        // console.log(formData);
         var raw = JSON.stringify({ "role": formData.get('role'), "services": formData.getAll('write') });
         // console.log(raw)
         /*Add Service*/
@@ -165,7 +165,7 @@ class Role extends React.Component {
         if (document.getElementById('loader')) { document.getElementById('loader').style.display = "block"; }
         fetch(`###REACT_APP_PLATFORM_URL###/access/roles?action=1`, requestOptions)
             .then((response) => {
-                console.log(response.status);
+                // console.log(response.status);
                 if (response.status == 200) {
                     this.setState({ isError: false, checkPoint: true });
                     this.handleGetRole();
@@ -187,7 +187,7 @@ class Role extends React.Component {
 
     handleEditRole = (value, index) => {
         this.handleShowModal('editroleModal')
-        console.log(value.role);
+        // console.log(value.role);
         this.setState({
             editName: value.role,
             edit: true,
@@ -206,7 +206,7 @@ class Role extends React.Component {
         const raw = { role: this.state.delService };
         // console.log(JSON.stringify(raw));
         const API_URL = process.env.REACT_APP_USER_MANAGEMENTURL;
-        console.log(process.env);
+        // console.log(process.env);
 
         var myHeaders = new Headers();
 
@@ -244,7 +244,7 @@ class Role extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         if (this.handleValidation()) {
             this.handleShowModal('addroleModal');
@@ -265,7 +265,7 @@ class Role extends React.Component {
     }
 
     handleValidation() {
-        console.log('inside handle validations');
+        // console.log('inside handle validations');
         const { fields } = this.state;
         const errors = {};
         let formIsValid = true;
@@ -287,7 +287,7 @@ class Role extends React.Component {
                 errors.role = "Minimum Length is 4";
             }
         }
-        console.log(fields.write, 'write')
+        // console.log(fields.write, 'write')
 
         this.setState({ errors });
         return formIsValid;
@@ -295,7 +295,7 @@ class Role extends React.Component {
 
     render() {
         // console.log("Roles", this.state.roles)
-        console.log(this.state.services);
+        // console.log(this.state.services);
         //Style for modal
         const showModalStyle = {
             display: 'block'

@@ -94,7 +94,7 @@ class Infra extends React.Component {
 
     handleGetInfra = () => {
         let API_URL = process.env.REACT_APP_ONBOARDING;
-        console.log(process.env);
+        // console.log(process.env);
         let token = sessionStorage.getItem('tokenStorage');
 
         let myHeaders = new Headers();
@@ -111,7 +111,7 @@ class Infra extends React.Component {
         fetch(`###REACT_APP_PLATFORM_URL###/onboard/infra`, requestOptions)
             .then(response => {
                 // console.log(response.status);
-                console.log(typeof (response));
+                // console.log(typeof (response));
                 // console.log(response);
                 if (response.status != 200) { this.setState({ response: (`${response.status}  ${response.statusText}`) }); };
                 return response.json();
@@ -219,7 +219,7 @@ class Infra extends React.Component {
                 // console.log(response);
                 // console.log(response.status);
                 if (response.status == 200) {
-                    console.log('editin infra 200k');
+                    // console.log('editin infra 200k');
                     this.handleGetInfra();
                     this.setState({ msgClass: 'successMessage', isError: false, checkpoint: true });
                 }
@@ -260,7 +260,7 @@ class Infra extends React.Component {
     hadleDelete = (event) => {
         this.handleShowModal('deleteinfraModal')
         this.setState({ disabledBtn: true });
-        console.log(this.state.delInfraName);
+        // console.log(this.state.delInfraName);
         let raw = {
             infra_name: this.state.delInfraName,
         };
@@ -291,7 +291,7 @@ class Infra extends React.Component {
             })
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
-                console.log(result);
+                // console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
                 setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
             })
@@ -310,7 +310,7 @@ class Infra extends React.Component {
     }
 
     contactSubmit = (e) => {
-        console.log('inside contactSubmit');
+        // console.log('inside contactSubmit');
         e.preventDefault();
         if (this.handleValidation()) {
             this.handleShowModal('addinfraModal')
@@ -321,10 +321,10 @@ class Infra extends React.Component {
     }
 
     contactSubmit1 = (e) => {
-        console.log('inside contactSubmit1');
+        // console.log('inside contactSubmit1');
         e.preventDefault();
         if (this.handleValidationEdit()) {
-            console.log('validation successful');
+            // console.log('validation successful');
             this.handleShowModal('editinfraModal')
             this.handleUpdateInfra();
         } else {
