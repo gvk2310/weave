@@ -12,6 +12,8 @@ const NavigationBar = (props) => {
     const [checkRole, setcheckRole] = useState('');
     const [checkName, setcheckName] = useState('');
     const [projectAcc, setprojectAcc] = useState(false);
+    const [status, setstatus] = useState('');
+    const [isError, setisError] = useState(false);
 
     useEffect(() => {
         var myHeaders = new Headers();
@@ -33,9 +35,19 @@ const NavigationBar = (props) => {
 
         let decUsername = decryptionAlgorithm(cookies['cookies'].username);
         fetch(`###REACT_APP_PLATFORM_URL###/access/userinfo/${decUsername}`, requestOptions)
-            .then(response => response.json())
-            .then((findresponse) => {
-                setcheckName(findresponse)
+        .then(response => {
+            if(response.status!=200)
+            {setisError(true)}
+            return response.json()
+        })
+        
+        .then((findresponse) => {
+           if(findresponse.msg){
+               setstatus(findresponse.msg)
+           }
+           else{
+            setcheckName(findresponse)
+           }
             })
             .catch(error => console.log('error', error));
     }, []);

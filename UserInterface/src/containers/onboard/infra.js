@@ -448,7 +448,7 @@ class Infra extends React.Component {
         fields[field] = e.target.value;
         this.setState({ ...fields, fields });
         const errors = {};
-        const checkDuplicate = this.state.infra.filter(task => task.infra_name == fields["infra_name"]);
+        const checkDuplicate = this.state.infra.filter(task => task.infra_name.toLowerCase() == fields["infra_name"].toLowerCase());
         // console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
             errors["infra_name"] = "Infra name already exists, Do you want to update?";

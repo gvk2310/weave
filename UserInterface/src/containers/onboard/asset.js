@@ -389,7 +389,7 @@ class Asset extends React.Component {
         this.setState({ ...fields, fields });
         const errors = {};
 
-        const checkDuplicate = this.state.asset.filter(task => task.asset_name == fields.asset_name);
+        const checkDuplicate = this.state.asset.filter(task => task.asset_name.toLowerCase() == fields.asset_name.toLowerCase());
         // console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
             errors.asset_name = "asset name already exists, Do you want to update?";
