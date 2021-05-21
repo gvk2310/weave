@@ -1,4 +1,5 @@
 import React from 'react';
+import { encryptionAlgorithm, decryptionAlgorithm } from '../../helpers/helperFunction';
 
 class Infra extends React.Component {
 
@@ -199,7 +200,11 @@ class Infra extends React.Component {
         formData.append('edit_infra_cloud_type', this.state.edit_infra_cloud_type);
         formData.append('edit_infra_orchestrator', this.state.edit_infra_orchestrator);
         formData.append('action', 'modify');
-        var raw = JSON.stringify({ "infra_name": formData.get('edit_infra_name'), "cloud_type": formData.get('edit_infra_cloud_type'), "environment": formData.get('edit_infra_environment'), "orchestrator": formData.get('edit_infra_orchestrator'), "access_key": formData.get('edit_infra_access_key'), "secret_key": formData.get('edit_infra_secret_key'), "action": formData.get('action') });
+        let access_key = decryptionAlgorithm(formData.get('edit_infra_access_key'));
+        let secret_key = decryptionAlgorithm(formData.get('edit_infra_secret_key'));
+        var raw = JSON.stringify({ "infra_name": formData.get('edit_infra_name'), "cloud_type": formData.get('edit_infra_cloud_type'),
+        "environment": formData.get('edit_infra_environment'), "orchestrator": formData.get('edit_infra_orchestrator'),
+        "access_key": access_key,"secret_key": secret_key, "action": formData.get('action') });
         // console.log(formData);
         // console.log(raw);
         // console.log([...this.state.infra, JSON.parse(raw)]);
@@ -244,6 +249,8 @@ class Infra extends React.Component {
 
     handleEditInfra = (data) => {
         this.handleShowModal('editinfraModal');
+        let access_key = encryptionAlgorithm(data.access_key);
+        let secret_key = encryptionAlgorithm(data.secret_key);
         this.setState({
             edit_infra_name: data.infra_name,
             edit_infra_cloud_type: data.cloud_type,
@@ -251,8 +258,8 @@ class Infra extends React.Component {
             edit_infra_orchestrator: data.orchestrator,
             conditionCloud1: data.cloud_type,
             conditionOrchestrator1: data.orchestrator,
-            edit_infra_access_key: data.access_key,
-            edit_infra_secret_key: data.secret_key,
+            edit_infra_access_key: access_key,
+            edit_infra_secret_key: secret_key,
             edit: true,
         });
     }
@@ -448,7 +455,7 @@ class Infra extends React.Component {
         fields[field] = e.target.value;
         this.setState({ ...fields, fields });
         const errors = {};
-        const checkDuplicate = this.state.infra.filter(task => task.infra_name == fields["infra_name"]);
+        const checkDuplicate = this.state.infra.filter(task => task.infra_name.toLowerCase() == fields["infra_name"].toLowerCase());
         // console.log(checkDuplicate);
         if (checkDuplicate.length > 0) {
             errors["infra_name"] = "Infra name already exists, Do you want to update?";

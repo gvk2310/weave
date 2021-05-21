@@ -276,7 +276,6 @@ class Role extends React.Component {
             formIsValid = false;
             errors.role = "Cannot be empty";
         }
-
         if (typeof fields.role !== "undefined") {
             if (!fields.role. match(/^[A-Za-z][A-Za-z0-9_-]*$/)) {
                 formIsValid = false;
@@ -287,7 +286,10 @@ class Role extends React.Component {
                 errors.role = "Minimum Length is 4";
             }
         }
-        // console.log(fields.write, 'write')
+        if (!fields.write) {
+            formIsValid = false;
+            errors.write = "Cannot be empty";
+        }
 
         this.setState({ errors });
         return formIsValid;
@@ -312,13 +314,13 @@ class Role extends React.Component {
             </div>
             <div className="form-group">
                 <label className="form-label">Services<span style={{ color: "red" }}>*</span></label>
-                <select className="form-control" name="write" id="roleWriteService" multiple>
+                <select className="form-control" name="write" id="roleWriteService" multiple onChange={this.handleChange.bind(this, "write")}>
                     {/* <option>Select Services</option> */}
                     {this.state.services && this.state.services.map((item, index) => {   // here I call other options
                         return (<option key={index} directory={item} value={item.name}>{item.name}</option>);
                     })}
-                    <span style={{ color: "red" }}>{this.state.errors.write}</span>
                 </select>
+                <span style={{ color: "red" }}>{this.state.errors.write}</span>
             </div>
         </form>;
 
