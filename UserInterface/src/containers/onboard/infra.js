@@ -402,7 +402,7 @@ class Infra extends React.Component {
         return formIsValid;
     }
 
-    handleValidationEdit() {
+    handleValidationEdit =() => {
         let editFields = {
             edit_infra_environment: this.state.editFields.edit_infra_environment ? this.state.editFields.edit_infra_environment : this.state.edit_infra_environment,
             edit_infra_access_key: this.state.editFields.edit_infra_access_key ? this.state.editFields.edit_infra_access_key : this.state.edit_infra_access_key,
@@ -421,24 +421,10 @@ class Infra extends React.Component {
             editErrors.edit_infra_access_key = "Cannot be empty";
         }
         //  Secret Key
-        if (!editFields.edit_infra_access_key) {
+        if (!editFields.edit_infra_secret_key) {
             editForm = false;
-            editErrors.edit_infra_access_key = "Cannot be empty";
+            editErrors.edit_infra_secret_key = "Cannot be empty";
         }
-
-        if (!editFields.edit_infra_cloud_type == 'AWS') {
-            // Access Key
-            if (!editFields.edit_infra_access_key) {
-                editForm = false;
-                editErrors.edit_infra_access_key = "Cannot be empty";
-            }
-            //  Secret Key
-            if (!editFields.edit_infra_secret_key) {
-                editForm = false;
-                editErrors.edit_infra_secret_key = "Cannot be empty";
-            }
-        }
-
         this.setState({ editErrors: editErrors });
         return editForm;
     }
