@@ -348,7 +348,7 @@ class Infra extends React.Component {
     }
 
 
-    handleValidation() {
+    handleValidation = () =>{
         let fields = this.state.fields;
         let errors = {};
         let formIsValid = true;
@@ -402,11 +402,11 @@ class Infra extends React.Component {
         return formIsValid;
     }
 
-    handleValidationEdit =() => {
+    handleValidationEdit = () => {
         let editFields = {
             edit_infra_environment: this.state.editFields.edit_infra_environment ? this.state.editFields.edit_infra_environment : this.state.edit_infra_environment,
-            edit_infra_access_key: this.state.editFields.edit_infra_access_key ? this.state.editFields.edit_infra_access_key : this.state.edit_infra_access_key,
-            edit_infra_secret_key: this.state.editFields.edit_infra_secret_key ? this.state.editFields.edit_infra_secret_key : this.state.edit_infra_secret_key
+             edit_infra_access_key: this.state.editFields.edit_infra_access_key,
+            edit_infra_secret_key: this.state.editFields.edit_infra_secret_key
         }
         const editErrors = {};
         let editForm = true;
