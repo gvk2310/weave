@@ -6,5 +6,4 @@ WORKDIR /Onboarding
 RUN mkdir tmp
 RUN pip install wheel && pip install -r requirements.txt
 RUN apk add clamav && freshclam
-RUN cd /var/lib/clamav/ && rm bytecode.cvd && rm daily.cvd
 CMD ["uwsgi", "--ini", "uwsgi.ini"]
