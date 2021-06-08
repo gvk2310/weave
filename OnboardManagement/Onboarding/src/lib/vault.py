@@ -44,8 +44,6 @@ def getRepoList():
                 repoInfo = requests.get(
                     f'{vault_url}/v1/secret/data/devnetops/Repo_Details/{eachRepo}',
                     headers={'X-Vault-Token': vault_token})
-                repo_password = repoInfo.json()['data']['data']['repo_password']
-                decoded_repopassword = str(base64.b64decode(repo_password), "utf-8")
                 repo_list = get()
                 if repo_list:
                     assets_info = []
@@ -61,8 +59,7 @@ def getRepoList():
                         "repo_vendor": repoInfo.json()['data']['data'][
                             'repo_vendor'],
                         "repo_url": repoInfo.json()['data']['data'][
-                            'repo_url'], "repo_username": repoInfo.json()['data']['data'][
-                            'repo_username'], "repo_password": decoded_repopassword, "assets_info": repo_assets})
+                            'repo_url'],"assets_info": repo_assets})
             return payload
         elif reposList.status_code == 404:
             logger.info("No repositories onboarded")
@@ -88,10 +85,6 @@ def getInfraList():
                     f'{vault_url}/v1/secret/data/devnetops/Infra_Details/{eachInfra}',
                     headers={'X-Vault-Token': vault_token})
                 if infraInfo.json()['data']['data']['cloud_type'].lower() == 'aws':
-                    decoded_accesskey = str(base64.b64decode(infraInfo.json()['data']['data'][
-                            'access_key']), "utf-8")
-                    decoded_secretkey = str(base64.b64decode(infraInfo.json()['data']['data'][
-                            'secret_key']), "utf-8")
                     payload.append(
                         {"infra_name": infraInfo.json()['data']['data'][
                             'infra_name'],
@@ -100,11 +93,8 @@ def getInfraList():
                         "environment": infraInfo.json()['data']['data'][
                             'environment'],
                         "orchestrator": infraInfo.json()['data']['data'][
-                            'orchestrator'],
-                        "access_key": decoded_accesskey, "secret_key": decoded_secretkey})
+                            'orchestrator']})
                 elif infraInfo.json()['data']['data']['cloud_type'].lower() == 'openstack'and infraInfo.json()['data']['data']['orchestrator_password']:
-                    decode_orchestrator_password = str(base64.b64decode(infraInfo.json()['data']['data'][
-                            'orchestrator_password']), "utf-8")
                     payload.append(
                         {"infra_name": infraInfo.json()['data']['data'][
                             'infra_name'],
@@ -117,10 +107,7 @@ def getInfraList():
                         "RcFile" : infraInfo.json()['data']['data'][
                             'RcFile'],
                         "orchestrator_url" : infraInfo.json()['data']['data'][
-                            'orchestrator_url'],
-                        "orchestrator_username" : infraInfo.json()['data']['data'][
-                            'orchestrator_username'],
-                        "orchestrator_password" : decode_orchestrator_password})
+                            'orchestrator_url']})
                 else:
                     payload.append(
                         {"infra_name": infraInfo.json()['data']['data'][
