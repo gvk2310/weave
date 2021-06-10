@@ -843,7 +843,7 @@ class Deployment extends React.Component {
                     </div>
                     <div className="dev-sub-headbg">
                         <div className="myw-container">
-                            <div className="dev-sub-head-title py-4"><a href="javascript:;"><img src={require("images/back-arrow.svg")} alt="Back" /></a> <span class="ml-2">Add Deployment</span></div>
+                        <div className="dev-sub-head-title py-4"><a href="javascript:;"><img src={require("images/back-arrow.svg")} alt="Back" onClick={() => { this.handleShowModal('adddeployPage'); }}/></a> <span class="ml-2">Add Deployment</span></div>
                         </div>
                     </div>
                     <div className="modal-body">
@@ -852,7 +852,7 @@ class Deployment extends React.Component {
                     <div className="modal-footer">
                         {this.state.currScreen != 1 && <button type="button" className="btn btn-secondary" data-dismiss="modal" data-toggle="modal" data-target="#adddeployPage" onClick={this.handleBackScreen}>Back</button>}
                         {this.state.currScreen != 3 && <button type="button" className="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#devnetConfigureModal" onClick={this.handleNextScreen}>Next</button>}
-                        {this.state.currScreen == 3 && <><button type="button" className="btn btn-secondary">Deploy Later</button>
+                        {this.state.currScreen == 3 && <><button type="button" className="btn btn-secondary" disabled>Deploy Later</button>
                             <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.contactSubmit1}>Deploy</button></>}
                     </div>
                 </div>

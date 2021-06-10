@@ -406,7 +406,7 @@ class Asset extends React.Component {
         }
     }
 
-    handleValidation() {
+    handleValidation = () => {
         const fields = this.state.fields;
         const errors = {};
         let formIsValid = true;
@@ -457,9 +457,9 @@ class Asset extends React.Component {
 
         // invalid vendor name
         if (typeof fields.asset_vendor !== "undefined") {
-            if (!fields.asset_vendor.match(/^[A-Za-z0-9_-]/)) { 
+            if (!fields.asset_vendor.match(/^[A-Za-z][A-Za-z0-9_-]*$/)) { 
                 formIsValid = false;
-                errors.asset_vendor = "Only letters";
+                errors.asset_vendor = "Invalid Input";
             }
             if(fields.asset_vendor.length < 4 ){
                 formIsValid = false;
@@ -738,7 +738,8 @@ class Asset extends React.Component {
                 {this.state.radioVal == 2 && <div className={`col-6 devnet-url ${this.state.radioVal == '2' ? "" : "d-none"}`}>
                     <div className="form-group">
                         <label className="form-label">URL<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_path" className="form-control" placeholder="Enter URL" />
+                        <input type="text" name="asset_path" className="form-control" placeholder="Enter URL" 
+                        onChange={this.handleChange.bind(this, "asset_path")} />
                         <span style={{ color: "red" }}>{this.state.errors.asset_path}</span>
                     </div>
                 </div>}

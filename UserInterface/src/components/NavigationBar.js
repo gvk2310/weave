@@ -34,7 +34,8 @@ const NavigationBar = (props) => {
             .catch(error => console.log('error', error));
 
         let decUsername = decryptionAlgorithm(cookies['cookies'].username);
-        fetch(`###REACT_APP_PLATFORM_URL###/access/userinfo/${decUsername}`, requestOptions)
+        let userName = decUsername.toLowerCase();
+        fetch(`###REACT_APP_PLATFORM_URL###/access/userinfo/${userName}`, requestOptions)
         .then(response => {
             if(response.status!=200)
             {setisError(true)}
