@@ -224,9 +224,11 @@ class Asset extends React.Component {
                 if (response.status == 200) {
                     this.setState({ listening: true });
                     this.setState({ isError: false, checkpoint: true });
+                    this.setState({ status: 'Asset Onboarded Successfully' });
 
                 } else {
                     this.setState({ isError: true, checkpoint: true });
+                    this.setState({ status: 'Asset Onboard Failed' });
                 }
                 return response.json();
             })
@@ -236,8 +238,8 @@ class Asset extends React.Component {
                 if (typeof (result) === 'object') {
                     const jsonData = JSON.parse(raw);
                     // this.setState({ status: JSON.parse(result).message });
-                    this.setState({ status: 'Asset Onboarded Successfully' });
-                    this.setState({asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });
+                    this.handleGetAsset();
+                    // this.setState({asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });
                     this.handleSSE(this.state.asset);
                     // console.log(JSON.parse(result).msg);
                 }
@@ -406,7 +408,7 @@ class Asset extends React.Component {
         }
     }
 
-    handleValidation = () => {
+    handleValidation() {
         const fields = this.state.fields;
         const errors = {};
         let formIsValid = true;
@@ -738,7 +740,7 @@ class Asset extends React.Component {
                 {this.state.radioVal == 2 && <div className={`col-6 devnet-url ${this.state.radioVal == '2' ? "" : "d-none"}`}>
                     <div className="form-group">
                         <label className="form-label">URL<span style={{ color: "red" }}>*</span></label>
-                        <input type="text" name="asset_path" className="form-control" placeholder="Enter URL" 
+                        <input type="text" name="asset_path" className="form-control" placeholder="Enter URL"
                         onChange={this.handleChange.bind(this, "asset_path")} />
                         <span style={{ color: "red" }}>{this.state.errors.asset_path}</span>
                     </div>

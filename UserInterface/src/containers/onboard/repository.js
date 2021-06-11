@@ -574,7 +574,7 @@ class Repository extends React.Component {
                                             <th scope="col">Name</th>
                                             <th scope="col" className="repository_type">Repository Type</th>
                                             <th scope="col">URL</th>
-                                            <th scope="col">Associated Assets</th>
+                                            <th scope="col" className="associated_asset">Associated Assets</th>
                                             <th scope="col" className="text-center">Action</th>
                                         </tr>
                                     </thead>
