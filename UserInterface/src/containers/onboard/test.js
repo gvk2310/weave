@@ -543,9 +543,9 @@ class Test extends React.Component {
 
                 <div className="col-6">
                     <div className="form-group">
-                        <label className="form-label">Test category<span style={{ color: "red" }}>*</span></label>
+                        <label className="form-label">Test Category<span style={{ color: "red" }}>*</span></label>
                         <select name="test_category" className="form-control" onChange={this.handleChange.bind(this, "test_category")}>
-                            <option selected>Select Type</option>
+                            <option selected>Select Category</option>
                             <option>performance</option>
                             <option>sanity</option>
                             <option>smoke</option>

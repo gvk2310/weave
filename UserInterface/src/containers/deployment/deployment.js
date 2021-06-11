@@ -74,9 +74,10 @@ class Deployment extends React.Component {
                     // console.log(response.status);
                     if (response.status == 200) {
                         this.setState({ isError: false, checkpoint: true });
+                        this.setState({ status: 'Downloaded Successfully' });
                     } else {
                         this.setState({ isError: true, checkpoint: true });
-                        this.setState({ status: 'Download Failed' });
+                        this.setState({ status: 'Download Failed- Error retrieving template details' });
                     }
                     return response.blob();
                 })
@@ -86,7 +87,7 @@ class Deployment extends React.Component {
                     a.href = URL.createObjectURL(result);
                     a.setAttribute("download", 'Config');
                     a.click();
-                    this.setState({ status: 'Downloaded Successfully' });
+                   
                     setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
                 })
                 .catch(error => {
@@ -634,7 +635,7 @@ class Deployment extends React.Component {
                                 <select className="form-control" ref="changeCloudType" name="type" onChange={this.handleChangeCloudType}>
                                     <option selected>Select Type</option>
                                     <option value="generic">generic </option>
-                                    <option value="versa">versa</option>
+                                    {/* <option value="versa">versa</option> */}
                                 </select>
                                 <span style={{ color: "red" }}>{this.state.errors.type}</span>
                             </div>
@@ -843,7 +844,7 @@ class Deployment extends React.Component {
                     </div>
                     <div className="dev-sub-headbg">
                         <div className="myw-container">
-                            <div className="dev-sub-head-title py-4"><a href="javascript:;"><img src={require("images/back-arrow.svg")} alt="Back" /></a> <span class="ml-2">Add Deployment</span></div>
+                            <div className="dev-sub-head-title py-4"><a href="javascript:;"><img src={require("images/back-arrow.svg")} alt="Back" onClick={() => { this.handleShowModal('adddeployPage'); }}/></a> <span class="ml-2">Add Deployment</span></div>
                         </div>
                     </div>
                     <div className="modal-body">
@@ -852,7 +853,7 @@ class Deployment extends React.Component {
                     <div className="modal-footer">
                         {this.state.currScreen != 1 && <button type="button" className="btn btn-secondary" data-dismiss="modal" data-toggle="modal" data-target="#adddeployPage" onClick={this.handleBackScreen}>Back</button>}
                         {this.state.currScreen != 3 && <button type="button" className="btn btn-primary" data-dismiss="modal" data-toggle="modal" data-target="#devnetConfigureModal" onClick={this.handleNextScreen}>Next</button>}
-                        {this.state.currScreen == 3 && <><button type="button" className="btn btn-secondary">Deploy Later</button>
+                        {this.state.currScreen == 3 && <><button type="button" className="btn btn-secondary" disabled>Deploy Later</button>
                             <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this.contactSubmit1}>Deploy</button></>}
                     </div>
                 </div>

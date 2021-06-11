@@ -578,11 +578,11 @@ class Infra extends React.Component {
                 <br />
                 {this.state.conditionCloud1 == 'AWS' &&
                     <><label className="form-label" htmlFor="email">Access Key<span style={{ color: "red" }}>*</span></label>
-                        <input type="password" className="form-control" name="edit_infra_access_key" onChange={this.handleChangeEdit.bind(this, "edit_infra_access_key")} />
+                        <input type="password" className="form-control" name="edit_infra_access_key" placeholder="Enter Access Key" onChange={this.handleChangeEdit.bind(this, "edit_infra_access_key")} />
                         <span style={{ color: "red" }}>{this.state.editErrors["edit_infra_access_key"]}</span>
                         <br />
                         <label className="form-label" htmlFor="email">Secret Key<span style={{ color: "red" }}>*</span></label>
-                        <input type="password" className="form-control" name="edit_infra_secret_key" onChange={this.handleChangeEdit.bind(this, "edit_infra_secret_key")} />
+                        <input type="password" className="form-control" name="edit_infra_secret_key" placeholder="Enter Secret Key" onChange={this.handleChangeEdit.bind(this, "edit_infra_secret_key")} />
                         <span style={{ color: "red" }}>{this.state.editErrors["edit_infra_secret_key"]}</span>
                         <br /></>
                 }
