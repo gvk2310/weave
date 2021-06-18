@@ -13,8 +13,8 @@ class Api(_Api):
                                                    'BadRequest']:
             try:
                 return self.handle_error(e)
-            except Exception:
-                pass
+            except Exception as exp:
+                logger.error(exp)
         return original_handler(e)
 
 
