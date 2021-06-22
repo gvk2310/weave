@@ -1,17 +1,16 @@
 import re
-import os
 import base64
-import traceback
+import datetime
 import pymongo
+import traceback
 from ..db import db
-from Crypto.Cipher import AES
-from flask_jwt_extended import get_jwt_identity
-from functools import wraps
-from kubernetes import config, client
 from ..log import logger
-from ..config.auth_config import *
-
-mongohost = os.environ['mongohost']
+from functools import wraps
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from kubernetes import config, client
+from flask_jwt_extended import create_access_token, get_jwt_identity
+from ..config.config import mywd_iv, mywd_key, service_user, service_key, mongohost
 
 
 def getProject(project):
@@ -107,24 +106,30 @@ def endpoints():
         logger.error(e)
 
 
-def auth_user_details(encoded_service_user, encoded_service_key):
+def encrypted(var):
     try:
-        user = base64.b64decode(encoded_service_user).decode("utf8")
-        key = base64.b64decode(encoded_service_key).decode("utf8")
-        if user == INITIAL_ADMIN_USER and key == INITIAL_ADMIN_PASSWORD:
-            return True
-        else:
-            return False
+        aes = AES.new(mywd_key, AES.MODE_CBC, mywd_iv)
+        return base64.b64encode(aes.encrypt(pad(var.encode('utf-8'), 16))).decode('utf-8')
     except Exception as e:
-        logger.error('Unable to authenticate user details')
+        logger.error(f'Failed to encrypt data: {var}')
         logger.error(e)
+
+
+def decrypted(var):
+    try:
+        aes = AES.new(mywd_key, AES.MODE_CBC, mywd_iv)
+        return unpad(aes.decrypt(base64.b64decode(var)), 16).decode('utf-8')
+    except Exception as e:
+        logger.error(f'Failed to decrypt data: {var}')
+        logger.error(e)
+
+
+def validate_service_user(encoded_service_user, encoded_service_key):
+    return service_user == decrypted(encoded_service_user) and service_key == decrypted(
+        encoded_service_key)
 
 
 def create_token(encoded_service_user):
-    try:
-        aes = AES.new(base64.b64decode(MYWD_KEY), AES.MODE_CFB,
-                      base64.b64decode(MYWD_IV))
-        return aes.encrypt(base64.b64decode(encoded_service_user))
-    except Exception as e:
-        logger.error('Unable to create token')
-        logger.error(e)
+    access_token = create_access_token(identity=decrypted(encoded_service_user),
+                                       expires_delta=datetime.timedelta(minutes=120))
+    return encrypted(access_token)

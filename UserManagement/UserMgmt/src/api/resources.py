@@ -1,12 +1,11 @@
-import datetime
-import re
 import os
+import re
+import datetime
 from ..db import db
 from kubernetes import config, client
-from ..lib.commonFunctions import *
-from flask_restful import Resource, reqparse, inputs
-from flask_jwt_extended import create_access_token, get_jwt_identity, \
-    jwt_required
+from flask_restful import Resource, reqparse
+from ..lib.commonFunctions import (nonEmptyString, nonEmptyEmail, getProject, formatList, endpoints,
+                                   returnNotMatches, validate_service_user, create_token)
 
 
 class User(Resource):
@@ -232,13 +231,12 @@ class SingleUserInfo(Resource):
         return {'msg': 'Internal Server Error'}, 500
 
 
-class Access(Resource):
+class GenerateToken(Resource):
     def get(self, encoded_service_user, encoded_service_key):
-        check = auth_user_details(encoded_service_user, encoded_service_key)
-        if check is False:
-            return 404
+        if not validate_service_user(encoded_service_user, encoded_service_key):
+            return {"error": "Access Denied"}, 404
         token = create_token(encoded_service_user)
         if token:
             headers = [('Set-Cookie', f'token={token};HttpOnly;Secure')]
             return '', 200, headers
-        return 500
+        return {"error": "Token generation failed"}, 500
