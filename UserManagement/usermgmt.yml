@@ -2,30 +2,50 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: devnetops-access
+  name: devnetops-access-test
   labels:
-    app: devnetops-access
+    app: devnetops-access-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: devnetops-access
+      app: devnetops-access-test
   template:
     metadata:
       labels:
-        app: devnetops-access
+        app: devnetops-access-test
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: devnetops-access
-        image: devnetops.azurecr.io/devnetops-accessmgmt:S1
+      - name: devnetops-access-test
+        image: devnetops.azurecr.io/devnetops-accessmgmt:test
         imagePullPolicy: Always
         env:
         - name: mongohost
           value: mongodb://admin:password@devnetops-mongo.ethan.svc.cluster.local:80/devnetops?authSource=admin
         - name: service_list
           value: devnetops-project,devnetops-onboard,devnetops-deployment,devnetops-testing,devnetops-monitor,devnetops-security
+        - name: MYWD_KEY
+            valueFrom:
+              configMapKeyRef:
+                key: MYWD_KEY
+                name: cloveplatformui-env
+        - name: MYWD_IV
+            valueFrom:
+              configMapKeyRef:
+                key: MYWD_IV
+                name: cloveplatformui-env
+        - name: service_user
+            valueFrom:
+              configMapKeyRef:
+                key: INITIAL_ADMIN_USER
+                name: cloveplatformui-env
+        - name: service_key
+            valueFrom:
+              configMapKeyRef:
+                key: INITIAL_ADMIN_PASSWORD
+                name: cloveplatformui-env
         - name: username
           valueFrom:
             configMapKeyRef:
@@ -33,16 +53,17 @@ spec:
               name: jenkins-blueocean-env
         ports:
         - containerPort: 8080
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: devnetops-access
+  name: devnetops-access-test
   labels:
-    app: devnetops-access
+    app: devnetops-access-test
 spec:
   selector:
-    app: devnetops-access
+    app: devnetops-access-test
   type: LoadBalancer
   ports:
   - port: 80

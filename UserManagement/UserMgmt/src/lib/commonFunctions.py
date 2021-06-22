@@ -1,14 +1,18 @@
 import re
 import os
+import base64
 import traceback
 import pymongo
 from ..db import db
+from Crypto.Cipher import AES
 from flask_jwt_extended import get_jwt_identity
 from functools import wraps
 from kubernetes import config, client
 from ..log import logger
+from ..config.auth_config import *
 
-mongohost= os.environ['mongohost']
+mongohost = os.environ['mongohost']
+
 
 def getProject(project):
     try:
@@ -22,8 +26,8 @@ def getProject(project):
         logger.error("Unable to get poject details")
         logger.debug(traceback.format_exc())
         logger.error(e)
-        
-        
+
+
 def admin_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -75,10 +79,11 @@ def formatList(val):
                 r'^[\w\d\-_|]+$', item):
             return 'One of the item in the list is an invalid string'
     return val
-  
+
+
 def returnNotMatches(service_list, actual_list):
     return [x for x in service_list if x not in actual_list]
-  
+
 
 def endpoints():
     try:
@@ -101,3 +106,25 @@ def endpoints():
         logger.error('Unable to get endpoints from kubernetes')
         logger.error(e)
 
+
+def auth_user_details(encoded_service_user, encoded_service_key):
+    try:
+        user = base64.b64decode(encoded_service_user).decode("utf8")
+        key = base64.b64decode(encoded_service_key).decode("utf8")
+        if user == INITIAL_ADMIN_USER and key == INITIAL_ADMIN_PASSWORD:
+            return True
+        else:
+            return False
+    except Exception as e:
+        logger.error('Unable to authenticate user details')
+        logger.error(e)
+
+
+def create_token(encoded_service_user):
+    try:
+        aes = AES.new(base64.b64decode(MYWD_KEY), AES.MODE_CFB,
+                      base64.b64decode(MYWD_IV))
+        return aes.encrypt(base64.b64decode(encoded_service_user))
+    except Exception as e:
+        logger.error('Unable to create token')
+        logger.error(e)

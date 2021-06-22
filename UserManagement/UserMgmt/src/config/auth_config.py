@@ -1,0 +1,6 @@
+import os
+
+MYWD_IV = os.environ['MYWD_IV']
+MYWD_KEY = os.environ['MYWD_KEY']
+INITIAL_ADMIN_USER = os.environ['INITIAL_ADMIN_USER']
+INITIAL_ADMIN_PASSWORD = os.environ['INITIAL_ADMIN_PASSWORD']

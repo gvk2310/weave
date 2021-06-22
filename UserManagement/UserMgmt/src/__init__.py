@@ -30,4 +30,6 @@ app_api.add_resource(resources.User, '/users')
 app_api.add_resource(resources.SingleUserInfo, '/userinfo/<string:name>')
 app_api.add_resource(resources.Role, '/roles')
 app_api.add_resource(resources.Service, '/services')
-
+app_api.add_resource(resources.Access,
+                     '/access/token-auth/<string:encoded_service_user>'
+                     '/<string:encoded_service_key>')

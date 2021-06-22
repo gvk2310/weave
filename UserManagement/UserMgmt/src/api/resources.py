@@ -9,7 +9,6 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, \
     jwt_required
 
 
-
 class User(Resource):
 
     def get(self):
@@ -20,16 +19,19 @@ class User(Resource):
             return {'msg': 'No users record found'}, 404
         return {'message': 'Unable to fetch users'}, 500
 
-
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('email', type=nonEmptyEmail, required=True, nullable=False)
-        parser.add_argument('name', type=nonEmptyString, required=True, nullable=False)
-        parser.add_argument('project', type=nonEmptyString, required=True, nullable=False)
-        parser.add_argument('roles', type=nonEmptyString, required=True, nullable=False)
+        parser.add_argument('email', type=nonEmptyEmail, required=True,
+                            nullable=False)
+        parser.add_argument('name', type=nonEmptyString, required=True,
+                            nullable=False)
+        parser.add_argument('project', type=nonEmptyString, required=True,
+                            nullable=False)
+        parser.add_argument('roles', type=nonEmptyString, required=True,
+                            nullable=False)
         args = parser.parse_args()
-        args['name']=args['name'].lower()
-        args['roles']=args['roles'].lower()
+        args['name'] = args['name'].lower()
+        args['roles'] = args['roles'].lower()
         if db.getUsers(email=args['email']):
             return {'message': 'User already exists'}, 400
         role = db.getRoles(args['roles'])
@@ -48,14 +50,16 @@ class User(Resource):
             return {'message': 'User created'}, 200
         return {'message': 'Unable to create user '}, 500
 
-
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('email', type=nonEmptyEmail, required=True, nullable=False)
-        parser.add_argument('roles', type=nonEmptyString, required=True, nullable=False)
-        parser.add_argument('project', type=nonEmptyString, required=True, nullable=False)
+        parser.add_argument('email', type=nonEmptyEmail, required=True,
+                            nullable=False)
+        parser.add_argument('roles', type=nonEmptyString, required=True,
+                            nullable=False)
+        parser.add_argument('project', type=nonEmptyString, required=True,
+                            nullable=False)
         args = parser.parse_args()
-        args['roles']=args['roles'].lower()
+        args['roles'] = args['roles'].lower()
         role = db.getUsers(email=args['email'])
         if (role['roles'] == args['roles'] and role['project'] == args[
             'project']):
@@ -103,7 +107,7 @@ class Role(Resource):
         parser.add_argument('access_type', choices=('read', 'write'),
                             default='write')
         args = parser.parse_args()
-        args['role']=args['role'].lower()
+        args['role'] = args['role'].lower()
         if db.getRoles(args['role']):
             return {'message': 'Role already exists'}, 400
         services = formatList(args['services'])
@@ -121,13 +125,14 @@ class Role(Resource):
         parser.add_argument('role', type=nonEmptyString, required=True)
         parser.add_argument('services', action='append', required=True)
         args = parser.parse_args()
-        args['role']=args['role'].lower()
+        args['role'] = args['role'].lower()
         services = formatList(args['services'])
         if not isinstance(services, list):
             return {'message': {'services': services}}, 400
         srvc = db.getRoles(args['role'])
         if srvc['access']['access_on'] == args['services']:
-            return {'message': 'Service(s) already associated with the role'}, 400
+            return {
+                       'message': 'Service(s) already associated with the role'}, 400
         svcs = [sub['name'] for sub in db.getServices()]
         svc_list = [svc for svc in args['services'] if svc not in svcs]
         if svc_list:
@@ -142,8 +147,8 @@ class Role(Resource):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=nonEmptyString, required=True)
         args = parser.parse_args()
-        args['role']=args['role'].lower()
-        data= db.getRoles(role= args['role'])
+        args['role'] = args['role'].lower()
+        data = db.getRoles(role=args['role'])
         if data is False:
             return {'message': 'Role doesnt exist'}, 400
         resp = db.deleteRole(args['role'])
@@ -157,61 +162,65 @@ class Role(Resource):
 class Service(Resource):
 
     def get(self):
-      config.load_incluster_config()
-      v1 = client.CoreV1Api()
-      retp = v1.list_pod_for_all_namespaces(watch=False)
-      service_list = os.environ.get('service_list').split(',')
-      actual_plist= []
-      for i in retp.items:
-          result = re.findall("devnetops", i.metadata.name)
-          if result == ['devnetops']:
-            check = (i.metadata.name.split('-'), i.status.phase)
-            if (check[0][0]+ "-" + check[0][1]) in service_list:
-              actual_plist.append(check[0][0]+ "-" + check[0][1])
-              resp= db.changePodStatus(name=(check[0][0]+ "-" + check[0][1]), status=check[1])
-              if not resp:
-                return{"message": "Failed to update the pod status "}, 500
-      rets = v1.list_service_for_all_namespaces(watch=False)
-      actual_slist= []
-      for i in rets.items:
-          if i.metadata.name in service_list:
-              actual_slist.append(i.metadata.name)
-              resp= db.changeServiceStatus(name=i.metadata.name, status='Running')
-              if not resp:
-                return{"message": "Failed to update the service status "}, 500          
-      end_points = endpoints()
-      for i in service_list:
-          for j in end_points:
-            if i in j:
-              resp = db.changeServiceEndpoints(name=i, endpoints=j[:-3])
-              if not resp:
-                return {"message": "Failed to update endpoint URL"}, 500
-      if (actual_plist != service_list):
-        check= returnNotMatches(service_list,actual_plist)
-        for items in check:
-          resp = db.changePodStatus(name=items, status='Disabled')
-          if not resp:
-            return {"message": "Failed to update pod_status"}, 500
-          resp = db.changeServiceEndpoints(name=items, endpoints='None')
-          if not resp:
-            return {"message": "Failed to update endpoint_URL"}, 500
-      if (actual_slist != service_list):
-        check= returnNotMatches(service_list,actual_slist)
-        for items in check:
-          resp = db.changeServiceStatus(name=items, status='Disabled')
-          if not resp:
-            return {"message": "Failed to update service_status"}, 500
-          resp = db.changeServiceEndpoints(name=items, endpoints='None')
-          if not resp:
-            return {"message": "Failed to update endpoint_URL"}, 500
-      svcs = db.getServices()
-      if svcs:
-          return svcs, 200
-      if svcs is False:
-          return {'msg': 'No services record found'}, 404
-      return {'message': 'Unable to fetch services'}, 500
-    
-    
+        config.load_incluster_config()
+        v1 = client.CoreV1Api()
+        retp = v1.list_pod_for_all_namespaces(watch=False)
+        service_list = os.environ.get('service_list').split(',')
+        actual_plist = []
+        for i in retp.items:
+            result = re.findall("devnetops", i.metadata.name)
+            if result == ['devnetops']:
+                check = (i.metadata.name.split('-'), i.status.phase)
+                if (check[0][0] + "-" + check[0][1]) in service_list:
+                    actual_plist.append(check[0][0] + "-" + check[0][1])
+                    resp = db.changePodStatus(
+                        name=(check[0][0] + "-" + check[0][1]), status=check[1])
+                    if not resp:
+                        return {
+                                   "message": "Failed to update the pod status "}, 500
+        rets = v1.list_service_for_all_namespaces(watch=False)
+        actual_slist = []
+        for i in rets.items:
+            if i.metadata.name in service_list:
+                actual_slist.append(i.metadata.name)
+                resp = db.changeServiceStatus(name=i.metadata.name,
+                                              status='Running')
+                if not resp:
+                    return {
+                               "message": "Failed to update the service status "}, 500
+        end_points = endpoints()
+        for i in service_list:
+            for j in end_points:
+                if i in j:
+                    resp = db.changeServiceEndpoints(name=i, endpoints=j[:-3])
+                    if not resp:
+                        return {"message": "Failed to update endpoint URL"}, 500
+        if (actual_plist != service_list):
+            check = returnNotMatches(service_list, actual_plist)
+            for items in check:
+                resp = db.changePodStatus(name=items, status='Disabled')
+                if not resp:
+                    return {"message": "Failed to update pod_status"}, 500
+                resp = db.changeServiceEndpoints(name=items, endpoints='None')
+                if not resp:
+                    return {"message": "Failed to update endpoint_URL"}, 500
+        if (actual_slist != service_list):
+            check = returnNotMatches(service_list, actual_slist)
+            for items in check:
+                resp = db.changeServiceStatus(name=items, status='Disabled')
+                if not resp:
+                    return {"message": "Failed to update service_status"}, 500
+                resp = db.changeServiceEndpoints(name=items, endpoints='None')
+                if not resp:
+                    return {"message": "Failed to update endpoint_URL"}, 500
+        svcs = db.getServices()
+        if svcs:
+            return svcs, 200
+        if svcs is False:
+            return {'msg': 'No services record found'}, 404
+        return {'message': 'Unable to fetch services'}, 500
+
+
 class SingleUserInfo(Resource):
 
     def get(self, name):
@@ -223,3 +232,13 @@ class SingleUserInfo(Resource):
         return {'msg': 'Internal Server Error'}, 500
 
 
+class Access(Resource):
+    def get(self, encoded_service_user, encoded_service_key):
+        check = auth_user_details(encoded_service_user, encoded_service_key)
+        if check is False:
+            return 404
+        token = create_token(encoded_service_user)
+        if token:
+            headers = [('Set-Cookie', f'token={token};HttpOnly;Secure')]
+            return '', 200, headers
+        return 500
