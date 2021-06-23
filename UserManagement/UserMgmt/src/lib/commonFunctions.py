@@ -109,7 +109,7 @@ def endpoints():
 def encrypted(var):
     try:
         aes = AES.new(mywd_key, AES.MODE_CBC, mywd_iv)
-        return base64.b64encode(aes.encrypt(pad(var.encode('utf-8'), 16))).decode('utf-8')
+        return base64.urlsafe_b64encode(aes.encrypt(pad(var.encode('utf-8'), 16))).decode('utf-8')
     except Exception as e:
         logger.error(f'Failed to encrypt data: {var}')
         logger.error(e)
@@ -118,7 +118,7 @@ def encrypted(var):
 def decrypted(var):
     try:
         aes = AES.new(mywd_key, AES.MODE_CBC, mywd_iv)
-        return unpad(aes.decrypt(base64.b64decode(var)), 16).decode('utf-8')
+        return unpad(aes.decrypt(base64.urlsafe_b64decode(var)), 16).decode('utf-8')
     except Exception as e:
         logger.error(f'Failed to decrypt data: {var}')
         logger.error(e)
