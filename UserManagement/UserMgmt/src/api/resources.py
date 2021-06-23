@@ -7,6 +7,13 @@ from flask_restful import Resource, reqparse
 from ..lib.commonFunctions import (nonEmptyString, nonEmptyEmail, getProject, formatList, endpoints,
                                    returnNotMatches, validate_service_user, create_token)
 
+from flask_jwt_extended import get_jwt_identity, jwt_required
+
+request_header = {
+    item.split('/')[0]: item.split('/')[1]
+    for item in os.environ['request_header'].split(';')
+}
+
 
 class User(Resource):
 
@@ -240,3 +247,19 @@ class GenerateToken(Resource):
             headers = [('Set-Cookie', f'token={token};HttpOnly;Secure')]
             return '', 200, headers
         return {"error": "Token generation failed"}, 500
+
+
+class IsAuthorized(Resource):
+    # This endpoint is to verify whether the token user is authorised for the
+    # service along with the permission type.
+    # Token provided to the user while user authentication needs to be passed
+    # as Bearer token along with service,
+    # and permission type.
+    @jwt_required
+    def get(self, svc, perm):
+        resp = db.verifyPermissions(get_jwt_identity(), svc, perm)
+        if resp:
+            return {'permission': 'granted'}, 200, request_header
+        elif resp is False:
+            return {'permission': 'denied'}, 401, request_header
+        return {'message': 'Unable to verify permissions'}, 500, request_header

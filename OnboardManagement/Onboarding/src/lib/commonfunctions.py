@@ -50,14 +50,13 @@ def zipFileType(file):
 def verifyToken(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        if 'Authorization' not in request.headers.keys() or \
-                request.headers['Authorization'].split()[0] != 'Bearer':
+        if 'DnopsToken' not in request.headers.keys():
             return {"msg": "Token required"}, 500
-        token = request.headers['Authorization'].split()[1]
+        token = request.headers['DnopsToken']
         perm = 'read' if request.method == 'GET' else 'write'
         resp = requests.get(
             f"{token_auth_url}/isauthorized/onboard/{perm}",
-            headers={f'Authorization': f'Bearer {token}',
+            headers={f'DnopsToken': f'{token}',
                      'Content-Type': 'application/json'},
         )
         if resp.status_code != 200:
