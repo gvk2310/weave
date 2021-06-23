@@ -27,25 +27,25 @@ spec:
         - name: service_list
           value: devnetops-project,devnetops-onboard,devnetops-deployment,devnetops-testing,devnetops-monitor,devnetops-security
         - name: MYWD_KEY
-            valueFrom:
-              configMapKeyRef:
-                key: MYWD_KEY
-                name: cloveplatformui-env
+          valueFrom:
+            configMapKeyRef:
+              key: MYWD_KEY
+              name: cloveplatformui-env
         - name: MYWD_IV
-            valueFrom:
-              configMapKeyRef:
-                key: MYWD_IV
-                name: cloveplatformui-env
+          valueFrom:
+            configMapKeyRef:
+              key: MYWD_IV
+              name: cloveplatformui-env
         - name: service_user
-            valueFrom:
-              configMapKeyRef:
-                key: INITIAL_ADMIN_USER
-                name: cloveplatformui-env
+          valueFrom:
+            configMapKeyRef:
+              key: INITIAL_ADMIN_USER
+              name: cloveplatformui-env
         - name: service_key
-            valueFrom:
-              configMapKeyRef:
-                key: INITIAL_ADMIN_PASSWORD
-                name: cloveplatformui-env
+          valueFrom:
+            configMapKeyRef:
+              key: INITIAL_ADMIN_PASSWORD
+              name: cloveplatformui-env
         - name: username
           valueFrom:
             configMapKeyRef:
