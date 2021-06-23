@@ -40,12 +40,12 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: INITIAL_ADMIN_USER
-              name: cloveplatformui-env
+              name: jenkins-blueocean-env
         - name: service_key
           valueFrom:
             configMapKeyRef:
               key: INITIAL_ADMIN_PASSWORD
-              name: cloveplatformui-env
+              name: jenkins-blueocean-env
         - name: username
           valueFrom:
             configMapKeyRef:
