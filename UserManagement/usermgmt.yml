@@ -26,6 +26,10 @@ spec:
           value: mongodb://admin:password@devnetops-mongo.ethan.svc.cluster.local:80/devnetops?authSource=admin
         - name: service_list
           value: devnetops-project,devnetops-onboard,devnetops-deployment,devnetops-testing,devnetops-monitor,devnetops-security
+        - name: secretkey
+          value: 200Gw5vUnsTZBmmRTLzuBiCwrr67Q88xDP-GxwH9CfWuqlWx3ZwNh85LdiatBLiqNX0
+        - name: jwtsecretkey
+          value: eKHjwE761qUucC7FXtHKkeFI5O7c8GJ41PVcfLrMFA7oE-tINxTCB78SwyoNPhN7iHE
         - name: MYWD_KEY
           valueFrom:
             configMapKeyRef:
