@@ -19,6 +19,7 @@ class Api(_Api):
 
 app = Flask(__name__)
 app_api = Api(app)
+jwt = JWTManager(app)
 
 from .config import config
 from .db import db
