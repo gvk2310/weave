@@ -131,12 +131,15 @@ def create_token(encoded_service_user):
         "exp": int(exp.timestamp())
     }
     token = jwt.encode(token_data, jwt_secret, algorithm="HS512").decode('ascii')
+    print(token)
     return encrypted(token)
 
 
 def authenticated(encrypted_token):
     try:
+        print(encrypted_token)
         token = decrypted(encrypted_token)
+        print(token)
         if not token:
             return '', "Invalid Token"
         head = jwt.get_unverified_header(token)
