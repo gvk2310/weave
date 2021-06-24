@@ -130,7 +130,7 @@ def create_token(encoded_service_user):
         "nbf": int(iat.timestamp()),
         "exp": int(exp.timestamp())
     }
-    token = jwt.encode(token_data, jwt_secret, algorithm="HS512")
+    token = jwt.encode(token_data, jwt_secret, algorithm="HS512").decode('ascii')
     return encrypted(token)
 
 
