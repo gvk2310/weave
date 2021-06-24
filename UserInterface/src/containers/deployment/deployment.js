@@ -421,7 +421,7 @@ class Deployment extends React.Component {
             // console.log('second screen')
             this.setState({ currScreen: ++this.state.currScreen });
         } else {
-            alert("Form has errors");
+            // alert("Form has errors");
         }
     }
     handleFileUpload = () => {

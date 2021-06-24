@@ -236,7 +236,7 @@ class Asset extends React.Component {
                 // console.log(result);
                 // console.log(typeof (result));
                 if (typeof (result) === 'object') {
-                    const jsonData = JSON.parse(raw);
+                    // const jsonData = JSON.parse(raw);
                     // this.setState({ status: JSON.parse(result).message });
                     this.handleGetAsset();
                     // this.setState({asset: [...this.state.asset, { ...jsonData, asset_id: result.asset_id }] });

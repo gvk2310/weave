@@ -159,18 +159,19 @@ class Infra extends React.Component {
                 // console.log(response.status);
                 if (response.status == 200) {
                     this.handleGetInfra();
-                    var duplicateIndex = '';
-                    const checkDuplicate = this.state.infra.filter((task, index) => {
-                        if (task.infra_name == formData.get('infra_name')) {
-                            duplicateIndex = index;
-                            return true;
-                        }
-                    });
-                    if (checkDuplicate !== '') this.state.infra.splice(duplicateIndex, 1);
-                    this.setState({ msgClass: 'successMessage', infra: [...this.state.infra, JSON.parse(raw)],  isError: false, checkpoint: true });
+                    // var duplicateIndex = '';
+                    // const checkDuplicate = this.state.infra.filter((task, index) => {
+                    //     if (task.infra_name == formData.get('infra_name')) {
+                    //         duplicateIndex = index;
+                    //         return true;
+                    //     }
+                    // });
+                    // if (checkDuplicate !== '') this.state.infra.splice(duplicateIndex, 1);
+                    this.setState({ isError: false, checkpoint: true });
+                    this.setState({ status: 'Infra Onboarded Successfully'});
                 }
                 else {
-                    this.setState({ msgClass: 'errorMessage', status: 'There was an unknown error',  isError: true, checkpoint: true });
+                    this.setState({ status: 'Infra Onboard Failed',  isError: true, checkpoint: true });
                 }
                 return response.json();
             })
@@ -223,10 +224,10 @@ class Infra extends React.Component {
                 if (response.status == 200) {
                     // console.log('editin infra 200k');
                     this.handleGetInfra();
-                    this.setState({ msgClass: 'successMessage', isError: false, checkpoint: true });
+                    this.setState({ status: 'Infra Updated Successfully', isError: false, checkpoint: true });
                 }
                 else {
-                    this.setState({ isError: true, checkpoint: true });
+                    this.setState({ status: 'Infra Update Failed', isError: true, checkpoint: true });
                 }
                 return response.json();
             })
