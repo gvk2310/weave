@@ -26,7 +26,7 @@ from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
 class Asset(Resource):
 
 
-    #@verifyToken
+    @verifyToken
     def get(self):
         data = db.get()
         if data:
