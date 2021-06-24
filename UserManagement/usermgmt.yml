@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: devnetops-access-test
+  name: devnetops-access
   labels:
-    app: devnetops-access-test
+    app: devnetops-access
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: devnetops-access-test
+      app: devnetops-access
   template:
     metadata:
       labels:
-        app: devnetops-access-test
+        app: devnetops-access
     spec:
       imagePullSecrets:
       - name: devnetops
       containers:
-      - name: devnetops-access-test
+      - name: devnetops-access
         image: devnetops.azurecr.io/devnetops-accessmgmt:test
         imagePullPolicy: Always
         env:
@@ -58,12 +58,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: devnetops-access-test
+  name: devnetops-access
   labels:
-    app: devnetops-access-test
+    app: devnetops-access
 spec:
   selector:
-    app: devnetops-access-test
+    app: devnetops-access
   type: ClusterIP
   ports:
   - port: 80
