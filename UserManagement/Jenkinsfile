@@ -77,7 +77,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               '''}
          }
     
-         stage('SonarQube Analysis') {
+     /*    stage('SonarQube Analysis') {
 			withCredentials([usernamePassword(credentialsId: 'SONAR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]){
 			withSonarQubeEnv('SonarQube') {
 			container('curl')
@@ -156,7 +156,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					} 
 					}
 		}
-         
+       */  
   		 stage (' Create Docker image'){
 			container('docker'){
               sh ("docker build -t ${DockerReg_Url}/${Docker_Image}:${Image_Tag} --network=host -f UserManagement/Dockerfile_Dev .")
