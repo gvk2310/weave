@@ -177,8 +177,10 @@ class Test extends React.Component {
                 if (response.status == 200) {
                     this.setState({ listening: true });
                     this.setState({ isError: false, checkpoint: true });
+                    this.setState({ status: 'Test Onboarded Successfully' });
                 } else {
                     this.setState({ isError: true, checkpoint: true });
+                    this.setState({ status: 'Test Onboard Failed' });
                 }
                 return response.json();
             })
@@ -186,10 +188,9 @@ class Test extends React.Component {
                 // console.log(result);
                 // console.log(typeof (result));
                 if (typeof (result) === 'object') {
-                    const jsonData = JSON.parse(raw);
-                    this.setState({ status: 'Test Onboarded Successfully' });
-                    this.setState({ test: [...this.state.test, { ...jsonData, test_id: result.test_id }] });
-                    // this.handleGetTest();
+                    // const jsonData = JSON.parse(raw);
+                    // this.setState({ test: [...this.state.test, { ...jsonData, test_id: result.test_id }] });
+                    this.handleGetTest();
                     this.handleSSE(this.state.test);
                     // console.log(JSON.parse(result).msg);
                 }
