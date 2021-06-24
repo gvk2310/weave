@@ -1,7 +1,7 @@
 import os
 import re
 import json
-import requests
+from flask_restful import reqparse
 from ..log import logger
 from .jfrog import uploadToJfrog, deleteFromJfrog
 from .vault import retrieveUrl
@@ -47,21 +47,16 @@ def zipFileType(file):
         raise ValueError('Not a zip or gzip file input')
     return file
 
-def verifyToken(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        if 'DnopsToken' not in request.headers.keys():
-            return {"msg": "Token required"}, 500
-        token = request.headers['DnopsToken']
-        perm = 'read' if request.method == 'GET' else 'write'
-        resp = requests.get(
-            f"{token_auth_url}/isauthorized/onboard/{perm}",
-            headers={f'DnopsToken': f'{token}',
-                     'Content-Type': 'application/json'},
-        )
+def verify_token(func):
+    @wraps(func)
+    def wrapper(**kwargs):
+        p = reqparse.RequestParser()
+        p.add_argument('DnopsToken', required=True, location='cookies')
+        args = p.parse_args()
+        resp = request.get(f"{token_auth_url}/isauthorized")
         if resp.status_code != 200:
             return resp.json(), resp.status_code
-        return fn(*args, **kwargs)
+        return func(*args, **kwargs)
 
     return wrapper
   

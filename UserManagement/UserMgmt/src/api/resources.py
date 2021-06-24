@@ -4,15 +4,7 @@ import datetime
 from ..db import db
 from kubernetes import config, client
 from flask_restful import Resource, reqparse
-from ..lib.commonFunctions import (nonEmptyString, nonEmptyEmail, getProject, formatList, endpoints,
-                                   returnNotMatches, validate_service_user, create_token)
-
-from flask_jwt_extended import get_jwt_identity, jwt_required
-
-request_header = {
-    item.split('/')[0]: item.split('/')[1]
-    for item in os.environ['request_header'].split(';')
-}
+from ..lib import commonFunctions as cf
 
 
 class User(Resource):
@@ -27,13 +19,13 @@ class User(Resource):
 
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('email', type=nonEmptyEmail, required=True,
+        parser.add_argument('email', type=cf.nonEmptyEmail, required=True,
                             nullable=False)
-        parser.add_argument('name', type=nonEmptyString, required=True,
+        parser.add_argument('name', type=cf.nonEmptyString, required=True,
                             nullable=False)
-        parser.add_argument('project', type=nonEmptyString, required=True,
+        parser.add_argument('project', type=cf.nonEmptyString, required=True,
                             nullable=False)
-        parser.add_argument('roles', type=nonEmptyString, required=True,
+        parser.add_argument('roles', type=cf.nonEmptyString, required=True,
                             nullable=False)
         args = parser.parse_args()
         args['name'] = args['name'].lower()
@@ -43,7 +35,7 @@ class User(Resource):
         role = db.getRoles(args['roles'])
         if role is False:
             return {'message': "Given role doesn't exist"}, 400
-        data = getProject(args['project'])
+        data = cf.getProject(args['project'])
         if data is None:
             return {'message': 'Given Project doesnt exist'}, 400
         args['user_id'] = datetime.datetime.now().strftime("UR%Y%m%d%H%M%S")
@@ -58,11 +50,11 @@ class User(Resource):
 
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('email', type=nonEmptyEmail, required=True,
+        parser.add_argument('email', type=cf.nonEmptyEmail, required=True,
                             nullable=False)
-        parser.add_argument('roles', type=nonEmptyString, required=True,
+        parser.add_argument('roles', type=cf.nonEmptyString, required=True,
                             nullable=False)
-        parser.add_argument('project', type=nonEmptyString, required=True,
+        parser.add_argument('project', type=cf.nonEmptyString, required=True,
                             nullable=False)
         args = parser.parse_args()
         args['roles'] = args['roles'].lower()
@@ -75,7 +67,7 @@ class User(Resource):
             data = db.getRoles(role=args['roles'])
             if data is False:
                 return {'message': 'Role doesnt exist'}, 400
-            data = getProject(args['project'])
+            data = cf.getProject(args['project'])
             if data is None:
                 return {'message': 'Project doesnt exist'}, 400
             resp = db.updateUserdetails(email=args['email'],
@@ -89,7 +81,7 @@ class User(Resource):
 
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('email', type=nonEmptyEmail, required=True)
+        parser.add_argument('email', type=cf.nonEmptyEmail, required=True)
         args = parser.parse_args()
         if db.deleteUser(args['email']):
             return {'message': 'User deleted'}, 200
@@ -108,7 +100,7 @@ class Role(Resource):
 
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('role', type=nonEmptyString, required=True)
+        parser.add_argument('role', type=cf.nonEmptyString, required=True)
         parser.add_argument('services', action='append', required=True)
         parser.add_argument('access_type', choices=('read', 'write'),
                             default='write')
@@ -116,7 +108,7 @@ class Role(Resource):
         args['role'] = args['role'].lower()
         if db.getRoles(args['role']):
             return {'message': 'Role already exists'}, 400
-        services = formatList(args['services'])
+        services = cf.formatList(args['services'])
         if not isinstance(services, list):
             return {'message': {'services': services}}, 400
         resp = db.createRole(args['role'], services, args['access_type'])
@@ -128,11 +120,11 @@ class Role(Resource):
 
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('role', type=nonEmptyString, required=True)
+        parser.add_argument('role', type=cf.nonEmptyString, required=True)
         parser.add_argument('services', action='append', required=True)
         args = parser.parse_args()
         args['role'] = args['role'].lower()
-        services = formatList(args['services'])
+        services = cf.formatList(args['services'])
         if not isinstance(services, list):
             return {'message': {'services': services}}, 400
         srvc = db.getRoles(args['role'])
@@ -151,7 +143,7 @@ class Role(Resource):
 
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('role', type=nonEmptyString, required=True)
+        parser.add_argument('role', type=cf.nonEmptyString, required=True)
         args = parser.parse_args()
         args['role'] = args['role'].lower()
         data = db.getRoles(role=args['role'])
@@ -194,7 +186,7 @@ class Service(Resource):
                 if not resp:
                     return {
                                "message": "Failed to update the service status "}, 500
-        end_points = endpoints()
+        end_points = cf.endpoints()
         for i in service_list:
             for j in end_points:
                 if i in j:
@@ -202,7 +194,7 @@ class Service(Resource):
                     if not resp:
                         return {"message": "Failed to update endpoint URL"}, 500
         if (actual_plist != service_list):
-            check = returnNotMatches(service_list, actual_plist)
+            check = cf.returnNotMatches(service_list, actual_plist)
             for items in check:
                 resp = db.changePodStatus(name=items, status='Disabled')
                 if not resp:
@@ -211,7 +203,7 @@ class Service(Resource):
                 if not resp:
                     return {"message": "Failed to update endpoint_URL"}, 500
         if (actual_slist != service_list):
-            check = returnNotMatches(service_list, actual_slist)
+            check = cf.returnNotMatches(service_list, actual_slist)
             for items in check:
                 resp = db.changeServiceStatus(name=items, status='Disabled')
                 if not resp:
@@ -240,26 +232,21 @@ class SingleUserInfo(Resource):
 
 class GenerateToken(Resource):
     def get(self, encoded_service_user, encoded_service_key):
-        if not validate_service_user(encoded_service_user, encoded_service_key):
+        if not cf.validate_service_user(encoded_service_user, encoded_service_key):
             return {"error": "Access Denied"}, 404
-        token = create_token(encoded_service_user)
+        token = cf.create_token(encoded_service_user)
         if token:
-            headers = [('Set-Cookie', f'token={token};HttpOnly;Secure')]
+            headers = [('Set-Cookie', f'DnopsToken={token};Path=/')]
             return '', 200, headers
         return {"error": "Token generation failed"}, 500
 
 
 class IsAuthorized(Resource):
-    # This endpoint is to verify whether the token user is authorised for the
-    # service along with the permission type.
-    # Token provided to the user while user authentication needs to be passed
-    # as Bearer token along with service,
-    # and permission type.
-    @jwt_required
-    def get(self, svc, perm):
-        resp = db.verifyPermissions(get_jwt_identity(), svc, perm)
-        if resp:
-            return {'permission': 'granted'}, 200, request_header
-        elif resp is False:
-            return {'permission': 'denied'}, 401, request_header
-        return {'message': 'Unable to verify permissions'}, 500, request_header
+    def get(self):
+        p = reqparse.RequestParser()
+        p.add_argument('DnopsToken', required=True, location='cookies')
+        args = p.parse_args()
+        status, resp = cf.authenticated(args['DnopsToken'])
+        if not status:
+            return {"error": resp}, 400
+        return '', 200

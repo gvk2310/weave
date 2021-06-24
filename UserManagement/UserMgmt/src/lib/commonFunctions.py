@@ -1,6 +1,8 @@
 import re
+import jwt
 import base64
 import datetime
+import uuid
 import pymongo
 import traceback
 from ..db import db
@@ -9,8 +11,7 @@ from functools import wraps
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from kubernetes import config, client
-from flask_jwt_extended import create_access_token, get_jwt_identity
-from ..config.config import mywd_iv, mywd_key, service_user, service_key, mongohost
+from ..config.config import mywd_iv, mywd_key, service_user, service_key, mongohost, jwt_secret
 
 
 def getProject(project):
@@ -130,6 +131,25 @@ def validate_service_user(encoded_service_user, encoded_service_key):
 
 
 def create_token(encoded_service_user):
-    access_token = create_access_token(identity=decrypted(encoded_service_user),
-                                       expires_delta=datetime.timedelta(minutes=120))
-    return encrypted(access_token)
+    iat = datetime.datetime.now()
+    exp = iat + datetime.timedelta(hours=1)
+    token_data = {
+        "jti": str(uuid.uuid4()),
+        "sub": decrypted(encoded_service_user),
+        "iat": int(iat.timestamp()),
+        "nbf": int(iat.timestamp()),
+        "exp": int(exp.timestamp())
+    }
+    token = jwt.encode(token_data, jwt_secret, algorithm="HS512")
+    return encrypted(token)
+
+
+def authenticated(encrypted_token):
+    try:
+        token = decrypted(encrypted_token)
+        if not token:
+            return '', "Invalid Token"
+        head = jwt.get_unverified_header(token)
+        return True, jwt.decode(token, jwt_secret, algorithms=head['alg'])
+    except Exception as e:
+        return '', e.args[0]

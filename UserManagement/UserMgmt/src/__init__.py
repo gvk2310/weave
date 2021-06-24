@@ -1,5 +1,4 @@
 from .log import logger
-from flask_jwt_extended import JWTManager
 from flask import Flask
 from flask_restful import Api as _Api
 
@@ -19,7 +18,6 @@ class Api(_Api):
 
 app = Flask(__name__)
 app_api = Api(app)
-jwt = JWTManager(app)
 
 from .config import config
 from .db import db
@@ -32,5 +30,4 @@ app_api.add_resource(resources.Service, '/services')
 app_api.add_resource(resources.GenerateToken,
                      '/token-auth/<string:encoded_service_user>'
                      '/<string:encoded_service_key>')
-app_api.add_resource(resources.IsAuthorized,
-                     '/isauthorized/<string:svc>/<string:perm>')
+app_api.add_resource(resources.IsAuthorized, '/isauthorized')
