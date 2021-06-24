@@ -8,7 +8,7 @@ from ..lib import commonFunctions as cf
 
 
 class User(Resource):
-
+    @cf.verify_token
     def get(self):
         users = db.getUsers()
         if users:
@@ -17,6 +17,7 @@ class User(Resource):
             return {'msg': 'No users record found'}, 404
         return {'message': 'Unable to fetch users'}, 500
 
+    @cf.verify_token
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=cf.nonEmptyEmail, required=True,
@@ -48,6 +49,7 @@ class User(Resource):
             return {'message': 'User created'}, 200
         return {'message': 'Unable to create user '}, 500
 
+    @cf.verify_token
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=cf.nonEmptyEmail, required=True,
@@ -79,6 +81,7 @@ class User(Resource):
                 return {
                            'message': 'Unable to update role/project from user'}, 400
 
+    @cf.verify_token
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('email', type=cf.nonEmptyEmail, required=True)
@@ -89,7 +92,7 @@ class User(Resource):
 
 
 class Role(Resource):
-
+    @cf.verify_token
     def get(self):
         roles = db.getRoles()
         if roles:
@@ -98,6 +101,7 @@ class Role(Resource):
             return {'msg': 'No roles record found'}, 404
         return {'message': 'Unable to fetch roles'}, 500
 
+    @cf.verify_token
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=cf.nonEmptyString, required=True)
@@ -118,6 +122,7 @@ class Role(Resource):
             return {'messages': 'Unable to create role'}, 412
         return {'message': 'Request not processed'}, 500
 
+    @cf.verify_token
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=cf.nonEmptyString, required=True)
@@ -141,6 +146,7 @@ class Role(Resource):
         else:
             return {'message': 'Unable to update Service(s) to the role'}, 400
 
+    @cf.verify_token
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('role', type=cf.nonEmptyString, required=True)
@@ -158,7 +164,7 @@ class Role(Resource):
 
 
 class Service(Resource):
-
+    @cf.verify_token
     def get(self):
         config.load_incluster_config()
         v1 = client.CoreV1Api()
@@ -220,7 +226,7 @@ class Service(Resource):
 
 
 class SingleUserInfo(Resource):
-
+    @cf.verify_token
     def get(self, name):
         data = db.getUserSvcs(name=name)
         if data:
@@ -242,11 +248,6 @@ class GenerateToken(Resource):
 
 
 class IsAuthorized(Resource):
+    @cf.verify_token
     def get(self):
-        p = reqparse.RequestParser()
-        p.add_argument('DnopsToken', required=True, location='cookies')
-        args = p.parse_args()
-        status, resp = cf.authenticated(args['DnopsToken'])
-        if not status:
-            return {"error": resp}, 400
         return '', 200

@@ -11,6 +11,7 @@ from functools import wraps
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from kubernetes import config, client
+from flask_restful import reqparse
 from ..config.config import mywd_iv, mywd_key, service_user, service_key, mongohost, jwt_secret
 
 
@@ -26,17 +27,6 @@ def getProject(project):
         logger.error("Unable to get poject details")
         logger.debug(traceback.format_exc())
         logger.error(e)
-
-
-def admin_required(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        user = get_jwt_identity()
-        if not db.checkAdminPrivilege(user):
-            return {'message': "Don't have adequate privilege"}, 401
-        return fn(*args, **kwargs)
-
-    return wrapper
 
 
 def nonEmptyString(value):
@@ -153,3 +143,17 @@ def authenticated(encrypted_token):
         return True, jwt.decode(token, jwt_secret, algorithms=head['alg'])
     except Exception as e:
         return '', e.args[0]
+
+
+def verify_token(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        p = reqparse.RequestParser()
+        p.add_argument('DnopsToken', required=True, location='cookies')
+        args = p.parse_args()
+        status, resp = authenticated(args['DnopsToken'])
+        if not status:
+            return {"error": resp}, 400
+        return func(*args, **kwargs)
+
+    return wrapper
