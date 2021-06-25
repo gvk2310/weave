@@ -12,7 +12,8 @@ from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from kubernetes import config, client
 from flask_restful import reqparse
-from ..config.config import mywd_iv, mywd_key, service_user, service_key, mongohost, jwt_secret
+from ..config.config import mywd_iv, mywd_key, service_user, service_key, \
+    mongohost, jwt_secret
 
 
 def getProject(project):
@@ -131,15 +132,12 @@ def create_token(encoded_service_user):
         "exp": int(exp.timestamp())
     }
     token = jwt.encode(token_data, jwt_secret, algorithm="HS512").decode('ascii')
-    print(token)
     return encrypted(token)
 
 
 def authenticated(encrypted_token):
     try:
-        print(encrypted_token)
         token = decrypted(encrypted_token)
-        print(token)
         if not token:
             return '', "Invalid Token"
         head = jwt.get_unverified_header(token)

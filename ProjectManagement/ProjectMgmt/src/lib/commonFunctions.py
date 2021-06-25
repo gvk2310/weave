@@ -6,8 +6,8 @@ from ..log import logger
 import requests
 from flask_restful import request
 from functools import wraps
+from ..config.config import token_auth_url
 
-token_auth_url = os.environ['usermgmtUrl']
 
 
 def nonEmptyString(value):

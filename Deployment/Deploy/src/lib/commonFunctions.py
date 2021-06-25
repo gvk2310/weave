@@ -1,5 +1,4 @@
 from io import BytesIO
-import os
 import re
 import xlwt
 import xlrd
@@ -10,13 +9,7 @@ from ..log import logger
 from functools import wraps
 from flask_restful import request
 from werkzeug.datastructures import FileStorage
-
-jenkins_url = os.environ['jenkins_url']
-jenkins_username = os.environ['jenkins_username']
-jenkins_password = os.environ['jenkins_password']
-jenkins_token = os.environ['jenkins_token']
-onboarding_url = os.environ['onboarding_url']
-token_auth_url = os.environ['usermgmtUrl']
+from ..config import config
 
 
 def nonEmptyString(value):
@@ -53,7 +46,7 @@ def excelFileType(file):
 def verify_token(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        resp = requests.get(f"{token_auth_url}/isauthorized",
+        resp = requests.get(f"{config.token_auth_url}/isauthorized",
                             cookies=request.cookies)
         if resp.status_code != 200:
             return resp.json(), resp.status_code
@@ -71,7 +64,7 @@ def verifyToken(fn):
         token = request.headers['Authorization'].split()[1]
         perm = 'read' if request.method == 'GET' else 'write'
         resp = requests.get(
-            f"{token_auth_url}/isauthorized/deploy/{perm}",
+            f"{config.token_auth_url}/isauthorized/deploy/{perm}",
             headers={f'Authorization': f'Bearer {token}',
                      'Content-Type': 'application/json'},
         )
@@ -84,7 +77,7 @@ def verifyToken(fn):
 
 def assetDownloadDetails(assets):
     try:
-        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}")
+        data = requests.get(f"{config.onboarding_url}/assetdetails?assets={assets}")
         if data.status_code == 200:
             return data.json()
         logger.error("Failed to retrieve asset download detail")
@@ -95,10 +88,10 @@ def assetDownloadDetails(assets):
 
 def triggerJenkins(parameters, job_name):
     try:
-        srv = jenkins.Jenkins(jenkins_url, username=jenkins_username,
-                              password=jenkins_password)
+        srv = jenkins.Jenkins(config.jenkins_url, username=config.jenkins_username,
+                              password=config.jenkins_password)
         srv.build_job(job_name, parameters=parameters,
-                      token=jenkins_token)
+                      token=config.jenkins_token)
         return True
     except Exception as e:
         logger.error("Unable to trigger Jenkins Job")

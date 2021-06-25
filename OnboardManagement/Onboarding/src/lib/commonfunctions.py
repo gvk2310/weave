@@ -11,8 +11,7 @@ from flask_restful import request
 from ..lib.sse import publish_onboard_events
 from functools import wraps
 from werkzeug.datastructures import FileStorage
-
-token_auth_url = os.environ['usermgmtUrl']
+from ..config.config import token_auth_url
 
 
 def non_empty_string(string):
