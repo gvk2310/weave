@@ -22,6 +22,8 @@ spec:
         image: devnetops.azurecr.io/devnetops-events:t1
         imagePullPolicy: Always
         env:
+        - name: usermgmtUrl
+          value: http://devnetops-access.ethan.svc.cluster.local:80
         - name: redis_url
           value: redis-ls.ethan.svc.cluster.local:6379
 #        resources:

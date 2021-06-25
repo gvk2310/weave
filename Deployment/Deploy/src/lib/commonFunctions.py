@@ -16,8 +16,6 @@ jenkins_username = os.environ['jenkins_username']
 jenkins_password = os.environ['jenkins_password']
 jenkins_token = os.environ['jenkins_token']
 onboarding_url = os.environ['onboarding_url']
-
-
 token_auth_url = os.environ['usermgmtUrl']
 
 
@@ -52,15 +50,14 @@ def excelFileType(file):
     return file
 
 
-def verifyJenkins(fn):
-    @wraps(fn)
+def verify_token(func):
+    @wraps(func)
     def wrapper(*args, **kwargs):
-        if 'Auth-Token' not in request.headers.keys() or \
-                not request.headers['Auth-Token'].strip():
-            return {"msg": "Jenkins auth token required"}, 500
-        if request.headers['Auth-Token'] != jenkins_token:
-            return "Invalid Jenkins auth token", 500
-        return fn(*args, **kwargs)
+        resp = requests.get(f"{token_auth_url}/isauthorized",
+                            cookies=request.cookies)
+        if resp.status_code != 200:
+            return resp.json(), resp.status_code
+        return func(*args, **kwargs)
 
     return wrapper
 
