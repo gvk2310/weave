@@ -14,7 +14,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-project'
-        def Image_Tag = 'auth_test'
+        def Image_Tag = 'S1'
         def K8s_Deployment = 'devnetops-project'
         
 	   try{
@@ -79,7 +79,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		}  
 		stage('Pushing the Docker image to Container Registry') {
               container('docker') {		 
-	             withCredentials([usernamePassword(credentialsId: 'devnetops', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
+	             withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
 				 {
 			     sh ("docker login -u ${USERNAME} -p ${PASSWORD} "+DockerReg_Url)
 				 sh ("docker push ${DockerReg_Url}/${Docker_Image}:${Image_Tag}")	
