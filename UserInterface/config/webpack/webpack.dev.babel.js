@@ -1,5 +1,4 @@
 import webpack from 'webpack';
-
 import paths from './paths';
 
 module.exports = {

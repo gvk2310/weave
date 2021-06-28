@@ -4,6 +4,7 @@ const deps = require("../../package.json").dependencies;
 import paths from './paths';
 import rules from './rules';
 
+
 module.exports = {
     entry: paths.entryPath,
     target:"web",

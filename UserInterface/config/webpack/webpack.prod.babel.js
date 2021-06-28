@@ -1,5 +1,4 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-
 import paths from './paths';
 import webpack from 'webpack';
 

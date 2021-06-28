@@ -1,4 +1,5 @@
 module.exports = [
+
     {
         test: /bootstrap\.js$/,
         loader: "bundle-loader",
