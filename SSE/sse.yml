@@ -41,7 +41,7 @@ metadata:
 spec:
   selector:
     app: devnetops-events
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - port: 80
     targetPort: 8080
