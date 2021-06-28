@@ -5,7 +5,8 @@ ext_modules = [
         Extension("sse.src.api.resources",  ["sse/src/api/resources.py"]),
                 Extension("sse.src.config.config",  ["sse/src/config/config.py"]),
   				Extension("sse.src.__init__",  ["sse/src/__init__.py"]),
-  				Extension("sse.src.log",  ["sse/src/log.py"])
+  				Extension("sse.src.log",  ["sse/src/log.py"]),
+  				Extension("sse.src.lib.commonFunctions",  ["sse.src.lib.commonFunctions"])
 ]
 setup(
         name = 'devnetops',
