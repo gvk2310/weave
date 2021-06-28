@@ -15,13 +15,11 @@ const NavigationBar = (props) => {
     const [status, setstatus] = useState('');
     const [isError, setisError] = useState(false);
 
-    useEffect(() => {
+    useEffect(() => {   
         var myHeaders = new Headers();
-
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
         myHeaders.append('GET', 'POST', 'OPTIONS');
-
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,

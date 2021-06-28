@@ -33,6 +33,8 @@ module.exports = {
             PLATFORM_URL: `###REACT_APP_PLATFORM_URL###/gqlapi`,
             MYWD_KEY: '###MYWD_KEY###',
             MYWD_IV: '###MYWD_IV###',
+            service_user: '###service_user###',
+            service_key: '###service_key###'
           }),
         new CleanWebpackPlugin({cleanOnceBeforeBuildPatterns:[paths.outputPath]})
     ],
