@@ -19,7 +19,7 @@ spec:
       - name: devnetops
       containers:
       - name: devnetops-events
-        image: devnetops.azurecr.io/devnetops-events:auth_test
+        image: devnetops.azurecr.io/devnetops-events:t1
         imagePullPolicy: Always
         env:
         - name: usermgmtUrl
@@ -41,7 +41,7 @@ metadata:
 spec:
   selector:
     app: devnetops-events
-  type: ClusterIP
+  type: LoadBalancer
   ports:
   - port: 80
     targetPort: 8080
