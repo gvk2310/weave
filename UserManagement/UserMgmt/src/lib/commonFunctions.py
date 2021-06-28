@@ -11,7 +11,7 @@ from functools import wraps
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from kubernetes import config, client
-from flask_restful import reqparse
+from flask_restful import reqparse, request
 from ..config.config import mywd_iv, mywd_key, service_user, service_key, \
     mongohost, jwt_secret
 
@@ -149,12 +149,11 @@ def authenticated(encrypted_token):
 def verify_token(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        p = reqparse.RequestParser()
-        p.add_argument('DnopsToken', required=True, location='cookies')
-        args = p.parse_args()
-        status, resp = authenticated(args['DnopsToken'])
+        if 'DnopsToken' not in request.cookies.keys():
+            return {"error": "Access Denied"}, 400
+        token = request.cookies['DnopsToken']
+        status, resp = authenticated(token)
         if not status:
             return {"error": resp}, 400
         return func(*args, **kwargs)
-
     return wrapper
