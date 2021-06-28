@@ -39,14 +39,8 @@ class RoutingModule extends Component {
     componentDidMount = () => {
         const uName = process.env.service_user;
         const uKey = process.env.service_key;
-        console.log("uName ",uName);
-        console.log("uKey ",uKey);
-
         const encrypteduserName = encryptionAlgorithm(uName);
         const encryptedKey = encryptionAlgorithm(uKey);
-
-        console.log("en user", encrypteduserName);
-        console.log("en key", encryptedKey);
         var myHeaders = new Headers();
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
