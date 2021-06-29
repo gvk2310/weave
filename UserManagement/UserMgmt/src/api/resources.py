@@ -247,7 +247,7 @@ class GenerateToken(Resource):
         return {"error": "Token generation failed"}, 500
 
 
-class IsAuthorized(Resource):
+class IsValidRequest(Resource):
     @cf.verify_token
     def get(self):
         return '', 200

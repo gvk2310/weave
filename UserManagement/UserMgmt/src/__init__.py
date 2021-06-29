@@ -30,4 +30,4 @@ app_api.add_resource(resources.Service, '/services')
 app_api.add_resource(resources.GenerateToken,
                      '/token-auth/<string:encoded_service_user>'
                      '/<string:encoded_service_key>')
-app_api.add_resource(resources.IsAuthorized, '/isauthorized')
+app_api.add_resource(resources.IsValidRequest, '/isvalidrequest')
