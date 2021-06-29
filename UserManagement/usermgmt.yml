@@ -64,7 +64,7 @@ metadata:
 spec:
   selector:
     app: devnetops-access
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - port: 80
     targetPort: 8080
