@@ -154,6 +154,6 @@ def verify_token(func):
         token = request.cookies['DnopsToken']
         status, resp = authenticated(token)
         if not status:
-            return {"error": resp}, 400
+            return {"error": "Access Denied"}, 400
         return func(*args, **kwargs)
     return wrapper
