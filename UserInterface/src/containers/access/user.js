@@ -304,7 +304,7 @@ class User extends React.Component {
         this.setState({ errors });
     }
 
-    handleValidation=()=> {
+    handleValidation() {
         // console.log('inside handle validations');
         const fields = this.state.fields;
         const errors = {};
@@ -317,12 +317,15 @@ class User extends React.Component {
         }
         // invalid email
         if (typeof fields.email !== "undefined") {
-            // var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
-            // if (!pattern.test(fields.email)) {
+            // const lastAtPos = fields.email.lastIndexOf('@');
+            // const lastDotPos = fields.email.lastIndexOf('.');
+
+            // if (!(lastAtPos < lastDotPos && lastAtPos > 0 && fields.email.indexOf('@@') == -1 && lastDotPos > 2 && (fields.email.length - lastDotPos) > 2)) {
             //     formIsValid = false;
             //     errors.email = "Email is not valid";
             // }
-            if(!fields.email.match(/^[A-Za-z\d._-]+[@]\w+[.]\w+$/)){
+            var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+            if (!pattern.test(fields.email)) {
                 formIsValid = false;
                 errors.email = "Email is not valid";
             }
