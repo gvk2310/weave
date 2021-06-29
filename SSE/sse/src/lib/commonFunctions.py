@@ -4,7 +4,6 @@ from functools import wraps
 from ..config.config import token_auth_url
 
 
-
 def verify_token(func):
     @wraps(func)
     def wrapper(*args, **kwargs):

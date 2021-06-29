@@ -5,13 +5,12 @@ import datetime
 import uuid
 import pymongo
 import traceback
-from ..db import db
 from ..log import logger
 from functools import wraps
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from kubernetes import config, client
-from flask_restful import reqparse, request
+from flask_restful import request
 from ..config.config import mywd_iv, mywd_key, service_user, service_key, \
     mongohost, jwt_secret
 

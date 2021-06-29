@@ -9,7 +9,8 @@ from ..log import logger
 from functools import wraps
 from flask_restful import request
 from werkzeug.datastructures import FileStorage
-from ..config import config
+from ..config.config import token_auth_url, onboarding_url, jenkins_url, \
+    jenkins_username, jenkins_password, jenkins_token
 
 
 def nonEmptyString(value):
@@ -29,7 +30,8 @@ def genericString(value):
         raise ValueError(
             'The string value is either empty or not allowed. Alphanumeric '
             'string with special characters (-_) allowed')
-        
+
+
 def checkStringLength(string):
     if (len(string) <= 25):
         return True
@@ -46,7 +48,7 @@ def excelFileType(file):
 def verify_token(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        resp = requests.get(f"{config.token_auth_url}/isvalidrequest",
+        resp = requests.get(f"{token_auth_url}/isvalidrequest",
                             cookies=request.cookies)
         if resp.status_code != 200:
             return resp.json(), resp.status_code
@@ -55,29 +57,9 @@ def verify_token(func):
     return wrapper
 
 
-def verifyToken(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        if 'Authorization' not in request.headers.keys() or \
-                request.headers['Authorization'].split()[0] != 'Bearer':
-            return {"msg": "Token required"}, 500
-        token = request.headers['Authorization'].split()[1]
-        perm = 'read' if request.method == 'GET' else 'write'
-        resp = requests.get(
-            f"{config.token_auth_url}/isauthorized/deploy/{perm}",
-            headers={f'Authorization': f'Bearer {token}',
-                     'Content-Type': 'application/json'},
-        )
-        if resp.status_code != 200:
-            return resp.json(), resp.status_code
-        return fn(*args, **kwargs)
-
-    return wrapper
-
-
 def assetDownloadDetails(assets):
     try:
-        data = requests.get(f"{config.onboarding_url}/assetdetails?assets={assets}")
+        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}")
         if data.status_code == 200:
             return data.json()
         logger.error("Failed to retrieve asset download detail")
@@ -86,12 +68,13 @@ def assetDownloadDetails(assets):
         logger.debug(traceback.format_exc())
         logger.error(e)
 
+
 def triggerJenkins(parameters, job_name):
     try:
-        srv = jenkins.Jenkins(config.jenkins_url, username=config.jenkins_username,
-                              password=config.jenkins_password)
+        srv = jenkins.Jenkins(jenkins_url, username=jenkins_username,
+                              password=jenkins_password)
         srv.build_job(job_name, parameters=parameters,
-                      token=config.jenkins_token)
+                      token=jenkins_token)
         return True
     except Exception as e:
         logger.error("Unable to trigger Jenkins Job")

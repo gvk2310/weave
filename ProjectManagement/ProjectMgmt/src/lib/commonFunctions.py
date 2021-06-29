@@ -1,8 +1,4 @@
 import re
-import os
-from ..db import db
-from flask_jwt_extended import get_jwt_identity
-from ..log import logger
 import requests
 from flask_restful import request
 from functools import wraps
@@ -39,5 +35,4 @@ def verify_token(func):
         if resp.status_code != 200:
             return resp.json(), resp.status_code
         return func(*args, **kwargs)
-
     return wrapper
