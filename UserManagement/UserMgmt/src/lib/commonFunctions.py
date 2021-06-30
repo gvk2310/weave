@@ -1,14 +1,19 @@
 import re
-import os
-import traceback
+import jwt
+import base64
+import datetime
+import uuid
 import pymongo
-from ..db import db
-from flask_jwt_extended import get_jwt_identity
-from functools import wraps
-from kubernetes import config, client
+import traceback
 from ..log import logger
+from functools import wraps
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from kubernetes import config, client
+from flask_restful import request
+from ..config.config import mywd_iv, mywd_key, service_user, service_key, \
+    mongohost, jwt_secret
 
-mongohost= os.environ['mongohost']
 
 def getProject(project):
     try:
@@ -22,17 +27,6 @@ def getProject(project):
         logger.error("Unable to get poject details")
         logger.debug(traceback.format_exc())
         logger.error(e)
-        
-        
-def admin_required(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        user = get_jwt_identity()
-        if not db.checkAdminPrivilege(user):
-            return {'message': "Don't have adequate privilege"}, 401
-        return fn(*args, **kwargs)
-
-    return wrapper
 
 
 def nonEmptyString(value):
@@ -75,10 +69,11 @@ def formatList(val):
                 r'^[\w\d\-_|]+$', item):
             return 'One of the item in the list is an invalid string'
     return val
-  
+
+
 def returnNotMatches(service_list, actual_list):
     return [x for x in service_list if x not in actual_list]
-  
+
 
 def endpoints():
     try:
@@ -101,3 +96,63 @@ def endpoints():
         logger.error('Unable to get endpoints from kubernetes')
         logger.error(e)
 
+
+def encrypted(var):
+    try:
+        aes = AES.new(mywd_key, AES.MODE_CBC, mywd_iv)
+        return base64.urlsafe_b64encode(aes.encrypt(pad(var.encode('utf-8'), 16))).decode('utf-8')
+    except Exception as e:
+        logger.error(f'Failed to encrypt data: {var}')
+        logger.error(e)
+
+
+def decrypted(var):
+    try:
+        aes = AES.new(mywd_key, AES.MODE_CBC, mywd_iv)
+        return unpad(aes.decrypt(base64.urlsafe_b64decode(var)), 16).decode('utf-8')
+    except Exception as e:
+        logger.error(f'Failed to decrypt data: {var}')
+        logger.error(e)
+
+
+def validate_service_user(encoded_service_user, encoded_service_key):
+    return service_user == decrypted(encoded_service_user) and service_key == decrypted(
+        encoded_service_key)
+
+
+def create_token(encoded_service_user):
+    iat = datetime.datetime.now()
+    exp = iat + datetime.timedelta(hours=1)
+    token_data = {
+        "jti": str(uuid.uuid4()),
+        "sub": decrypted(encoded_service_user),
+        "iat": int(iat.timestamp()),
+        "nbf": int(iat.timestamp()),
+        "exp": int(exp.timestamp())
+    }
+    token = jwt.encode(token_data, jwt_secret, algorithm="HS512").decode('ascii')
+    return encrypted(token)
+
+
+def authenticated(encrypted_token):
+    try:
+        token = decrypted(encrypted_token)
+        if not token:
+            return '', "Invalid Token"
+        head = jwt.get_unverified_header(token)
+        return True, jwt.decode(token, jwt_secret, algorithms=head['alg'])
+    except Exception as e:
+        return '', e.args[0]
+
+
+def verify_token(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if 'DnopsToken' not in request.cookies.keys():
+            return {"error": "Access Denied"}, 400
+        token = request.cookies['DnopsToken']
+        status, resp = authenticated(token)
+        if not status:
+            return {"error": "Access Denied"}, 400
+        return func(*args, **kwargs)
+    return wrapper

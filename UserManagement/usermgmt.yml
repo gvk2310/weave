@@ -26,6 +26,26 @@ spec:
           value: mongodb://admin:password@devnetops-mongo.ethan.svc.cluster.local:80/devnetops?authSource=admin
         - name: service_list
           value: devnetops-project,devnetops-onboard,devnetops-deployment,devnetops-testing,devnetops-monitor,devnetops-security
+        - name: MYWD_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: MYWD_KEY
+              name: cloveplatformui-env
+        - name: MYWD_IV
+          valueFrom:
+            configMapKeyRef:
+              key: MYWD_IV
+              name: cloveplatformui-env
+        - name: service_user
+          valueFrom:
+            configMapKeyRef:
+              key: INITIAL_ADMIN_USER
+              name: jenkins-blueocean-env
+        - name: service_key
+          valueFrom:
+            configMapKeyRef:
+              key: INITIAL_ADMIN_PASSWORD
+              name: jenkins-blueocean-env
         - name: username
           valueFrom:
             configMapKeyRef:
@@ -33,6 +53,7 @@ spec:
               name: jenkins-blueocean-env
         ports:
         - containerPort: 8080
+
 ---
 apiVersion: v1
 kind: Service
@@ -43,7 +64,7 @@ metadata:
 spec:
   selector:
     app: devnetops-access
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - port: 80
     targetPort: 8080

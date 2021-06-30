@@ -19,6 +19,8 @@ import Repository from '../containers/onboard/repository';
 import Infra from '../containers/onboard/infra';
 import Asset from '../containers/onboard/asset';
 import Test from '../containers/onboard/test';
+import { encryptionAlgorithm, decryptionAlgorithm, Base64EncodeUrl, Base64DecodeUrl } from '../helpers/helperFunction'
+
 
 const mapStateToProps = (state) => {
     return {
@@ -27,9 +29,40 @@ const mapStateToProps = (state) => {
 }
 
 class RoutingModule extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            authenticated: false,
+        };
+        this.selectedId = '';
+    }
+    componentDidMount = () => {
+        const uName = process.env.service_user;
+        const uKey = process.env.service_key;
+        const encrypteduserName = encryptionAlgorithm(uName);
+        const encryptedKey = encryptionAlgorithm(uKey);
+        var myHeaders = new Headers();
+        myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
+        myHeaders.append('Access-Control-Allow-Credentials', 'true');
+        myHeaders.append('GET', 'POST', 'OPTIONS');
+        var requestOptions = {
+          method: 'GET',
+          headers: myHeaders
+        };
+        fetch(`###REACT_APP_PLATFORM_URL###/access/token-auth/${encrypteduserName}/${encryptedKey}`, requestOptions)
+          .then(response => {
+              if(response.status === 200){
+                  this.setState({
+                      authenticated: true,
+                  })
+              }
+            console.log("response of 1st call", response);
+          })
+          .catch(error => console.log('error', error));
+      };
     render() {
         return (
-
+            this.state.authenticated ?
             <Router basename="/devnetops/">
                 <Switch>
                     <Route exact path="/">
@@ -40,6 +73,7 @@ class RoutingModule extends Component {
                             <div className="row flex-fill no-gutters">
                                 <NavigationBar />
                                 <Overview />
+
                             </div>
                         </div>
                     </Route>
@@ -120,6 +154,7 @@ class RoutingModule extends Component {
 
                 </Switch >
             </Router >
+            : "Not Authenticated"
         )
     }
 

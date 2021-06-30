@@ -22,6 +22,8 @@ spec:
         image: devnetops.azurecr.io/devnetops-project:S1
         imagePullPolicy: Always
         env:
+        - name: usermgmtUrl
+          value: http://devnetops-access.ethan.svc.cluster.local:80
         - name: mongohost
           value: mongodb://admin:password@devnetops-mongo.ethan.svc.cluster.local:80/devnetops?authSource=admin
         ports:
@@ -36,7 +38,7 @@ metadata:
 spec:
   selector:
     app: devnetops-project
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - port: 80
     targetPort: 8080

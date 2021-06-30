@@ -7,3 +7,4 @@ app.config['MONGODB_SETTINGS'] = {
 }
 
 app.config['upload_folder'] = 'tmp'
+token_auth_url = os.environ['usermgmtUrl']

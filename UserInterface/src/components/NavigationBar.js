@@ -14,14 +14,11 @@ const NavigationBar = (props) => {
     const [projectAcc, setprojectAcc] = useState(false);
     const [status, setstatus] = useState('');
     const [isError, setisError] = useState(false);
-
-    useEffect(() => {
+    useEffect(() => {   
         var myHeaders = new Headers();
-
         myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
         myHeaders.append('Access-Control-Allow-Credentials', 'true');
         myHeaders.append('GET', 'POST', 'OPTIONS');
-
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
@@ -32,7 +29,6 @@ const NavigationBar = (props) => {
                 setcheckRole(findresponse)
             })
             .catch(error => console.log('error', error));
-
         let decUsername = decryptionAlgorithm(cookies['cookies'].username);
         let userName = decUsername.toLowerCase();
         fetch(`###REACT_APP_PLATFORM_URL###/access/userinfo/${userName}`, requestOptions)
@@ -41,7 +37,6 @@ const NavigationBar = (props) => {
             {setisError(true)}
             return response.json()
         })
-        
         .then((findresponse) => {
            if(findresponse.msg){
                setstatus(findresponse.msg)
@@ -52,7 +47,6 @@ const NavigationBar = (props) => {
             })
             .catch(error => console.log('error', error));
     }, []);
-
     const expandAccordian = (accordianName) => {
         if (accordianName == 'onboard') { 
             setonboardAcc(!onboardAcc);

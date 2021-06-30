@@ -1,5 +1,4 @@
 import path from 'path';
-
 module.exports = {
     root: path.resolve(__dirname, '../', '../'),
     outputPath: path.resolve(__dirname, '../', '../', 'servebuild/build'),

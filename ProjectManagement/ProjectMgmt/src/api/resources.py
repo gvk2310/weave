@@ -5,8 +5,10 @@ from ..db import db
 from ..lib.commonFunctions import *
 from flask_restful import Resource, reqparse, inputs
 
+
 class Project(Resource):
 
+    @verify_token
     def get(self):
         project = db.getProject()
         if project:
@@ -15,6 +17,7 @@ class Project(Resource):
             return {'msg': 'No projects record found'}, 404
         return {'message': 'Unable to fetch projects'}, 500
 
+    @verify_token
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('project_name', type=nonEmptyString, required=True,
@@ -23,8 +26,8 @@ class Project(Resource):
         args = parser.parse_args()
         check = db.getProject(project_name=args['project_name'])
         if check is not False:
-          if check['project_name'] == args['project_name']:
-            return {'message': 'Project already exist'}, 400
+            if check['project_name'] == args['project_name']:
+                return {'message': 'Project already exist'}, 400
         args['project_id'] = datetime.datetime.now().strftime("PR%Y%m%d%H%M%S")
         resp = db.createProject(project_id=args['project_id'],
                                 project_name=args['project_name'],
@@ -35,6 +38,7 @@ class Project(Resource):
             return {'messages': 'Unable to create project details'}, 412
         return {'message': 'Request not processed'}, 500
 
+    @verify_token
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('project_name', type=nonEmptyString, required=True, nullable=False)
@@ -52,10 +56,11 @@ class Project(Resource):
         else:
             return {'message': 'Unable to update project details'}, 400
         return {'message': 'Unable to process this request'}, 500
-      
+
+    @verify_token
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
-        parser.add_argument('project_name', type=nonEmptyString, required=True,nullable=False)
+        parser.add_argument('project_name', type=nonEmptyString, required=True, nullable=False)
         args = parser.parse_args()
         check = db.getProject(project_name=args['project_name'])
         if check is False:

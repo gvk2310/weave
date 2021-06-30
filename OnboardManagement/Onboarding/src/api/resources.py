@@ -12,7 +12,7 @@ from werkzeug.datastructures import FileStorage
 from flask_restful import Resource, reqparse, inputs
 from ..lib.sse import publish_onboard_events
 from ..lib.jfrog import checkJfrogRemote, deleteFromJfrog, validateJfrog, checkJfrogUrl
-from ..lib.nexus import (validateNexus, checkNexusRemote,deleteFromNexus, \
+from ..lib.nexus import (validateNexus, checkNexusRemote, deleteFromNexus, \
                          checkNexusUrl)
 from ..lib.cloud_validate import aws_validate, openstack_validate, osm_validate
 from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
@@ -20,13 +20,12 @@ from ..lib.vault import (getRepoList, getInfraList, removeFromVault,
 from ..lib.commonfunctions import (localAssetOnboarding, localTestOnboarding,
                                    non_empty_string, retrieveUrl,
                                    validStrChecker, format_bytes,
-                                   assetDeletefromRepo, checkStringLength, verifyToken, json_loads)
+                                   assetDeletefromRepo, checkStringLength, verify_token, json_loads)
 
 
 class Asset(Resource):
 
-
-    #@verifyToken
+    @verify_token
     def get(self):
         data = db.get()
         if data:
@@ -35,7 +34,7 @@ class Asset(Resource):
             return {'msg': 'No assets onboarded yet'}, 404
         return {'msg': 'Internal Server Error'}, 500
 
-    #@verifyToken
+    @verify_token
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_name', nullable=False, type=non_empty_string,
@@ -52,7 +51,7 @@ class Asset(Resource):
                             type=non_empty_string, required=True)
         parser.add_argument('asset_path', type=non_empty_string)
         parser.add_argument('asset_file', type=FileStorage,
-                                location='files')
+                            location='files')
         args = parser.parse_args()
         if not validStrChecker(args['asset_name']):
             return {'message': 'Asset name cannot have special characters'}, 422
@@ -69,10 +68,10 @@ class Asset(Resource):
         if not repo_details:
             return {"msg": "Unable to retrieve repo details"}, 400
         check = db.get(name=args['asset_name'],
-                    vendor=args['asset_vendor'],
-                    group=args['asset_group'],
-                    type=args['asset_type'],
-                    version=args['asset_version'])
+                       vendor=args['asset_vendor'],
+                       group=args['asset_group'],
+                       type=args['asset_type'],
+                       version=args['asset_version'])
         if check:
             return {'msg': 'Asset with same version already exists, '
                            'either delete the version or create with a '
@@ -111,9 +110,9 @@ class Asset(Resource):
             args['asset_file_loc'] = os.path.join(app.config['upload_folder'],
                                                   args['assetid'])
             args['asset_file'].save(args['asset_file_loc'])
-            if (os.path.getsize(args['asset_file_loc'])== 0):
+            if (os.path.getsize(args['asset_file_loc']) == 0):
                 return {"msg": "Upload non empty file"}, 422
-				
+
             check = db.create(
                 assetid=args['assetid'],
                 name=args['asset_name'],
@@ -138,14 +137,14 @@ class Asset(Resource):
                           scan_result='Unknown',
                           onboard_status='Failed')
                 publish_onboard_events(event='asset',
-                                       data={'asset_id':args['assetid'],
-                                             'scan_result':'Unknown',
-                                             'onboard_status':'Failed'})
+                                       data={'asset_id': args['assetid'],
+                                             'scan_result': 'Unknown',
+                                             'onboard_status': 'Failed'})
                 return {
                            'msg': 'Failed to initiate asset onboarding'}, 500
-            return {'asset_id': args['assetid']}, 200     
-          
-    #@verifyToken
+            return {'asset_id': args['assetid']}, 200
+
+    @verify_token
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_id', type=str, required=True)
@@ -155,7 +154,7 @@ class Asset(Resource):
         resp = db.get(assetid=args['asset_id'])
         if not resp:
             return {"msg": "Invalid asset id"}, 404
-        if not args['asset_version'] and not args['asset_group'] :
+        if not args['asset_version'] and not args['asset_group']:
             return {"msg": "Nothing to modify"}, 400
         if (str(resp['asset_version']) == args['asset_version']) and \
                 (resp['asset_group'] == args['asset_group']):
@@ -166,37 +165,37 @@ class Asset(Resource):
                                   'characters'}, 422
         if not checkStringLength(args['asset_group']):
             return {
-                       'message': 'Asset group cannot have more than 25 characters'}, 422        
+                       'message': 'Asset group cannot have more than 25 characters'}, 422
         done = db.update(assetid=args['asset_id'],
                          version=args['asset_version'],
                          group=args['asset_group'])
         publish_onboard_events(event='asset',
-                               data={'asset_id':args['asset_id'],
-                                     'asset_version':args['asset_version'],
-                                     'asset_group':args['asset_group']})
+                               data={'asset_id': args['asset_id'],
+                                     'asset_version': args['asset_version'],
+                                     'asset_group': args['asset_group']})
         if done:
-            return {"msg": "asset_version and asset_group got updated"}, 200          
+            return {"msg": "asset_version and asset_group got updated"}, 200
         if done is False:
             return {"msg": "Asset ID does not exist"}, 400
         return {"msg": "asset_version and asset_group update failed"}, 500
 
-    #@verifyToken
+    @verify_token
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('asset_id', nullable=False, type=non_empty_string,
                             required=True)
-        #parser.add_argument('delete_from_repo', type=inputs.boolean,
+        # parser.add_argument('delete_from_repo', type=inputs.boolean,
         #                    default=False)
         args = parser.parse_args()
         resp = db.get(assetid=args['asset_id'])
         if not resp:
             return {"msg": "Invalid assset id"}, 404
-        #if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or \
+        # if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or \
         #        resp['onboard_status'] == 'In progress':
         if (resp['onboard_status'] != 'Done') or \
                 resp['onboard_status'] == 'In progress':
             return {"msg": "Asset onboard not complete yet"}, 400
-        #if (args['delete_from_repo']):
+        # if (args['delete_from_repo']):
         repo_details = retrieveUrl(resp["asset_repository"].lower())
         if not repo_details:
             return {"msg": "Unable to retrieve repo details"}, 500
@@ -214,8 +213,7 @@ class Asset(Resource):
 
 class Repository(Resource):
 
-
-    #@verifyToken
+    @verify_token
     def get(self):
         data = getRepoList()
         if data:
@@ -224,7 +222,7 @@ class Repository(Resource):
             return {'msg': 'No repositories onboarded yet'}, 404
         return {"msg": "Unable to retrieve repository list"}, 404
 
-    #@verifyToken
+    @verify_token
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('repo_name', nullable=False, type=non_empty_string,
@@ -239,14 +237,14 @@ class Repository(Resource):
                             type=non_empty_string, required=True)
         parser.add_argument('action', nullable=False,
                             type=non_empty_string, required=True,
-                            choices=['create', 'modify'])                   
+                            choices=['create', 'modify'])
         args = parser.parse_args()
         action = args['action']
         parser.remove_argument('action')
         args = parser.parse_args()
-        repolist = getRepoList()  
+        repolist = getRepoList()
         if action.lower() not in ['create', 'modify']:
-                return {'msg': f"'{action}' is not supported"}, 400
+            return {'msg': f"'{action}' is not supported"}, 400
         if action == 'create':
             if not validStrChecker(args['repo_name']):
                 return {'message': 'Repo name cannot have special characters'}, 422
@@ -254,23 +252,25 @@ class Repository(Resource):
                 return {'message': 'Repo name cannot have more than 25 characters'}, 422
             if repolist and (args['repo_name'] in [item['repo_name'] for item in repolist]):
                 return {
-                       "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400 
+                           "msg": f"Repository with the name '{args['repo_name']}' already onboarded"}, 400
             if args['repo_vendor'].lower() not in ['jfrog', 'nexus']:
                 return {'msg': f"'{args['repo_vendor']}' as repo vendor is not supported"}, 400
             if repolist and (args['repo_url'] in [item['repo_url'] for item in
-                                              repolist]) and (args['repo_name'] not in [item['repo_name'] for item in
-                                          repolist]):
+                                                  repolist]) and (
+                    args['repo_name'] not in [item['repo_name'] for item in
+                                              repolist]):
                 return {
-                        "msg": "Repository already exists, please create an "
-                                "another one"}, 400
+                           "msg": "Repository already exists, please create an "
+                                  "another one"}, 400
         if action == 'modify' and repolist:
             if args['repo_name'] not in [item['repo_name'] for item in repolist]:
                 return {
-                       "msg": f"Repo with the name '{args['repo_name']}' does not exist to update"}, 400
+                           "msg": f"Repo with the name '{args['repo_name']}' does not exist to update"}, 400
             for item in repolist:
-                if (item['repo_url'] == args['repo_url']) and (item['repo_name'] != args['repo_name']):
+                if (item['repo_url'] == args['repo_url']) and (
+                        item['repo_name'] != args['repo_name']):
                     return {
-                            "msg": "Repository already exists, please create an another one"}, 400        
+                               "msg": "Repository already exists, please create an another one"}, 400
         if args['repo_vendor'].lower() == 'jfrog':
             url = re.findall("artifactory", args['repo_url'])
             if 'artifactory' not in url:
@@ -280,7 +280,7 @@ class Repository(Resource):
                 return {"msg": "Invalid Credentials. JFrog repository authentication failed"}, 500
             if args['repo_url'] not in [item['url'] for item in resp.json()]:
                 return {
-                       "msg": "Repository does not exist in JFrog"}, 400
+                           "msg": "Repository does not exist in JFrog"}, 400
         if args['repo_vendor'].lower() == 'nexus':
             url = re.findall("nexus", args['repo_url'])
             if 'nexus' not in url:
@@ -288,7 +288,7 @@ class Repository(Resource):
             resp = validateNexus(args)
             if resp == 401:
                 return {"msg": "Invalid Credentials. Nexus repository authentication failed"}, 500
-            elif resp == 404 or resp ==400:
+            elif resp == 404 or resp == 400:
                 return {"msg": "Repository does not exist in Nexus"}, 400
         check = []
         if (repolist):
@@ -311,10 +311,8 @@ class Repository(Resource):
                 return {"msg": "Repository data updated successfully"}, 200
             else:
                 return {"msg": "Repository onboarding successful"}, 200
-              
-              
-              
-    #@verifyToken
+
+    @verify_token
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('repo_name', type=str, required=True)
@@ -363,8 +361,7 @@ class Repository(Resource):
 
 class Infra(Resource):
 
-
-    #@verifyToken
+    @verify_token
     def get(self):
         data = getInfraList()
         if data:
@@ -376,7 +373,7 @@ class Infra(Resource):
         return {
                    "msg": "Unable to retrieve infra list"}, 500
 
-    #@verifyToken
+    @verify_token
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('infra_name', nullable=False, type=non_empty_string,
@@ -387,7 +384,7 @@ class Infra(Resource):
                             type=non_empty_string, required=True, choices=[
                 'Demo', 'Test', 'Development', 'Stage', 'Production'])
         parser.add_argument('action', nullable=False,
-                            type=non_empty_string, required=True)                   
+                            type=non_empty_string, required=True)
         args = parser.parse_args()
         action = args['action']
         parser.remove_argument('action')
@@ -405,9 +402,9 @@ class Infra(Resource):
         if action == 'modify':
             if infralist and (
                     args['infra_name'] not in [item['infra_name'] for item in
-                                           infralist]):
+                                               infralist]):
                 return {
-                       "msg": f"Infra with the name '{args['infra_name']}' does not exist to update"}, 400
+                           "msg": f"Infra with the name '{args['infra_name']}' does not exist to update"}, 400
         if args['cloud_type'].lower() == 'aws':
             parser.add_argument('orchestrator', nullable=False,
                                 type=non_empty_string, required=True,
@@ -474,9 +471,8 @@ class Infra(Resource):
                     return {"msg": "Infra onboarding successful"}, 200
         return {
                    "msg": "Cloud validation failed, data could not be added "}, 500
-                  
 
-    #@verifyToken
+    @verify_token
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('infra_name', type=str, required=True)
@@ -499,8 +495,7 @@ class Infra(Resource):
 
 class AssetDownloadDetails(Resource):
 
-
-    #@verifyToken
+    @verify_token
     def get(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('assets', type=str, required=True, location='args')
@@ -516,42 +511,42 @@ class AssetDownloadDetails(Resource):
                            "repo_password": repo_details['repo_password']})
         return output
 
-      
 
 class Tests(Resource):
-              
-    #@verifyToken
+
+    @verify_token
     def get(self):
         data = db.getTest()
         if data:
-             return data, 200
+            return data, 200
         elif data is False:
-             return {'msg': 'No testcases onboarded yet'}, 404
+            return {'msg': 'No testcases onboarded yet'}, 404
         return {'msg': 'Internal Server Error'}, 500
 
-    #@verifyToken
+    @verify_token
     def post(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_name', nullable=False, type=non_empty_string,
                             required=True)
         parser.add_argument('test_description', nullable=False,
                             type=str, required=True)
-        parser.add_argument('test_category', nullable=False,type=non_empty_string, required=True,
-                           choices=['performance','sanity','smoke','unit','regression','functional','integration'])
+        parser.add_argument('test_category', nullable=False, type=non_empty_string, required=True,
+                            choices=['performance', 'sanity', 'smoke', 'unit', 'regression',
+                                     'functional', 'integration'])
         parser.add_argument('test_repository', nullable=False,
                             type=non_empty_string, required=True)
         parser.add_argument('test_scripttype', nullable=False,
                             type=non_empty_string, required=True,
                             choices=['python', 'ansible'])
-#        parser.add_argument('test_parameters', type=json_loads, action='append',required=True, 
-#                            help="Invalid test_parameters input")
+        #        parser.add_argument('test_parameters', type=json_loads, action='append',required=True,
+        #                            help="Invalid test_parameters input")
         parser.add_argument('test_path', type=non_empty_string, nullable=False)
         parser.add_argument('test_file', type=FileStorage, location='files', nullable=False)
         args = parser.parse_args()
-#        if isinstance(args['test_parameters'],list):
-#            args['test_parameters'] = args['test_parameters'][0]
-#        else:
-#            return {'msg':'Invalid test_parameters input'}, 400
+        #        if isinstance(args['test_parameters'],list):
+        #            args['test_parameters'] = args['test_parameters'][0]
+        #        else:
+        #            return {'msg':'Invalid test_parameters input'}, 400
         if args['test_scripttype'] == 'ansible':
             parser.add_argument('test_commands', type=non_empty_string,
                                 required=True)
@@ -562,10 +557,10 @@ class Tests(Resource):
                                   'characters'}, 422
         if not checkStringLength(args['test_name']):
             return {'message': 'Test name cannot have more than 25 characters'}, 422
-          
+
         if not checkStringLength(args['test_description']):
             return {'message': 'Test description cannot have more than 25 characters'}, 422
-          
+
         if not args['test_file'] and not args['test_path']:
             return {
                        'message': 'either test file or test path should be provided'}, 422
@@ -589,7 +584,7 @@ class Tests(Resource):
             if repo_details['repo_vendor'] == 'Nexus':
                 if checkNexusUrl(args, repo_details) != True:
                     return {"msg": "Invalid test path details"}, 500
-            args['test_id'] = datetime.datetime.now().strftime("TC%Y%m%d%H%M%S") 
+            args['test_id'] = datetime.datetime.now().strftime("TC%Y%m%d%H%M%S")
             check = db.createTest(
                 testcaseid=args['test_id'],
                 name=args['test_name'],
@@ -598,7 +593,7 @@ class Tests(Resource):
                 scripttype=args['test_scripttype'],
                 commands=args[
                     'test_commands'] if 'test_commands' in args else 'None',
-#                parameters=args['test_parameters'],
+                #                parameters=args['test_parameters'],
                 repository=args['test_repository'],
                 link=args['test_path'],
                 scan_result='Unknown',
@@ -614,9 +609,9 @@ class Tests(Resource):
                                                  , args['test_id'])
             args['test_file'].save(args['test_file_loc'])
             if (args['test_file_name'].split('.')[-1] not in ['zip', 'gz']):
-                return {'msg':'Not a zip or gzip file input'}, 422
-            if (os.path.getsize(args['test_file_loc'])<= 22):
-                return{"msg": "Upload non empty file"}, 422
+                return {'msg': 'Not a zip or gzip file input'}, 422
+            if (os.path.getsize(args['test_file_loc']) <= 22):
+                return {"msg": "Upload non empty file"}, 422
             check = db.createTest(
                 testcaseid=args['test_id'],
                 name=args['test_name'],
@@ -625,7 +620,7 @@ class Tests(Resource):
                 scripttype=args['test_scripttype'],
                 commands=args[
                     'test_commands'] if 'test_commands' in args else 'None',
-#                parameters=args['test_parameters'],
+                #                parameters=args['test_parameters'],
                 repository=args['test_repository'],
                 link=None,
                 scan_result='Scanning',
@@ -636,92 +631,90 @@ class Tests(Resource):
                 Thread(target=localTestOnboarding,
                        args=(args, repo_details)).start()
             except ThreadError as e:
-                logger.error(e)                
+                logger.error(e)
                 db.updateTest(testcaseid=args['test_id'],
-                                 scan_result='Unknown',
-                                 onboard_status='Failed')
+                              scan_result='Unknown',
+                              onboard_status='Failed')
                 publish_onboard_events(event='tests',
-                                       data={'test_id':args['test_id'],
-                                             'scan_result':'Unknown',
-                                             'onboard_status':'Failed'})
+                                       data={'test_id': args['test_id'],
+                                             'scan_result': 'Unknown',
+                                             'onboard_status': 'Failed'})
                 return {
                            'msg': 'Failed to initiate test onboarding'}, 500
             return {'test_id': args['test_id']}, 200
-              
 
-                  
-    ##@verifyToken
+    @verify_token
     def put(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_id', type=non_empty_string, required=True)
         parser.add_argument('test_description', type=str, required=True)
-        parser.add_argument('test_category', type=non_empty_string,choices=['performance','sanity','smoke',
-                                        'unit','regression','functional','integration'], required=True)
+        parser.add_argument('test_category', type=non_empty_string,
+                            choices=['performance', 'sanity', 'smoke',
+                                     'unit', 'regression', 'functional', 'integration'],
+                            required=True)
         args = parser.parse_args()
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
             return {"msg": "Invalid testcase id"}, 404
-          
+
         if not args['test_description'] and not args['test_category']:
             return {"msg": "Nothing to modify"}, 400
-          
+
         if (resp['test_description'] == args['test_description']) and \
                 (resp['test_category'] == args['test_category']):
             return {'msg': "Test description and Test category details are already updated"}, 400
-             
+
         if not checkStringLength(args['test_description']):
-            return {'message': 'Test description cannot have more than 25 characters'}, 422       
+            return {'message': 'Test description cannot have more than 25 characters'}, 422
         done = db.updateTest(testcaseid=args['test_id'],
                              description=args['test_description'],
                              category=args['test_category'])
         publish_onboard_events(event='tests',
-                               data={'test_id':args['test_id'],
-                                     'test_description':args['test_description'],
-                                     'test_category':args['test_category']}) 
+                               data={'test_id': args['test_id'],
+                                     'test_description': args['test_description'],
+                                     'test_category': args['test_category']})
         if done:
-            return {"msg": "test_category and test_description got updated"}, 200                              
+            return {"msg": "test_category and test_description got updated"}, 200
         if done is False:
             return {"msg": "Test ID does not exist"}, 400
         return {"msg": "test_category and test_description update failed"}, 500
 
-
-    ##@verifyToken
+    @verify_token
     def delete(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('test_id', nullable=False, type=non_empty_string,
                             required=True)
-        #parser.add_argument('delete_from_repo', type=inputs.boolean,
+        # parser.add_argument('delete_from_repo', type=inputs.boolean,
         #                    default=False)
         args = parser.parse_args()
         resp = db.getTest(testcaseid=args['test_id'])
         if not resp:
             return {"msg": "Invalid testcase id"}, 404
-        #if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or \
+        # if (args['delete_from_repo'] and resp['onboard_status'] != 'Done') or \
         #        resp['onboard_status'] == 'In progress':
         if (resp['onboard_status'] != 'Done') or (resp['onboard_status'] == 'In progress'):
             return {"msg": "Test onboard not completed or Successful"}, 400
-        #if (args['delete_from_repo']):
+        # if (args['delete_from_repo']):
         repo_details = retrieveUrl(resp["test_repository"].lower())
         if not repo_details:
-          return {"msg": "Unable to retrieve repo details"}, 500
-        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'JFrog':
+            return {"msg": "Unable to retrieve repo details"}, 500
+        # if args['delete_from_repo'] and repo_details['repo_vendor'] == 'JFrog':
         if repo_details['repo_vendor'] == 'JFrog':
-          resp = deleteFromJfrog(resp['test_link'], repo_details)
-        #if args['delete_from_repo'] and repo_details['repo_vendor'] == 'Nexus':
+            resp = deleteFromJfrog(resp['test_link'], repo_details)
+        # if args['delete_from_repo'] and repo_details['repo_vendor'] == 'Nexus':
         if repo_details['repo_vendor'] == 'Nexus':
-          resp = deleteFromNexus(resp['test_link'], repo_details)
+            resp = deleteFromNexus(resp['test_link'], repo_details)
         if not resp:
-          return {"msg": "Unable to delete test from repository"}, 500
+            return {"msg": "Unable to delete test from repository"}, 500
         check = db.deleteTest(testcaseid=args['test_id'])
         if check:
             return {'msg': 'Testcase Deleted'}, 200
         return {'msg': 'Internal Server Error'}, 500
-      
-      
+
+
 class TestDownloadDetails(Resource):
 
-
-    #@verifyToken
+    @verify_token
     def get(self):
         parser = reqparse.RequestParser(trim=True, bundle_errors=True)
         parser.add_argument('tests', type=str, required=True, location='args')
@@ -737,5 +730,3 @@ class TestDownloadDetails(Resource):
                            "repo_username": repo_details['repo_username'],
                            "repo_password": repo_details['repo_password']})
         return output
-  
-

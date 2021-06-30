@@ -5,14 +5,14 @@ import datetime
 from flask_restful import Resource
 from ..log import logger
 from flask import Response
-
+from ..lib.commonFunctions import verify_token
 redis_url = os.environ['redis_url']
 redis_host = redis_url.split(':')[0]
 redis_port = redis_url.split(':')[1]
 
 
 class ServerEventMessage(Resource):
-    #@verifyToken
+    @verify_token
     def get(self,type):
         stream = Response(SSEGenerator(event=type), mimetype="text/event-stream",
                           headers={'Cache-Control': 'no-cache'})
