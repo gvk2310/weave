@@ -48,7 +48,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               '''}
          }
    
-   
+   /*
    stage('SonarQube Analysis') {
 			withCredentials([usernamePassword(credentialsId: 'SONAR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]){
 			withSonarQubeEnv('SonarQube') {
@@ -129,7 +129,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					} 
 					}
 		}
-    
+    */
    
 	 stage (' Create Docker image'){
 			container('docker'){
