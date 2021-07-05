@@ -31,7 +31,7 @@ def getProject(project):
 
 def nonEmptyString(value):
     if isinstance(value, str) and value.strip() and re.match(
-            r'^[\w\d\-_|]+$', value):
+            r'^[\w\d\-_=|]+$', value):
         return value
     else:
         raise ValueError(
