@@ -1,31 +1,24 @@
 def label = "Devnetops-${UUID.randomUUID().toString()}"
 def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
-           containers: [containerTemplate(name: 'python', image: 'devnetops.azurecr.io/python3_devnetops:27072020', ttyEnabled: true, command: 'cat'),
-						containerTemplate(name: 'ansible', image: 'devnetops.azurecr.io/devnetops-ansible:latest', ttyEnabled: true, command: 'cat')],
-						volumes: [hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock'),
-                          configMapVolume(configMapName: 'clove-agent-env' ,mountPath: '/usr/')],
-		                  imagePullSecrets: ['devnetops'])
-		   
-		   
+           containers: [containerTemplate(name: 'python', image: 'aiindevops.azurecr.io/devnetops-release:python3', ttyEnabled: true, command: 'cat'),
+						containerTemplate(name: 'ansible', image: 'aiindevops.azurecr.io/devnetops-release:ansible', ttyEnabled: true, command: 'cat')],
+						volumes: [configMapVolume(mountPath: '/usr/config', configMapName: 'clove-agent-env')],
+		   imagePullSecrets: ['regcred'])
 
 {
-    
-    node(label){
+    node(label){		
         
-		def TOKEN="11d2cc12486764cb4e2862d2388b70a826"
+        native_token = sh(script:'#!/bin/sh -e\n' + "cat /usr/config/ADMIN_PASSWORD", returnStdout: true).trim()
+        withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"\",\"stage_info\":{\"Checkout Source Code\": \"\", \"Get Deployment Files\": \"\",\"StackDeployment In Cloud\": \"\"}}'"}
         
-        payload = "{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"\",\"stage_info\":{\"Checkout Source Code\": \"\", \"Get Deployment Files\": \"\",\"StackDeployment In Cloud\": \"\"}}"
-        sh("curl -X PUT ${status_url}  -H 'Content-Type: application/json' -d '${payload}'");
-        
-		
-		try{
+	try{
 			stage('Checkout Source Code'){
 				last_stage = STAGE_NAME
-				git branch: "DevNetOps-MP-Integration-V1",
-				url: "https://innersource.accenture.com/scm/dnp/devnetops.git",
-				credentialsId: innersource_cred
-                sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Source code checked out\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"
+				git branch: "master",
+				url: "http://gitlab.ethan.svc.cluster.local:8084/gitlab/root/devnetops_cartridge.git",
+				credentialsId: "gitlab"
+                withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {  sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Source code checked out\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"}
 			}
 			stage('Get Deployment Files'){
 				last_stage = STAGE_NAME
@@ -33,8 +26,12 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					def url = item.split(',')[1]
 					def user = item.split(',')[2]
 					def pass = item.split(',')[3]
-					sh "wget --user=${user} --password=${pass}  --timeout=1 --waitretry=0 --tries=5 --retry-connrefused ${url}"
-                sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Assets retrieved\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"
+                       sh """
+					   set +x
+					   wget --user=${user} --password=${pass}  --timeout=1 --waitretry=0 --tries=5 --retry-connrefused ${url}
+					   set -x
+					   """
+                withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Assets retrieved\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"}
 				}
 				}
 			stage('StackDeployment In Cloud'){
@@ -43,15 +40,25 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					sh 'python3 AwsstackPipeline/stack_create.py'
 				}
 				def instanceDetails = readFile(file: 'instanceDetails')
-                sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Stack created\", \"stage_info\":{\"${last_stage}\": \"Completed\"}, \"instances\":${instanceDetails}}'"
+                withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Stack created\", \"stage_info\":{\"${last_stage}\": \"Completed\"}, \"instances\":${instanceDetails}}'"}
 			}
         }catch (e) {
-			sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_FAILED\", \"message\":\"Failed to ${last_stage}.\",\"stage_info\":{\"${last_stage.toUpperCase()}\": \"Failed\"}}'"
+			withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_FAILED\", \"message\":\"Failed to ${last_stage}.\",\"stage_info\":{\"${last_stage.toUpperCase()}\": \"Failed\"}}'"}
 			currentBuild.result = 'FAILURE'
 		}finally{
 			if (!currentBuild.result || currentBuild.result=='SUCCESS'){
-            	sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_COMPLETE\", \"message\":\"done\"}'"
+            	withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_COMPLETE\", \"message\":\"done\"}'"}
 			}
-		}
+		}	
 	}
+
 }
+
+def withSecretEnv(List<Map> varAndPasswordList, Closure closure) {
+    wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: varAndPasswordList]) {
+    withEnv(varAndPasswordList.collect { "${it.var}=${it.password}" }) {
+      closure()
+    }
+  }
+}
+
