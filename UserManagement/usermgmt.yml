@@ -36,6 +36,11 @@ spec:
             configMapKeyRef:
               key: MYWD_IV
               name: cloveplatformui-env
+        - name: Native_Token
+          valueFrom:
+            configMapKeyRef:
+              key: ADMIN_PASSWORD
+              name: clove-agent-env
         - name: service_user
           valueFrom:
             configMapKeyRef:
@@ -98,3 +103,4 @@ spec:
 #  name: searchengine-role
 #  apiGroup: rbac.authorization.k8s.io
 #---
+
