@@ -17,7 +17,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-events'
-        def Image_Tag = 't1'
+        def Image_Tag = 'auth_test'
         def K8s_Deployment = 'devnetops-events'
         def SONAR_HOST_URL='https://a9df39b070e0b4f318517a4fb48d14d3-1933974976.us-west-2.elb.amazonaws.com/sonar/'
 		def SONAR_SCANNER='org.sonarsource.scanner.maven'
@@ -45,7 +45,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
                     mkdir tmp/sse/logs
               '''}
          }
-
+		/*
          stage('SonarQube Analysis') {
 			withCredentials([usernamePassword(credentialsId: 'SONAR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]){
 			withSonarQubeEnv('SonarQube') {
@@ -124,7 +124,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					}
 					} 
 					}
-		}
+		}*/
 	 stage (' Create Docker image'){
 			container('docker'){
               sh 'pwd'
