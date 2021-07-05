@@ -47,6 +47,11 @@ spec:
           value: devnetops
         - name: redis_url
           value: redis-ls.ethan.svc.cluster.local:6379
+        - name: Native_Token
+          valueFrom:
+            configMapKeyRef:
+              key: ADMIN_PASSWORD
+              name: clove-agent-env
         ports:
         - containerPort: 8080
 ---
@@ -63,4 +68,5 @@ spec:
   ports:
   - port: 80
     targetPort: 8080
+
 
