@@ -18,7 +18,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 				git branch: "master",
 				url: "http://gitlab.ethan.svc.cluster.local:8084/gitlab/root/devnetops_cartridge.git",
 				credentialsId: "gitlab"
-                withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {  sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Source code checked out\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"}
+                withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Source code checked out\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"}
 			}
 			stage('Get Deployment Files'){
 				last_stage = STAGE_NAME
@@ -31,7 +31,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					   wget --user=${user} --password=${pass}  --timeout=1 --waitretry=0 --tries=5 --retry-connrefused ${url}
 					   set -x
 					   """
-                withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Assets retrieved\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"}
+                withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Assets retrieved\", \"stage_info\":{\"${last_stage}\": \"Completed\"}}'"}
 				}
 				}
 			stage('StackDeployment In Cloud'){
@@ -40,14 +40,14 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					sh 'python3 AwsstackPipeline/stack_create.py'
 				}
 				def instanceDetails = readFile(file: 'instanceDetails')
-                withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Stack created\", \"stage_info\":{\"${last_stage}\": \"Completed\"}, \"instances\":${instanceDetails}}'"}
+                withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"Stack created\", \"stage_info\":{\"${last_stage}\": \"Completed\"}, \"instances\":${instanceDetails}}'"}
 			}
         }catch (e) {
-			withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_FAILED\", \"message\":\"Failed to ${last_stage}.\",\"stage_info\":{\"${last_stage.toUpperCase()}\": \"Failed\"}}'"}
+			withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_FAILED\", \"message\":\"Failed to ${last_stage}.\",\"stage_info\":{\"${last_stage.toUpperCase()}\": \"Failed\"}}'"}
 			currentBuild.result = 'FAILURE'
 		}finally{
 			if (!currentBuild.result || currentBuild.result=='SUCCESS'){
-            	withCredentials([string(credentialsId: 'TOKEN', variable: 'TOKEN')]) {sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_COMPLETE\", \"message\":\"done\"}'"}
+            	withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_COMPLETE\", \"message\":\"done\"}'"}
 			}
 		}	
 	}
@@ -61,4 +61,3 @@ def withSecretEnv(List<Map> varAndPasswordList, Closure closure) {
     }
   }
 }
-
