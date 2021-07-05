@@ -19,7 +19,7 @@ spec:
       - name: devnetops
       containers:
       - name: devnetops-onboard
-        image: devnetops.azurecr.io/devnetops-onboard:t1
+        image: devnetops.azurecr.io/devnetops-onboard:auth_test
         imagePullPolicy: Always
         env:
         - name: vaultToken
