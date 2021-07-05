@@ -237,10 +237,15 @@ class SingleUserInfo(Resource):
 
 
 class GenerateToken(Resource):
-    def get(self, encoded_service_user, encoded_service_key):
-        if not cf.validate_service_user(encoded_service_user, encoded_service_key):
+    def post(self):
+        parser = reqparse.RequestParser(trim=True, bundle_errors=True)
+        parser.add_argument('encoded_service_user', type=cf.nonEmptyString, required=True)
+        parser.add_argument('encoded_service_key', type=cf.nonEmptyString, required=True)
+        args = parser.parse_args()
+        if not cf.validate_service_user(args['encoded_service_user'],
+                                        args['encoded_service_key']):
             return {"error": "Access Denied"}, 404
-        token = cf.create_token(encoded_service_user)
+        token = cf.create_token(args['encoded_service_user'])
         if token:
             headers = [('Set-Cookie', f'DnopsToken={token};Path=/')]
             return '', 200, headers
@@ -251,3 +256,4 @@ class IsValidRequest(Resource):
     @cf.verify_token
     def get(self):
         return '', 200
+
