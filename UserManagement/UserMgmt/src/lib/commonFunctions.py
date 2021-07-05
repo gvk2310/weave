@@ -12,7 +12,7 @@ from Crypto.Util.Padding import pad, unpad
 from kubernetes import config, client
 from flask_restful import request
 from ..config.config import mywd_iv, mywd_key, service_user, service_key, \
-    mongohost, jwt_secret
+    mongohost, jwt_secret, app
 
 
 def getProject(project):
@@ -148,6 +148,9 @@ def authenticated(encrypted_token):
 def verify_token(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        if 'Native-Token' in request.headers.keys() and request.headers['Native-Token'] == \
+                app.config['native_token']:
+            return func(*args, **kwargs)
         if 'DnopsToken' not in request.cookies.keys():
             return {"error": "Access Denied"}, 400
         token = request.cookies['DnopsToken']
@@ -156,3 +159,4 @@ def verify_token(func):
             return {"error": "Access Denied"}, 400
         return func(*args, **kwargs)
     return wrapper
+
