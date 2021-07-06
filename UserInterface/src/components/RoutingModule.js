@@ -20,6 +20,7 @@ import Infra from '../containers/onboard/infra';
 import Asset from '../containers/onboard/asset';
 import Test from '../containers/onboard/test';
 import { encryptionAlgorithm, decryptionAlgorithm, Base64EncodeUrl, Base64DecodeUrl } from '../helpers/helperFunction'
+import { cookies } from '../helpers/Local/Cookies';
 
 
 const mapStateToProps = (state) => {
@@ -33,6 +34,7 @@ class RoutingModule extends Component {
         super(props);
         this.state = {
             authenticated: false,
+            failCookie: '',
         };
         this.selectedId = '';
     }
@@ -40,23 +42,30 @@ class RoutingModule extends Component {
         const uName = process.env.service_user;
         const uKey = process.env.service_key;
         const encrypteduserName = encryptionAlgorithm(uName);
-        const encryptedKey = encryptionAlgorithm(uKey);
+        const encryptedKey = encryptionAlgorithm(uKey); 
         var myHeaders = new Headers();
-        myHeaders.append('Access-Control-Allow-Origin', 'http://localhost:3000/');
-        myHeaders.append('Access-Control-Allow-Credentials', 'true');
-        myHeaders.append('GET', 'POST', 'OPTIONS');
+        let data = {
+            encoded_service_user: encrypteduserName,
+            encoded_service_key: encryptedKey,
+        }
+        myHeaders.append('Content-Type', 'application/json');
         var requestOptions = {
-          method: 'GET',
-          headers: myHeaders
+          method: 'POST',
+          headers: myHeaders,
+          body: JSON.stringify(data),
         };
-        fetch(`###REACT_APP_PLATFORM_URL###/access/token-auth/${encrypteduserName}/${encryptedKey}`, requestOptions)
+        fetch(`###REACT_APP_PLATFORM_URL###/access/token-auth`, requestOptions)
           .then(response => {
               if(response.status === 200){
                   this.setState({
                       authenticated: true,
                   })
               }
-            console.log("response of 1st call", response);
+              else{
+                  this.setState({
+                      failCookie: "Token generation Failed"
+                  })
+              }
           })
           .catch(error => console.log('error', error));
       };
@@ -154,7 +163,7 @@ class RoutingModule extends Component {
 
                 </Switch >
             </Router >
-            : "Not Authenticated"
+            : this.state.failCookie === '' ? "" : "Token Generation Failed"
         )
     }
 
