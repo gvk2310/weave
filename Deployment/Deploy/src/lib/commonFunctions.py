@@ -10,7 +10,7 @@ from functools import wraps
 from flask_restful import request
 from werkzeug.datastructures import FileStorage
 from ..config.config import token_auth_url, onboarding_url, jenkins_url, \
-    jenkins_username, jenkins_password, jenkins_token
+    jenkins_username, jenkins_password, jenkins_token, app
 
 
 def nonEmptyString(value):
@@ -48,7 +48,7 @@ def excelFileType(file):
 def verify_token(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        resp = requests.get(f"{token_auth_url}/isvalidrequest",
+        resp = requests.get(f"{token_auth_url}/isvalidrequest", headers=request.headers,
                             cookies=request.cookies)
         if resp.status_code != 200:
             return resp.json(), resp.status_code
@@ -59,7 +59,9 @@ def verify_token(func):
 
 def assetDownloadDetails(assets):
     try:
-        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}")
+        data = requests.get(f"{onboarding_url}/assetdetails?assets={assets}",
+                            headers={"Native-Token": app.config['native_token']})
+
         if data.status_code == 200:
             return data.json()
         logger.error("Failed to retrieve asset download detail")
@@ -124,3 +126,4 @@ def xlsToJson(xls_file):
         logger.error("Error while opening the config excel file")
         logger.debug(traceback.format_exc())
         logger.error(e)
+

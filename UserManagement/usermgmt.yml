@@ -19,7 +19,7 @@ spec:
       - name: devnetops
       containers:
       - name: devnetops-access
-        image: devnetops.azurecr.io/devnetops-accessmgmt:S1
+        image: devnetops.azurecr.io/devnetops-accessmgmt:auth_test
         imagePullPolicy: Always
         env:
         - name: mongohost
@@ -36,6 +36,11 @@ spec:
             configMapKeyRef:
               key: MYWD_IV
               name: cloveplatformui-env
+        - name: Native_Token
+          valueFrom:
+            configMapKeyRef:
+              key: ADMIN_PASSWORD
+              name: clove-agent-env
         - name: service_user
           valueFrom:
             configMapKeyRef:
@@ -98,3 +103,4 @@ spec:
 #  name: searchengine-role
 #  apiGroup: rbac.authorization.k8s.io
 #---
+

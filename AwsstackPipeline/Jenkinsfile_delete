@@ -1,27 +1,31 @@
-def label = "mypod-${UUID.randomUUID().toString()}"
+def label = "Devnetops-${UUID.randomUUID().toString()}"
 def serviceaccount = "jenkins-admin"
 podTemplate(label: label, serviceAccount: serviceaccount,
-           containers: [containerTemplate(name: 'python', image: 'devnetops.azurecr.io/python3_devnetops:27072020', ttyEnabled: true, command: 'cat'),
-						containerTemplate(name: 'ansible', image: 'devnetops.azurecr.io/devnetops-ansible:latest', ttyEnabled: true, command: 'cat')],
-		   imagePullSecrets: ['devnetops'])
+           containers: [containerTemplate(name: 'python', image: 'aiindevops.azurecr.io/devnetops-release:python3', ttyEnabled: true, command: 'cat'),
+						containerTemplate(name: 'ansible', image: 'aiindevops.azurecr.io/devnetops-release:ansible', ttyEnabled: true, command: 'cat')],
+						volumes: [configMapVolume(mountPath: '/usr/config', configMapName: 'clove-agent-env')],
+		   imagePullSecrets: ['regcred'])
 
 {
     node(label){
-		def TOKEN="11d2cc12486764cb4e2862d2388b70a826"
+		native_token = sh(script:'#!/bin/sh -e\n' + "cat /usr/config/ADMIN_PASSWORD", returnStdout: true).trim()
+        withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DEPLOY_IN_PROGRESS\", \"message\":\"\",\"stage_info\":{\"Checkout Source Code\": \"\", \"Get Deployment Files\": \"\",\"StackDeployment In Cloud\": \"\"}}'"}
+		
 		try{
 			stage('Checkout Source Code'){
 				last_stage = STAGE_NAME.toLowerCase()
 				git branch: "DevNetOps-MP-Integration-V1",
 				url: "https://innersource.accenture.com/scm/dnp/devnetops.git",
 				credentialsId: innersource_cred
-				sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DELETE_IN_PROGRESS\", \"message\":\"Deployment delete initiated\"}'"
+				
+				withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DELETE_IN_PROGRESS\", \"message\":\"Deployment delete initiated\"}'"}
 			}
 			stage('Delete Branches In Cloud'){
 				last_stage = STAGE_NAME.toLowerCase()
 				container('python'){
 					sh 'python3 AwsstackPipeline/stack_delete.py'
 				}
-				sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DELETE_COMPLETE\", \"message\":\"Stacks deleted in cloud\"}'"
+				withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DELETE_COMPLETE\", \"message\":\"Stacks deleted in cloud\"}'"}
 			}		
 		}catch (e) {
 			def check = fileExists 'fail_msg'
@@ -29,8 +33,16 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 			if (check){
 			    msg = readFile(file: 'fail_msg')
 			}
-			sh "curl -X PUT ${status_url} -H 'Auth-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DELETE_FAILED\", \"message\":\"Failed to ${last_stage}. ${msg}\"}'"
+			withSecretEnv([[var: 'TOKEN', password: native_token]]) {sh "curl -X PUT ${status_url} -H 'Native-Token: ${TOKEN}' -H 'Content-Type: application/json' -d '{\"deployment_id\":\"${deployment_id}\", \"status\":\"DELETE_FAILED\", \"message\":\"Failed to ${last_stage}. ${msg}\"}'"}
 			currentBuild.result = 'FAILURE'
 		}
 	}
+}
+
+def withSecretEnv(List<Map> varAndPasswordList, Closure closure) {
+    wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: varAndPasswordList]) {
+    withEnv(varAndPasswordList.collect { "${it.var}=${it.password}" }) {
+      closure()
+    }
+  }
 }

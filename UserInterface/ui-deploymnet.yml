@@ -44,6 +44,16 @@ spec:
                 configMapKeyRef:
                   key: MYWD_IV
                   name: cloveplatformui-env
+            - name: service_user
+              valueFrom:
+                configMapKeyRef:
+                  key: INITIAL_ADMIN_USER
+                  name: clove-agent-env
+            - name: service_key
+              valueFrom:
+                configMapKeyRef:
+                  key: INITIAL_ADMIN_PASSWORD
+                  name: clove-agent-env
 
       imagePullSecrets:
        - name: devnetops

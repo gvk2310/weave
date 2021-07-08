@@ -54,7 +54,7 @@ def zipFileType(file):
 def verify_token(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        resp = requests.get(f"{token_auth_url}/isvalidrequest",
+        resp = requests.get(f"{token_auth_url}/isvalidrequest", headers=request.headers,
                             cookies=request.cookies)
         if resp.status_code != 200:
             return resp.json(), resp.status_code
@@ -216,3 +216,4 @@ def localTestOnboarding(args, repo_details):
                                  'test_link': link,
                                  'onboard_status': 'Done'})
     os.remove(args['test_file_loc'])
+

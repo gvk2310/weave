@@ -28,6 +28,5 @@ app_api.add_resource(resources.SingleUserInfo, '/userinfo/<string:name>')
 app_api.add_resource(resources.Role, '/roles')
 app_api.add_resource(resources.Service, '/services')
 app_api.add_resource(resources.GenerateToken,
-                     '/token-auth/<string:encoded_service_user>'
-                     '/<string:encoded_service_key>')
+                     '/token-auth')
 app_api.add_resource(resources.IsValidRequest, '/isvalidrequest')

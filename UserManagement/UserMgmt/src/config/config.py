@@ -14,3 +14,5 @@ mywd_iv = base64.b64decode(os.environ['MYWD_IV'])
 mywd_key = base64.b64decode(os.environ['MYWD_KEY'])
 service_user = os.environ['service_user']
 service_key = os.environ['service_key']
+app.config['native_token'] = os.environ['Native_Token']
+

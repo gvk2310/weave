@@ -17,7 +17,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-deployment'
-        def Image_Tag = 'S1'
+        def Image_Tag = 'auth_test'
         def K8s_Deployment = 'devnetops-deployment'
 		def SONAR_HOST_URL='https://a71ea3e9d163d47c9a000b392eb54bc3-1901858758.us-west-2.elb.amazonaws.com/sonar/'
 		def SONAR_SCANNER='org.sonarsource.scanner.maven'
@@ -48,7 +48,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
               '''}
          }
    
-   
+   /*
    stage('SonarQube Analysis') {
 			withCredentials([usernamePassword(credentialsId: 'SONAR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]){
 			withSonarQubeEnv('SonarQube') {
@@ -129,7 +129,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 					} 
 					}
 		}
-    
+    */
    
 	 stage (' Create Docker image'){
 			container('docker'){
@@ -141,7 +141,7 @@ podTemplate(label: label, serviceAccount: serviceaccount,
 		}  
 		stage('Pushing the Docker image to Container Registry') {
               container('docker') {		 
-	             withCredentials([usernamePassword(credentialsId: 'ACR', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
+	             withCredentials([usernamePassword(credentialsId: 'devnetops', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')])
 				 {
 			     sh ("docker login -u ${USERNAME} -p ${PASSWORD} "+DockerReg_Url)
 				 sh ("docker push ${DockerReg_Url}/${Docker_Image}:${Image_Tag}")	
