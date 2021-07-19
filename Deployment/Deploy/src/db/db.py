@@ -26,7 +26,7 @@ class deployments(db.Document):
 
 
 
-def get(**kwargs):
+def get_to_delete(**kwargs):
     try:
         if len(kwargs) > 0:
             depl = deployments.objects(id=kwargs['id']).first()
@@ -145,5 +145,18 @@ def delete(**kwargs):
         return True
     except Exception as e:
         logger.error("Unable to delete deployments detail")
+        logger.debug(traceback.format_exc())
+        logger.error(e)
+        
+def get(**kwargs):
+    try:
+        data= get_to_delete()
+        if data:
+          for item in data:
+            del item['instances'] 
+            del item['configurations']
+          return data
+    except Exception as e:
+        logger.error("Unable to retrieve the deployment details")
         logger.debug(traceback.format_exc())
         logger.error(e)
