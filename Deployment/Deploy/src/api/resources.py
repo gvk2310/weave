@@ -14,7 +14,7 @@ class SingleDeployInfo(Resource):
         data = db.get(id=id)
         if data:
             return data, 200
-        if data is False:
+        if not data:
             return {'msg': 'No deployments record found'}, 404
         return {'msg': 'Internal Server Error'}, 500
 
