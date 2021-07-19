@@ -169,7 +169,7 @@ class Deploy(Resource):
         parser.add_argument('id', type=nonEmptyString, required=True)
         parser.add_argument('force_delete', type=inputs.boolean, default=False)
         args = parser.parse_args()
-        depl = db.get(id=args['id'])
+        depl = db.get_to_delete(id=args['id'])
         if not depl:
             return {"msg": "Deployment not found"}, 400
         if not args['force_delete'] and depl['status'] == 'DELETE_IN_PROGRESS':
