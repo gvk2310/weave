@@ -36,12 +36,14 @@ def get_to_delete(**kwargs):
                     'type': depl.type,
                     'infra': depl.infra,
                     'environment': depl.environment,
+                    'configurations': depl.configurations,
                     'assets': ','.join(depl.assets),
                     'status': depl.status,
                     'logs': depl.logs,
                     'created (utc)': depl.created.strftime(
                         "%d-%m-%Y %H:%M:%S"),
-                    'stage_info': depl.stage_info} if depl else False
+                    'stage_info': depl.stage_info,
+                    'instances': depl.instances} if depl else False
         depls = deployments.objects()
         return [{'id': deployment.id,
                  'name': deployment.name,
@@ -49,12 +51,14 @@ def get_to_delete(**kwargs):
                  'type': deployment.type,
                  'infra': deployment.infra,
                  'environment': deployment.environment,
+                 'configurations': depl.configurations,
                  'assets': ','.join(deployment.assets),
                  'status': deployment.status,
                  'logs': deployment.logs,
                  'created (utc)': deployment.created.strftime(
                      "%d-%m-%Y %H:%M:%S"),
-                 'stage_info': deployment.stage_info} for deployment in                 
+                 'stage_info': deployment.stage_info,
+                 'instances': deployment.instances} for deployment in                 
                 depls] if depls else False
     except Exception as e:
         logger.error("Unable to get deployments detail")
