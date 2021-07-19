@@ -51,7 +51,7 @@ def get_to_delete(**kwargs):
                  'type': deployment.type,
                  'infra': deployment.infra,
                  'environment': deployment.environment,
-                 'configurations': depl.configurations,
+                 'configurations': deployment.configurations,
                  'assets': ','.join(deployment.assets),
                  'status': deployment.status,
                  'logs': deployment.logs,
