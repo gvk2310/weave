@@ -17,9 +17,9 @@ podTemplate(label: label, serviceAccount: serviceaccount,
         def DockerReg_Url='devnetops.azurecr.io'
 		def DockerReg_Credentials='ACR'
         def Docker_Image = 'devnetops-deployment'
-        def Image_Tag = 'auth_test'
+        def Image_Tag = 'S1'
         def K8s_Deployment = 'devnetops-deployment'
-		def SONAR_HOST_URL='https://a71ea3e9d163d47c9a000b392eb54bc3-1901858758.us-west-2.elb.amazonaws.com/sonar/'
+		def SONAR_HOST_URL='https://build-env.acndevopsengineering.com/sonar/'
 		def SONAR_SCANNER='org.sonarsource.scanner.maven'
         def SONAR_PLUGIN='sonar-maven-plugin:3.2'
 		
