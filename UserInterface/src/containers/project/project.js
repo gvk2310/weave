@@ -73,7 +73,7 @@ class Project extends React.Component {
             })
             .then((findresponse) => {
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    this.setState({ response: findresponse.msg, projectArr: [] });
                 } else {
                     this.setState({ projectArr: findresponse });
                 }
@@ -250,9 +250,7 @@ class Project extends React.Component {
             this.handleShowModal('addprojectModal');
             this.handleAddproject();
         }
-        else {
-            alert("Form has errors");
-        }
+       
     }
     contactSubmit1 = (e) => {
         // console.log('inside contactSubmit1');
@@ -260,9 +258,7 @@ class Project extends React.Component {
         if (this.handleValidationEdit()) {
             this.handleShowModal('editprojectModal');
             this.handleUpdateProject();
-        } else {
-            alert("Form has errors.")
-        }
+        } 
     }
 
     handleValidation = () => {

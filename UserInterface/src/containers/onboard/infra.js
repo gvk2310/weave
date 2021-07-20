@@ -119,7 +119,7 @@ class Infra extends React.Component {
             .then((findresponse) => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    this.setState({ response: findresponse.msg, infra: []});
                 } else {
                     this.setState({ infra: findresponse });
                 }
@@ -178,12 +178,12 @@ class Infra extends React.Component {
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
                 if (result.msg) { this.setState({ status: result.msg }); }
-                setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
                 console.log(`error${error}`);
-                setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
         document.getElementById("addInfraForm").reset();
 
@@ -234,12 +234,12 @@ class Infra extends React.Component {
             .then(result => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
                 if (result.msg) { this.setState({ status: result.msg }); }
-                setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
                 console.log(`error${error}`);
-                setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
         document.getElementById("updateInfraForm").reset();
 
@@ -294,14 +294,14 @@ class Infra extends React.Component {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
                 // console.log(result);
                 if (JSON.parse(result).msg) { this.setState({ status: JSON.parse(result).msg }); }
-                setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
                 if (document.getElementById('loader')) { document.getElementById('loader').style.display = "none"; }
                 console.log('error', error);
                 this.setState({ disabledBtn: false });
                 document.querySelector('#myDeleteConfirmationModal .close').click();
-                setTimeout(() => { this.setState({ msgClass: '' }); }, 3000);
+                setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             });
     }
 
@@ -316,9 +316,7 @@ class Infra extends React.Component {
         if (this.handleValidation()) {
             this.handleShowModal('addinfraModal')
             this.handleAddInfra();
-        } else {
-            alert("Form has errors.");
-        }
+        } 
     }
 
     contactSubmit1 = (e) => {
@@ -328,9 +326,7 @@ class Infra extends React.Component {
             // console.log('validation successful');
             this.handleShowModal('editinfraModal')
             this.handleUpdateInfra();
-        } else {
-            alert("Form has errors.");
-        }
+        } 
     }
     handleChangeEdit(field, e) {
         const { editFields } = this.state;

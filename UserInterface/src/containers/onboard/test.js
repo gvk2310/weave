@@ -76,7 +76,7 @@ class Test extends React.Component {
             })
             .then((findresponse) => {
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    // this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ repo: findresponse });
                     // console.log(repo);
@@ -105,7 +105,7 @@ class Test extends React.Component {
             })
             .then((findresponse) => {
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    this.setState({ response: findresponse.msg, test: [] });
                 } else {
                     this.setState({ test: findresponse });
                     // console.log(this.state.test);
@@ -356,9 +356,7 @@ class Test extends React.Component {
             // console.log('validation successful');
             this.handleShowModal('addtestModal');
             this.handleAddTest();
-        } else {
-            alert("Form has errors.");
-        }
+        } 
     }
 
     handleValidation = () => {
@@ -445,9 +443,7 @@ class Test extends React.Component {
             // console.log('validation successful');
             this.handleShowModal('edittestModal');
             this.handleUpdateTest();
-        } else {
-            alert("Form has errors.");
-        }
+        } 
     }
 
     handleValidationEdit = () => {

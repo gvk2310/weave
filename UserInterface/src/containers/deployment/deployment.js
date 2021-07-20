@@ -46,7 +46,8 @@ class Deployment extends React.Component {
             status: '',
             isError: false,
             environment: '',
-            orchestrator: ''
+            orchestrator: '',
+            listening: false
 
         };
         this.selectedId = '';
@@ -179,9 +180,12 @@ class Deployment extends React.Component {
             })
             .then((findresponse) => {
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    this.setState({ response: findresponse.msg, deploy: [] });
                 } else {
                     this.setState({ deploy: findresponse });
+                    if (this.state.listening) {
+                        this.handleGetDeploySSE(findresponse);
+                    }
                     // console.log(this.state.deploy);
                 }
             })
@@ -207,17 +211,34 @@ class Deployment extends React.Component {
         }
     }
 
-    handleGetDeploySSE = () => {
+    handleGetDeploySSE = (deploy) => {
         let es = {};
+        let flag = false;
         es = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/deploy");
         es.onopen = function (event) {
-            // console.log('open message');
+            console.log('open connection')
         };
         es.addEventListener("deploy", e => {
-            // console.log('inside event listner');
-            // console.log(e.data);
-            this.updateDeploymentArray(JSON.parse(e.data));
+            const usage = JSON.parse(e.data);
+            flag = usage.status == "DEPLOY_IN_PROGRESS" || usage.status == "DELETE_IN_PROGRESS" ? false : true;
+            if (deploy) {
+                deploy.map((value, index) => {
+                    if (value.id === usage.id) {
+                        deploy[index].status = usage.status;
+                        deploy[index].stage_info = usage.stage_info;
+                    }
+                });
+                this.setState({ deploy: deploy });
+                if (this.selectedId === usage.id) { this.setState({ currentDep: usage }); }
+            }
         });
+        es.onerror = (err) => {
+            this.setState({listening: false})
+            if (flag) {
+                this.getNewDeploymentDetails();
+                es.close();
+            }
+        }
     }
 
     handleAddDeploy = () => {
@@ -252,6 +273,7 @@ class Deployment extends React.Component {
                 // console.log(response);
                 // console.log(response.status);
                 if (response.status == 200) {
+                    this.setState({listening: true});
                     this.getNewDeploymentDetails();
                     this.setState({ isError: false, checkpoint: true });
                 } else {
@@ -267,7 +289,6 @@ class Deployment extends React.Component {
                 } else{
                     this.setState({ status: 'Deployment Successfully done' });
                 }
-                this.handleGetDeploySSE();
                 setTimeout(() => { this.setState({ checkpoint: false }); }, 3000);
             })
             .catch(error => {
@@ -305,19 +326,15 @@ class Deployment extends React.Component {
     }
 
     handledeleteSSE = () => {
-        const es = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/deploy");
-        es.onopen = function (event) {
-            // console.log('open message');
-        };
-        es.addEventListener("deploy", e => {
-            // console.log('inside event listner');
-            // console.log(e.data);
-            if ((JSON.parse(e.data).status) == "DELETE_IN_PROGRESS")
-                this.handleGetDeploy();
-            {
-                this.state.deploy.splice(this.state.delDeployWithIndex, 1);
-            };
+        let eventSource = new EventSourcePolyfill("###REACT_APP_PLATFORM_URL###/events/deploy");
+        eventSource.onopen = function (event) {
+        }
+        eventSource.addEventListener("deploy", event => {
+            const usage = JSON.parse(event.data);
         });
+        // eventSource.onerror = (err) => {
+            eventSource.close();
+        // }
     } 
 
     handleDelete = () => {
@@ -346,16 +363,13 @@ class Deployment extends React.Component {
             .then((response) => {
                 this.setState({ disabledBtn: false });
                 if (response.status == 200) {
-                    const delrow = this.state.deploy[this.state.delDeployWithIndex];
-                    delrow.status = 'DELETE_IN_PROGRESS';
-                    this.setState({ deploy: [...this.state.deploy, { ...delrow }] });
-                    this.handledeleteSSE();
-                    this.handleGetDeploy();
-                    this.state.deploy.splice(this.state.delDeployWithIndex, 1);
+                    this.handleGetDeploySSE(this.state.deploy);
+                    this.setState({ status: "Deployment delete is initiated" });
                     this.setState({ isError: false, checkpoint: true });
                 }
                 else {
-                    this.setState({ isError: true, checkpoint: true, status: 'There was an unknown error' });
+                    this.setState({ status: "There was an unknown error" });
+                    this.setState({ isError: true, checkpoint: true });
                 };
                 return response.text();
             })
@@ -420,9 +434,7 @@ class Deployment extends React.Component {
         } else if (this.state.currScreen === 2 && this.handleValidationUpload()) {
             // console.log('second screen')
             this.setState({ currScreen: ++this.state.currScreen });
-        } else {
-            // alert("Form has errors");
-        }
+        } 
     }
     handleFileUpload = () => {
         this.setState({ fileStatus: document.getElementById('config').files[0].name });
@@ -458,6 +470,12 @@ class Deployment extends React.Component {
                 fields['environment'] = '';
                 fields['orchestrator'] = '';
             }
+        }
+        if (field === 'assets') {
+            let asset = e.target.value;
+            let assetId = asset.split('=')[1];
+            let assetArr = this.state.assets.filter(item => item.asset_id === assetId);
+            fields['assets'] = `template=${assetArr[0].asset_name}`;
         }
         if (this.refs.changeCloudType) {
             this.handleChangeCloudType();
