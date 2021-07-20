@@ -57,7 +57,7 @@ class Repository extends React.Component {
             })
             .then((findresponse) => {
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    this.setState({ response: findresponse.msg, repo: [] });
                 } else {
                     this.setState({ repo: findresponse });
                     // console.log(repo)
@@ -346,9 +346,7 @@ class Repository extends React.Component {
             // console.log('validation successful')
             this.handleShowModal('addrepositoryModal')
             this.handleAddRepository();
-        } else {
-            alert("Form has errors.");
-        }
+        } 
     }
 
     contactSubmit1 = (e) => {
@@ -358,9 +356,7 @@ class Repository extends React.Component {
             // console.log('validation successful')
             this.handleShowModal('editrepositoryModal')
             this.handleUpdateRepository();
-        } else {
-            alert("Form has errors.");
-        }
+        } 
     }
 
     handleChangeEdit(field, e) {

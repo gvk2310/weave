@@ -91,7 +91,7 @@ class Role extends React.Component {
             .then((findresponse) => {
 
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    this.setState({ response: findresponse.msg, roles: [] });
                 } else {
                     this.setState({ roles: findresponse });
                 }

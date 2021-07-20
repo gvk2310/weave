@@ -75,7 +75,7 @@ class Asset extends React.Component {
             .then((findresponse) => {
 
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    this.setState({ response: findresponse.msg, asset: [] });
                 } else {
                     this.setState({ asset: findresponse });
                 }
@@ -118,7 +118,7 @@ class Asset extends React.Component {
             })
             .then((findresponse) => {
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    this.setState({ response: findresponse.msg , asset: []});
                 } else {
                     this.setState({ asset: findresponse });
                 }
@@ -560,8 +560,6 @@ class Asset extends React.Component {
         e.preventDefault();
         if (this.handleValidation()) {
             this.handleAddAsset();
-        } else {
-            alert("Form has errors.");
         }
     }
 
@@ -569,9 +567,7 @@ class Asset extends React.Component {
         e.preventDefault();
         if (this.handleValidationEdit()) {
             this.handleUpdateAsset();
-        } else {
-            alert("Form has errors.");
-        }
+        } 
     }
 
     handleRadio = (event) => {

@@ -131,7 +131,7 @@ class User extends React.Component {
             .then((findresponse) => {
 
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    // this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ roles: findresponse });
                 }
@@ -143,7 +143,7 @@ class User extends React.Component {
             .then(response => response.json())
             .then((findresponse) => {
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    // this.setState({ response: findresponse.msg });
                 } else {
                     this.setState({ projectArr: findresponse });
                 }
@@ -169,7 +169,7 @@ class User extends React.Component {
 
                 this.setState({ displayLoader: false });
                 if (findresponse.msg) {
-                    this.setState({ response: findresponse.msg });
+                    this.setState({ response: findresponse.msg, userArr: [] });
                 } else {
                     this.setState({ userArr: findresponse });
                     // console.log(findresponse);
@@ -290,9 +290,6 @@ class User extends React.Component {
         if (this.handleValidation()) {
             this.handleShowModal('adduserModal');
             this.handleAddUser();
-        }
-        else {
-            alert("Form has errors.")
         }
     }
 
