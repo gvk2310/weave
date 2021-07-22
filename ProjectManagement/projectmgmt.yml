@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devnetops-project
+  labels:
+    app: devnetops-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devnetops-project
+  template:
+    metadata:
+      labels:
+        app: devnetops-project
+    spec:
+      imagePullSecrets:
+      - name: devnetops
+      containers:
+      - name: devnetops-project
+        image: devnetops.azurecr.io/devnetops-project:auth_test
+        imagePullPolicy: Always
+        env:
+        - name: usermgmtUrl
+          value: http://devnetops-access.ethan.svc.cluster.local:80
+        - name: mongohost
+          value: mongodb://admin:password@devnetops-mongo.ethan.svc.cluster.local:80/devnetops?authSource=admin
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: devnetops-project
+  labels:
+    app: devnetops-project
+spec:
+  selector:
+    app: devnetops-project
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+

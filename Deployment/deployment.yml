@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devnetops-deployment
+  labels:
+    app: devnetops-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: devnetops-deployment
+  template:
+    metadata:
+      labels:
+        app: devnetops-deployment
+    spec:
+      imagePullSecrets:
+      - name: devnetops
+      containers:
+      - name: devnetops-deployment
+        image: devnetops.azurecr.io/devnetops-deployment:S1
+        imagePullPolicy: Always
+        env:
+        - name: jenkins_url
+          value: http://jenkins-blueocean.ethan.svc.cluster.local:8081/jenkinscore
+        - name: jenkins_username
+          value: ethanadmin
+        - name: jenkins_password
+          value: sUh7s0wJk2XMLV2D91
+        - name: jenkins_token
+          value: 11d2cc12486764cb4e2862d2388b70a826
+        - name: jenkins_cft_deploy_job
+          value: Dev_Workspace/devnetops/cft_deploy
+        - name: jenkins_cft_delete_job
+          value: Dev_Workspace/devnetops/cft_delete
+        - name: onboarding_url
+          value: http://devnetops-onboard.ethan.svc.cluster.local:80
+        - name: usermgmtUrl
+          value: http://devnetops-access.ethan.svc.cluster.local:80
+        - name: mongohost
+          value:  mongodb://admin:password@devnetops-mongo.ethan.svc.cluster.local:80/devnetops?authSource=admin
+        - name: status_url
+          value: http://devnetops-deployment.ethan.svc.cluster.local:80
+        - name: vault_url
+          value: http://devnetops-vault.ethan.svc.cluster.local:80
+        - name: vault_token
+          value: devnetops
+        - name: redis_url
+          value: redis-ls.ethan.svc.cluster.local:6379
+        - name: Native_Token
+          valueFrom:
+            configMapKeyRef:
+              key: ADMIN_PASSWORD
+              name: clove-agent-env
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: devnetops-deployment
+  labels:
+    app: devnetops-deployment
+spec:
+  selector:
+    app: devnetops-deployment
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+
+

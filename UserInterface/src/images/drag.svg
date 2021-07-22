@@ -1,0 +1,55 @@
+<svg id="Group_24253" data-name="Group 24253" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="13.341" height="11.977" viewBox="0 0 13.341 11.977">
+  <defs>
+    <clipPath id="clip-path">
+      <path id="Path_40819" data-name="Path 40819" d="M353.093,388.5a.378.378,0,0,0,.377-.377v-3.251l1.046,1.046a.378.378,0,1,0,.534-.534L353.36,383.7a.389.389,0,0,0-.534,0l-1.668,1.668a.377.377,0,0,0,.534.533l1.022-1.022v3.251A.378.378,0,0,0,353.093,388.5Z" transform="translate(-351.047 -383.591)" fill="#005fee"/>
+    </clipPath>
+    <clipPath id="clip-path-2">
+      <rect id="Rectangle_4431" data-name="Rectangle 4431" width="1281.37" height="831.111" fill="#005fee"/>
+    </clipPath>
+    <clipPath id="clip-path-3">
+      <path id="Path_40820" data-name="Path 40820" d="M355.05,394.13a.377.377,0,0,0-.534,0l-1.022,1.022V391.9a.378.378,0,0,0-.755,0v3.251l-1.046-1.047a.378.378,0,1,0-.534.534l1.692,1.692a.378.378,0,0,0,.534,0l1.667-1.668A.379.379,0,0,0,355.05,394.13Z" transform="translate(-351.048 -391.525)" fill="#005fee"/>
+    </clipPath>
+    <clipPath id="clip-path-5">
+      <path id="Path_40821" data-name="Path 40821" d="M357.147,392.009a.376.376,0,0,0,.534,0l1.691-1.691a.377.377,0,0,0,0-.534l-1.668-1.667a.377.377,0,1,0-.533.533l1.022,1.023h-3.251a.378.378,0,0,0,0,.755h3.251l-1.046,1.047A.376.376,0,0,0,357.147,392.009Z" transform="translate(-354.566 -388.008)" fill="#005fee"/>
+    </clipPath>
+    <clipPath id="clip-path-7">
+      <path id="Path_40822" data-name="Path 40822" d="M347.915,390.453h3.251a.378.378,0,0,0,0-.755h-3.251l1.046-1.047a.377.377,0,1,0-.534-.533l-1.691,1.691a.377.377,0,0,0,0,.534l1.667,1.667a.377.377,0,0,0,.534-.533Z" transform="translate(-346.627 -388.008)" fill="#005fee"/>
+    </clipPath>
+  </defs>
+  <g id="Group_13577" data-name="Group 13577" transform="translate(4.614)">
+    <g id="Group_13562" data-name="Group 13562" transform="translate(0)" clip-path="url(#clip-path)">
+      <g id="Group_13561" data-name="Group 13561" transform="translate(-298.716 -341.061)">
+        <g id="Group_13560" data-name="Group 13560" transform="translate(0 0)" clip-path="url(#clip-path-2)">
+          <rect id="Rectangle_4430" data-name="Rectangle 4430" width="13.012" height="13.812" transform="translate(294.267 336.612)" fill="#005fee"/>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g id="Group_13578" data-name="Group 13578" transform="translate(4.614 7.06)">
+    <g id="Group_13566" data-name="Group 13566" clip-path="url(#clip-path-3)">
+      <g id="Group_13565" data-name="Group 13565" transform="translate(-298.717 -348.122)">
+        <g id="Group_13564" data-name="Group 13564" transform="translate(0 0)" clip-path="url(#clip-path-2)">
+          <rect id="Rectangle_4432" data-name="Rectangle 4432" width="13.011" height="13.816" transform="translate(294.267 343.672)" fill="#005fee"/>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g id="Group_13579" data-name="Group 13579" transform="translate(8.424 3.93)">
+    <g id="Group_13570" data-name="Group 13570" transform="translate(0 0)" clip-path="url(#clip-path-5)">
+      <g id="Group_13569" data-name="Group 13569" transform="translate(-301.847 -344.992)">
+        <g id="Group_13568" data-name="Group 13568" transform="translate(0 0)" clip-path="url(#clip-path-2)">
+          <rect id="Rectangle_4434" data-name="Rectangle 4434" width="13.816" height="13.012" transform="translate(297.397 340.542)" fill="#005fee"/>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g id="Group_13580" data-name="Group 13580" transform="translate(0 3.93)">
+    <g id="Group_13574" data-name="Group 13574" transform="translate(0 0)" clip-path="url(#clip-path-7)">
+      <g id="Group_13573" data-name="Group 13573" transform="translate(-294.782 -344.992)">
+        <g id="Group_13572" data-name="Group 13572" transform="translate(0 0)" clip-path="url(#clip-path-2)">
+          <rect id="Rectangle_4436" data-name="Rectangle 4436" width="13.816" height="13.012" transform="translate(290.332 340.542)" fill="#005fee"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
