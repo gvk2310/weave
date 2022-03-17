@@ -1,8 +1,0 @@
-FROM python:3.8-alpine
-MAINTAINER "Devnetops Team"
-#RUN apk add --no-cache --virtual .build-deps libressl-dev libffi-dev gcc musl-dev
-RUN apk add --no-cache --virtual .build-deps openssl-dev libffi-dev gcc musl-dev
-COPY ProjectManagement/tmp/ProjectMgmt /ProjectMgmt
-WORKDIR /ProjectMgmt
-RUN pip install -r requirements.txt
-CMD ["uwsgi", "--ini", "uwsgi.ini"]

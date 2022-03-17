@@ -1,0 +1,21 @@
+global: 
+  serveAsHttps: true
+  image:
+    #mention PDC bastion ip when using gitlab present in bastion
+    registry: ###REGISTRY###
+  dns:
+    enabled: true
+  ingress:
+    host: "www.google.com" ###HOST if DNS is given###
+  authentication:
+    adminPassword: ###ADMINPASSWORD###
+  keycloakSettings:
+    enabled: false
+    cookieSecret: "###COOKIESECRET###"
+    keycloakAdminUsername: "keycloak"
+    keycloakAdminPassword: "###KCADMINPASSWORD###"
+    keycloakClientId: "###CLIENTID###"
+    keycloakClientSecret: "###CLIENTSECRET###"
+    keycloakRealm: "###REALM###"
+    keycloakInitialUser: "platformuser"
+    keycloakInitialUserPassword: "###INITIALPASSWORD###"
