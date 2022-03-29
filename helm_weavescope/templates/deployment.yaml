@@ -105,7 +105,7 @@ items:
         name: weave-scope-agent
         app: weave-scope
         weave-cloud-component: scope
-        weave-scope-component: agen
+        weave-scope-component: agent
       namespace: {{ .Values.namespace.name }}
     spec:
       minReadySeconds: {{ .Values.daemonSet.minReadySeconds }}
