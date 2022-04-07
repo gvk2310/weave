@@ -1,0 +1,15 @@
+apiVersion: v1
+entries:
+  weave-scope:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2022-04-07T10:58:53.0887724+05:30"
+    description: A Helm chart for Kubernetes
+    digest: 06bc004e832997509eba880e76d650bac1c0be7190b7594c5836df0b1c6022c4
+    icon: https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png
+    name: weave-scope
+    type: application
+    urls:
+    - weave-scope-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-04-07T10:58:53.0868683+05:30"
